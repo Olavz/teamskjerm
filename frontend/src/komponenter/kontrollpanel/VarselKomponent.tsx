@@ -1,23 +1,32 @@
 import {useContext} from 'react';
 import {DataContext} from "./BaseKomponentKontrollpanel.tsx";
 
+type VarselData = {
+    harFeilet: boolean;
+    melding: string;
+};
 
-const VarselKomponent : React.FC = () => {
+const VarselKomponent: React.FC = () => {
+    const {komponentData, loading} = useContext(DataContext)
 
-    const {kontrollpanelKomponent} = useContext(DataContext);
-
-    if (kontrollpanelKomponent === "true") {
-        return (
-            <div className="alert alert-danger" role="alert">
-                dsl-hent-maskert-grunnlagsdata
-            </div>
-        )
+    if (loading) {
+        return (<p>Laster...</p>)
     } else {
-        return (
-            <div className="alert alert-success" role="alert">
-                We good!
-            </div>
-        )
+        let varsel = JSON.parse(komponentData) as VarselData;
+
+        if (varsel.harFeilet ?? false) {
+            return (
+                <div className="alert alert-danger" role="alert">
+                    {varsel.melding}
+                </div>
+            )
+        } else {
+            return (
+                <div className="alert alert-success" role="alert">
+                    {varsel.melding ?? "Ingen"}
+                </div>
+            )
+        }
     }
 }
 

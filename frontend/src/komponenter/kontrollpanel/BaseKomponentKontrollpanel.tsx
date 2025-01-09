@@ -8,10 +8,10 @@ type BaseKomponentKontrollpanelProps = {
 }
 
 // Context for data
-export const DataContext = createContext<{ kontrollpanelKomponent: any; loading: boolean }>({ kontrollpanelKomponent: null, loading: true });
+export const DataContext = createContext<{ komponentData: any; loading: boolean }>({ komponentData: null, loading: true });
 
 export const DataProvider: React.FC<{ url: string; subscriptionPath: string, children: React.ReactNode }> = ({ url, subscriptionPath, children }) => {
-    const [data, setData] = useState<any>(null);
+    const [komponentData, setKomponentData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -20,7 +20,7 @@ export const DataProvider: React.FC<{ url: string; subscriptionPath: string, chi
             try {
                 const response = await fetch(url);
                 const result = await response.json();
-                setData(result.data);
+                setKomponentData(result.data);
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
@@ -46,7 +46,7 @@ export const DataProvider: React.FC<{ url: string; subscriptionPath: string, chi
                 // Abonner på meldinger fra serveren
                 // client.subscribe(`/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}`, (message: IMessage) => {
                 client.subscribe(`${subscriptionPath}`, (message: IMessage) => {
-                    setData(() => message.body);
+                    setKomponentData(() => message.body);
                 });
             },
             onDisconnect: () => {
@@ -62,7 +62,7 @@ export const DataProvider: React.FC<{ url: string; subscriptionPath: string, chi
         };
     }, []);
 
-    return <DataContext.Provider value={{ kontrollpanelKomponent: data, loading }}>{children}</DataContext.Provider>;
+    return <DataContext.Provider value={{ komponentData, loading }}>{children}</DataContext.Provider>;
 };
 
 export const BaseKomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> = ({navn, children}) => {

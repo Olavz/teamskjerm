@@ -1,5 +1,6 @@
 package app.teamskjerm.inforskjerm.kontrollpanel
 
+import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.http.ResponseEntity
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,18 +28,16 @@ class KomponenttjenerController(
     fun oppdaterKomponent(
         @PathVariable("kontrollpanelId") kontrollpanelId: String,
         @PathVariable("komponentId") komponentId: String,
-        @RequestBody request: KomponenttDataResponse
+        @RequestBody payload: JsonNode
     ): ResponseEntity<KomponenttDataResponse> {
-        simpMessagingTemplate.convertAndSend("/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}", request.data)
-        println("/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}")
-        println(request)
+        simpMessagingTemplate.convertAndSend("/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}", payload)
         kontrollpanelRepository.alleKontrollpanel()
             .filter { it.id == kontrollpanelId }
             .single()
             .komponenter
             .filter { it.id == komponentId }
             .single()
-            .data = request.data
+            .data = payload.toString()
         return ResponseEntity.ok(
             KomponenttDataResponse(
                 "OK"

@@ -4,11 +4,12 @@ import {DataContext} from "./BaseKomponentKontrollpanel.tsx";
 
 const OppdaterbarTekstKomponent : React.FC = () => {
 
-    const { kontrollpanelKomponent } = useContext(DataContext);
+    const { komponentData, loading } = useContext(DataContext);
 
     return (
         <>
-            <h1>{kontrollpanelKomponent ? kontrollpanelKomponent : 'Loading...'}</h1>
+            {loading && <h1>Laster..</h1>}
+            <h1>{komponentData ?? ""}</h1>
         </>
     );
 }

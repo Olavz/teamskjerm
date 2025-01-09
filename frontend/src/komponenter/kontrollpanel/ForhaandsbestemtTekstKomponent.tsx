@@ -3,20 +3,20 @@ import {DataContext} from "./BaseKomponentKontrollpanel.tsx";
 
 
 const ForhaandsbestemtTekstKomponent: React.FC = () => {
-    const { kontrollpanelKomponent, loading } = useContext(DataContext);
+    const { komponentData, loading } = useContext(DataContext);
 
     if (loading) return <p>Loading...</p>
 
     return (
         <>
-                <p>{kontrollpanelKomponent}</p>
+                <p>{komponentData}</p>
         </>
     )
 }
 
 export const RedigerForhaandsbestemtTekstKomponent: React.FC = () => {
 
-    const { kontrollpanelKomponent, loading } = useContext(DataContext);
+    const { komponentData, loading } = useContext(DataContext);
 
     const [inputValue, setInputValue] = useState<string>(''); // State for verdien i boksen
 
@@ -52,7 +52,7 @@ export const RedigerForhaandsbestemtTekstKomponent: React.FC = () => {
         <>
             <div className="mb-3">
                 <label className="form-label">Verdi</label>
-                <textarea onChange={handleInputChange} className="form-control" rows={3} defaultValue={kontrollpanelKomponent ? kontrollpanelKomponent : ""} />
+                <textarea onChange={handleInputChange} className="form-control" rows={3} defaultValue={komponentData ?? ""} />
                 <button onClick={lagreData}>Lagre</button>
             </div>
         </>
