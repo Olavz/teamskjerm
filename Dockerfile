@@ -17,6 +17,7 @@ WORKDIR /app
 # Kopier JAR-filen til containeren
 COPY --from=build /app/target/infoskjerm-0.0.1-SNAPSHOT.jar /app/infoskjerm.jar
 
-ENTRYPOINT ["java", "-jar", "infoskjerm.jar"]
+ENV PORT 8080
 
-EXPOSE 8080
+CMD ["java", "-Dserver.port=${PORT}", "-jar", "infoskjerm.jar"]
+
