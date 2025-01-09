@@ -1,11 +1,11 @@
-package com.monitor404.monitorapp.kontrollpanel.komponenter
+package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
-class OppdaterbarTekstKomponent(
+class AlertKomponent(
     override val id: String,
     override val navn: String,
     override var data: String
 ) : KontrollpanelKomponent {
     override fun komponentNavn(): String {
-        return "OppdaterbarTekstKomponent"
+        return "VarselKomponent"
     }
 }

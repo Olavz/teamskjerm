@@ -1,6 +1,6 @@
-package com.monitor404.monitorapp.kontrollpanel
+package app.teamskjerm.inforskjerm.kontrollpanel
 
-import com.monitor404.monitorapp.kontrollpanel.komponenter.KontrollpanelKomponent
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KontrollpanelKomponent
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -24,7 +24,7 @@ class KontrollpanelController(
     ): ResponseEntity<List<KontrollpanelKomponent>> {
         return ResponseEntity.ok(
             kontrollpanelRepository.alleKontrollpanel()
-                .filter { it.id.equals(id)}
+                .filter { it.id.equals(id) }
                 .single()
                 .komponenter
         )

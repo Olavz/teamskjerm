@@ -1,4 +1,4 @@
-package com.monitor404.monitorapp
+package app.teamskjerm.inforskjerm
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class MonitorappApplication
 
 fun main(args: Array<String>) {
-	runApplication<MonitorappApplication>(*args)
+    runApplication<MonitorappApplication>(*args)
 }

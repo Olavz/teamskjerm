@@ -1,4 +1,4 @@
-package com.monitor404.monitorapp.kontrollpanel.komponenter
+package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

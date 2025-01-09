@@ -1,4 +1,4 @@
-package com.monitor404.monitorapp
+package app.teamskjerm.inforskjerm
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest

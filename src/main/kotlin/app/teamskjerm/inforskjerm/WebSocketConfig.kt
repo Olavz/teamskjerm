@@ -1,4 +1,4 @@
-package com.monitor404.monitorapp
+package app.teamskjerm.inforskjerm
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker

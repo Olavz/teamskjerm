@@ -8,11 +8,11 @@
 		<version>3.4.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.monitor404</groupId>
-	<artifactId>monitorapp</artifactId>
+	<groupId>app.teamskjerm</groupId>
+	<artifactId>inforskjerm</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>monitorapp</name>
-	<description>Demo project for Spring Boot</description>
+	<name>Inforskjerm</name>
+	<description>Få rykende fersk informasjon rett på skjermen</description>
 	<url/>
 
 

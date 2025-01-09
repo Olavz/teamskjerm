@@ -1,4 +1,4 @@
-package com.monitor404.monitorapp.kontrollpanel
+package app.teamskjerm.inforskjerm.kontrollpanel
 
 import org.springframework.http.ResponseEntity
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -39,7 +39,11 @@ class KomponenttjenerController(
             .filter { it.id == komponentId }
             .single()
             .data = request.data
-        return ResponseEntity.ok(KomponenttDataResponse("OK"))
+        return ResponseEntity.ok(
+            KomponenttDataResponse(
+                "OK"
+            )
+        )
     }
 
     @GetMapping("/kontrollpanel/{kontrollpanelId}/komponent/{komponentId}/data")

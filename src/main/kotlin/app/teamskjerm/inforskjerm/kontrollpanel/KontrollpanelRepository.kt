@@ -1,8 +1,7 @@
-package com.monitor404.monitorapp.kontrollpanel
+package app.teamskjerm.inforskjerm.kontrollpanel
 
-import com.monitor404.monitorapp.kontrollpanel.komponenter.AlertKomponent
-import com.monitor404.monitorapp.kontrollpanel.komponenter.ForhåndsbestemtTekstKomponent
-import com.monitor404.monitorapp.kontrollpanel.komponenter.OppdaterbarTekstKomponent
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.AlertKomponent
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.ForhåndsbestemtTekstKomponent
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -24,12 +23,12 @@ class KontrollpanelRepository {
                     "Lorem" +
                             " ipsum dolor sit amet, consectetur adipiscing elit. Curabitur suscipit ultrices malesuada. Morbi et efficitur odio, a molestie lorem. Nunc erat lectus, ornare id tempus tristique, porta eget odio. Nullam ac rhoncus massa, elementum condimentum ligula. Cras id ex eget lectus congue convallis tincidunt nec nisl. Proin non facilisis mi. Vestibulum vestibulum, mi feugiat bibendum dignissim, enim mi mattis"
                 ),
-                OppdaterbarTekstKomponent(
+                app.teamskjerm.inforskjerm.kontrollpanel.komponenter.OppdaterbarTekstKomponent(
                     "4a629b34-027b-4a62-8e60-e025153e31c5",
                     "Temperatursensor garasjen",
                     "Første verdi"
                 ),
-                OppdaterbarTekstKomponent(
+                app.teamskjerm.inforskjerm.kontrollpanel.komponenter.OppdaterbarTekstKomponent(
                     "019437da-983e-79f6-ab69-ca9854f5f861",
                     "Strømforbruk panelovn",
                     "-"
