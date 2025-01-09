@@ -5,7 +5,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Kopier JAR-filen til containeren
-COPY target/monitorapp-0.0.1-SNAPSHOT.jar app.jar
+COPY target/infoskjerm-0.0.1-SNAPSHOT.jar app.jar
 
 # Eksponer porten som applikasjonen kjører på (juster om nødvendig)
 EXPOSE 8080

@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>app.teamskjerm</groupId>
-	<artifactId>inforskjerm</artifactId>
+	<artifactId>infoskjerm</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Inforskjerm</name>
+	<name>Infoskjerm</name>
 	<description>Få rykende fersk informasjon rett på skjermen</description>
 	<url/>
 
