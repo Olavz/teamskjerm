@@ -2,8 +2,7 @@ import {useEffect, useState} from "react";
 import {NavLink, useParams} from "react-router-dom";
 import AdministrerNyttKontrollpanelKomponent from "../komponenter/AdministrerNyttKontrollpanelKomponent.tsx";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
-import OppdaterbarTekstKomponent from "../komponenter/kontrollpanel/OppdaterbarTekstKomponent.tsx";
-import {RedigerForhaandsbestemtTekstKomponent} from "../komponenter/kontrollpanel/ForhaandsbestemtTekstKomponent.tsx";
+import {RedigerTekstKomponent} from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {BaseKomponentKontrollpanel, DataProvider} from "../komponenter/kontrollpanel/BaseKomponentKontrollpanel.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 
@@ -42,7 +41,7 @@ function Kontrollpanel() {
                 <div className="container">
                     <div className="row">
                         {data.map((item) => {
-                            if (item.komponentNavn == "ForhaandsbestemtTekstKomponent") {
+                            if (item.komponentNavn == "TekstKomponent") {
                                 return (
                                     <div className="col" key={item.id}>
                                         <div>
@@ -50,26 +49,11 @@ function Kontrollpanel() {
                                             KomponentType: {item.komponentNavn}
                                         </div>
                                         <DataProvider
-                                            url={`/api/kontrollpanel/${kontrollpanelId}/komponent/${item.id}/data`}
-                                            subscriptionPath={`/kontrollpanel/${kontrollpanelId}/komponent/${item.id}`}>
+                                            kontrollpanelId={kontrollpanelId}
+                                            komponentId={item.id}
+                                        >
                                             <BaseKomponentKontrollpanel navn={item.navn}>
-                                                <RedigerForhaandsbestemtTekstKomponent/>
-                                            </BaseKomponentKontrollpanel>
-                                        </DataProvider>
-                                    </div>
-                                )
-                            } else if (item.komponentNavn == "OppdaterbarTekstKomponent") {
-                                return (
-                                    <div className="col" key={item.id}>
-                                        <div>
-                                            KomponentId: {item.id}<br/>
-                                            KomponentType: {item.komponentNavn}
-                                        </div>
-                                        <DataProvider
-                                            url={`/api/kontrollpanel/${kontrollpanelId}/komponent/${item.id}/data`}
-                                            subscriptionPath={`/kontrollpanel/${kontrollpanelId}/komponent/${item.id}`}>
-                                            <BaseKomponentKontrollpanel navn={item.navn}>
-                                                <OppdaterbarTekstKomponent/>
+                                                <RedigerTekstKomponent/>
                                             </BaseKomponentKontrollpanel>
                                         </DataProvider>
                                     </div>
@@ -82,8 +66,9 @@ function Kontrollpanel() {
                                             KomponentType: {item.komponentNavn}
                                         </div>
                                         <DataProvider
-                                            url={`/api/kontrollpanel/${kontrollpanelId}/komponent/${item.id}/data`}
-                                            subscriptionPath={`/kontrollpanel/${kontrollpanelId}/komponent/${item.id}`}>
+                                            kontrollpanelId={kontrollpanelId}
+                                            komponentId={item.id}
+                                        >
                                             <BaseKomponentKontrollpanel navn={item.navn}>
                                                 <VarselKomponent/>
                                             </BaseKomponentKontrollpanel>

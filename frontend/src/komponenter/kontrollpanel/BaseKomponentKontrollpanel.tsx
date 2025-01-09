@@ -7,18 +7,45 @@ type BaseKomponentKontrollpanelProps = {
     children: ReactNode
 }
 
-// Context for data
-export const DataContext = createContext<{ komponentData: any; loading: boolean }>({ komponentData: null, loading: true });
+type KomponentKonfigurasjon = {
+    kontrollpanelId: string,
+    komponentId: string
+}
 
-export const DataProvider: React.FC<{ url: string; subscriptionPath: string, children: React.ReactNode }> = ({ url, subscriptionPath, children }) => {
+// Context for data
+export const DataContext = createContext<{
+    komponentKonfigurasjon: KomponentKonfigurasjon,
+    komponentData: any;
+    loading: boolean
+}>({komponentKonfigurasjon: {kontrollpanelId: "", komponentId: ""}, komponentData: null, loading: true});
+
+export const DataProvider: React.FC<{
+    kontrollpanelId: string,
+    komponentId: string,
+    children: React.ReactNode
+}> = ({kontrollpanelId, komponentId, children}) => {
+    const [komponentKonfigurasjon, setKomponentKonfigurasjon] = useState<KomponentKonfigurasjon>({
+        kontrollpanelId: "",
+        komponentId: ""
+    });
     const [komponentData, setKomponentData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setKomponentKonfigurasjon(
+            {
+                kontrollpanelId: kontrollpanelId,
+                komponentId: komponentId
+            }
+        )
+    }, []);
+
+    useEffect(() => {
+        // Last inn initiellt via REST
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(url);
+                const response = await fetch(`/api/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}/data`);
                 const result = await response.json();
                 setKomponentData(result.data);
             } catch (error) {
@@ -28,7 +55,7 @@ export const DataProvider: React.FC<{ url: string; subscriptionPath: string, chi
         };
 
         fetchData();
-    }, [url]);
+    }, []);
 
     useEffect(() => {
         // Opprett SockJS WebSocket-forbindelse
@@ -37,32 +64,63 @@ export const DataProvider: React.FC<{ url: string; subscriptionPath: string, chi
         const baseUrl = `${window.location.protocol}//${window.location.hostname}:${backendPort}`;
         const socket = new SockJS(`${baseUrl}/ws`);
 
-        const client = new Client({
-            webSocketFactory: () => socket as WebSocket, // Bruk SockJS som WebSocket
-            // debug: (str) => console.log(str),
-            onConnect: () => {
-                console.log("Connected to WebSocket");
+        let reconnectTimeout: number | null = null;
 
-                // Abonner på meldinger fra serveren
-                // client.subscribe(`/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}`, (message: IMessage) => {
-                client.subscribe(`${subscriptionPath}`, (message: IMessage) => {
-                    setKomponentData(() => message.body);
-                });
-            },
-            onDisconnect: () => {
-                console.log("Disconnected from WebSocket");
-            },
-        });
+        const kobleTil = () => {
 
-        client.activate(); // Aktiver STOMP-klienten
+            const client = new Client({
+                webSocketFactory: () => socket as WebSocket, // Bruk SockJS som WebSocket
+                // debug: (str) => console.log(str),
+                onConnect: () => {
+                    console.log("Connected to WebSocket");
 
-        // Rengjøring når komponenten demonteres
-        return () => {
-            client.deactivate();
+                    // Abonner på meldinger fra serveren
+                    // client.subscribe(`/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}`, (message: IMessage) => {
+                    client.subscribe(`/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}`, (message: IMessage) => {
+                        setKomponentData(() => message.body);
+                    });
+                },
+                onStompError: (e) => {
+                    console.log("We have an onStompError", e)
+                },
+                onWebSocketError: (e) => {
+                    console.log("We have an onWebSocketError", e)
+                },
+                onWebSocketClose: (e) => {
+                    console.log("We have an onWebSocketClose", e)
+                    scheduleReconnect()
+                },
+                onDisconnect: () => {
+                    console.log("Disconnected from WebSocket");
+                },
+            });
+
+            client.activate(); // Aktiver STOMP-klienten
+
+            // Rengjøring når komponenten demonteres
+            return () => {
+                if (reconnectTimeout) {
+                    clearTimeout(reconnectTimeout);
+                }
+                client.deactivate();
+            };
         };
+
+        const scheduleReconnect = () => {
+            if (!reconnectTimeout) {
+                reconnectTimeout = setTimeout(() => {
+                    console.log('Attempting to reconnect...');
+                    kobleTil();
+                }, 5000);
+            }
+        };
+
+        kobleTil()
+
     }, []);
 
-    return <DataContext.Provider value={{ komponentData, loading }}>{children}</DataContext.Provider>;
+    return <DataContext.Provider
+        value={{komponentKonfigurasjon, komponentData, loading}}>{children}</DataContext.Provider>;
 };
 
 export const BaseKomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> = ({navn, children}) => {

@@ -1,8 +1,7 @@
 import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
-import ForhaandsbestemtTekstKomponent from "../komponenter/kontrollpanel/ForhaandsbestemtTekstKomponent.tsx";
-import OppdaterbarTekstKomponent from "../komponenter/kontrollpanel/OppdaterbarTekstKomponent.tsx";
+import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {BaseKomponentKontrollpanel, DataProvider} from "../komponenter/kontrollpanel/BaseKomponentKontrollpanel.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 
@@ -41,26 +40,15 @@ function InfoskjermKontrollpanel() {
                 <div className="container">
                     <div className="row">
                         {data.map((item) => {
-                            if (item.komponentNavn == "ForhaandsbestemtTekstKomponent") {
+                            if (item.komponentNavn == "TekstKomponent") {
                                 return (
                                     <div className="col" key={item.id}>
                                         <DataProvider
-                                            url={`/api/kontrollpanel/${kontrollpanelId}/komponent/${item.id}/data`}
-                                            subscriptionPath={`/kontrollpanel/${kontrollpanelId}/komponent/${item.id}`}>
+                                            kontrollpanelId={kontrollpanelId}
+                                            komponentId={item.id}
+                                           >
                                             <BaseKomponentKontrollpanel navn={item.navn}>
-                                                <ForhaandsbestemtTekstKomponent></ForhaandsbestemtTekstKomponent>
-                                            </BaseKomponentKontrollpanel>
-                                        </DataProvider>
-                                    </div>
-                                )
-                            } else if (item.komponentNavn == "OppdaterbarTekstKomponent") {
-                                return (
-                                    <div className="col" key={item.id}>
-                                        <DataProvider
-                                            url={`/api/kontrollpanel/${kontrollpanelId}/komponent/${item.id}/data`}
-                                            subscriptionPath={`/kontrollpanel/${kontrollpanelId}/komponent/${item.id}`}>
-                                            <BaseKomponentKontrollpanel navn={item.navn}>
-                                                <OppdaterbarTekstKomponent></OppdaterbarTekstKomponent>
+                                                <TekstKomponent></TekstKomponent>
                                             </BaseKomponentKontrollpanel>
                                         </DataProvider>
                                     </div>
@@ -69,8 +57,9 @@ function InfoskjermKontrollpanel() {
                                 return (
                                     <div className="col" key={item.id}>
                                         <DataProvider
-                                            url={`/api/kontrollpanel/${kontrollpanelId}/komponent/${item.id}/data`}
-                                            subscriptionPath={`/kontrollpanel/${kontrollpanelId}/komponent/${item.id}`}>
+                                            kontrollpanelId={kontrollpanelId}
+                                            komponentId={item.id}
+                                        >
                                             <BaseKomponentKontrollpanel navn={item.navn}>
                                                 <VarselKomponent/>
                                             </BaseKomponentKontrollpanel>
