@@ -1,13 +1,44 @@
 import {useContext, useEffect, useState} from "react";
 import {DataContext} from "./BaseKomponentKontrollpanel.tsx";
+import {stompService} from "../../WebSocketService.tsx";
 
 type MeldingData = {
+    melding: string;
+};
+
+type KomponentData = {
     melding: string;
     seMerInformasjonUrl: string;
 };
 
 const TekstKomponent: React.FC = () => {
-    const {komponentData, loading} = useContext(DataContext);
+    const {komponentKonfigurasjon, komponentData, loading} = useContext(DataContext);
+    const [message, setMessage] = useState<string | null>(null);
+
+    const handleEvent = (message: MeldingData): void => {
+        try {
+            setMessage(message.melding);
+        } catch (error) {
+            console.error('Failed to parse message body:', message, error);
+        }
+    };
+
+
+    useEffect(() => {
+        if (!komponentKonfigurasjon) {
+            console.error('Komponentkonfigurasjon er ikke tilgjengelig');
+            return;
+        }
+
+        const topic = `/kontrollpanel/${komponentKonfigurasjon.kontrollpanelId}/komponent/${komponentKonfigurasjon.komponentId}`;
+        const subscription = stompService.subscribe<MeldingData>(topic, handleEvent);
+
+        return () => {
+            if (subscription) {
+                stompService.unsubscribe(topic, subscription);
+            }
+        };
+    }, [komponentKonfigurasjon]);
 
     const seMerInformasjonNaviger = (url: string) => {
         window.open(url, '_blank');
@@ -16,11 +47,12 @@ const TekstKomponent: React.FC = () => {
     if (loading) {
         return (<p>Laster...</p>)
     } else {
-        let data = JSON.parse(komponentData) as MeldingData;
+        let data = JSON.parse(komponentData) as KomponentData;
 
         return (
             <>
-                <p>{data.melding}</p>
+                {message && <p>{message}</p>}
+                {!message && <p>{data.melding}</p>}
                 {data.seMerInformasjonUrl && <button type="button" onClick={() => seMerInformasjonNaviger(data.seMerInformasjonUrl)} className="btn btn-light">Se mer informasjon</button>}
             </>
         )

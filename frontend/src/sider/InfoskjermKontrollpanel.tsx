@@ -4,6 +4,8 @@ import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpane
 import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {BaseKomponentKontrollpanel, DataProvider} from "../komponenter/kontrollpanel/BaseKomponentKontrollpanel.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
+import {stompService} from "../WebSocketService.tsx";
+
 
 interface KontrollpanelKomponent {
     id: string;
@@ -23,6 +25,19 @@ function InfoskjermKontrollpanel() {
     if (!kontrollpanelId) {
         return <p>Ingen ID spesifisert!</p>;
     }
+
+    useEffect(() => {
+        // Opprett SockJS WebSocket-forbindelse
+        const currentPort = window.location.port;
+        const backendPort = currentPort === "5173" ? "8080" : currentPort;
+        const baseUrl = `${window.location.protocol}//${window.location.hostname}:${backendPort}`;
+
+        stompService.connect(`${baseUrl}/ws`);
+
+        return () => {
+            stompService.client?.deactivate();
+        };
+    }, []);
 
     useEffect(() => {
         fetch(`/api/kontrollpanel/${kontrollpanelId}/komponenter`)

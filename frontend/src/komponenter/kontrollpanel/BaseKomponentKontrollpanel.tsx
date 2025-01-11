@@ -1,6 +1,4 @@
 import {createContext, ReactNode, useEffect, useState} from "react";
-import SockJS from "sockjs-client";
-import {Client, IMessage} from "@stomp/stompjs";
 
 type BaseKomponentKontrollpanelProps = {
     navn: string
@@ -55,68 +53,6 @@ export const DataProvider: React.FC<{
         };
 
         fetchData();
-    }, []);
-
-    useEffect(() => {
-        // Opprett SockJS WebSocket-forbindelse
-        const currentPort = window.location.port;
-        const backendPort = currentPort === "5173" ? "8080" : currentPort;
-        const baseUrl = `${window.location.protocol}//${window.location.hostname}:${backendPort}`;
-        const socket = new SockJS(`${baseUrl}/ws`);
-
-        let reconnectTimeout: number | null = null;
-
-        const kobleTil = () => {
-
-            const client = new Client({
-                webSocketFactory: () => socket as WebSocket, // Bruk SockJS som WebSocket
-                // debug: (str) => console.log(str),
-                onConnect: () => {
-                    console.log("Connected to WebSocket");
-
-                    // Abonner på meldinger fra serveren
-                    // client.subscribe(`/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}`, (message: IMessage) => {
-                    client.subscribe(`/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}`, (message: IMessage) => {
-                        setKomponentData(() => message.body);
-                    });
-                },
-                onStompError: (e) => {
-                    console.log("We have an onStompError", e)
-                },
-                onWebSocketError: (e) => {
-                    console.log("We have an onWebSocketError", e)
-                },
-                onWebSocketClose: (e) => {
-                    console.log("We have an onWebSocketClose", e)
-                    scheduleReconnect()
-                },
-                onDisconnect: () => {
-                    console.log("Disconnected from WebSocket");
-                },
-            });
-
-            client.activate(); // Aktiver STOMP-klienten
-
-            // Rengjøring når komponenten demonteres
-            return () => {
-                if (reconnectTimeout) {
-                    clearTimeout(reconnectTimeout);
-                }
-                client.deactivate();
-            };
-        };
-
-        const scheduleReconnect = () => {
-            if (!reconnectTimeout) {
-                reconnectTimeout = setTimeout(() => {
-                    console.log('Attempting to reconnect...');
-                    kobleTil();
-                }, 5000);
-            }
-        };
-
-        kobleTil()
-
     }, []);
 
     return <DataContext.Provider
