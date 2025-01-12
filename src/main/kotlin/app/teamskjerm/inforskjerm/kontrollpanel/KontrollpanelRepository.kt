@@ -1,7 +1,7 @@
 package app.teamskjerm.inforskjerm.kontrollpanel
 
-import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.AlertKomponent
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.TekstKomponent
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.VarselKomponent
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -32,10 +32,10 @@ class KontrollpanelRepository {
                     "Strømforbruk panelovn",
                     """{"melding": "-"}"""
                 ),
-                AlertKomponent(
+                VarselKomponent(
                     "4a629b34-027b-4a62-8e60-e025153e31c6",
                     "Jenkins overvåking",
-                    """{"harVarsel": false, "melding": ""}"""
+                    """{"varseltype": "gult", "melding": "Mulig feil"}"""
                 )
             )
         )

@@ -85,7 +85,7 @@ export const RedigerTekstKomponent: React.FC = () => {
         setInputMerInformasjonUrl(event.target.value);
     };
 
-    const lagreData = async () => {
+    const oppdaterData = async () => {
         if (!komponentKonfigurasjon) return;
         const { kontrollpanelId, komponentId } = komponentKonfigurasjon;
 
@@ -95,7 +95,7 @@ export const RedigerTekstKomponent: React.FC = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ melding: inputValue, seMerInformasjonUrl: inputMerInformasjonUrl }),
+                body: JSON.stringify({ melding: inputValue }),
             });
 
             if (!response.ok) {
@@ -122,13 +122,15 @@ export const RedigerTekstKomponent: React.FC = () => {
                 rows={3}
                 value={inputValue}
             />
+
+            <button onClick={oppdaterData}>Send oppdatering</button>
+<br />
             <label className="form-label">Se mer informasjon url</label>
             <input
                 onChange={handleInputHjelpUrlChange}
                 className="form-control"
                 value={inputMerInformasjonUrl}
             />
-            <button onClick={lagreData}>Lagre</button>
         </div>
     );
 };
