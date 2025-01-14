@@ -3,7 +3,7 @@ import {NavLink, useParams} from "react-router-dom";
 import AdministrerNyttKontrollpanelKomponent from "../komponenter/AdministrerNyttKontrollpanelKomponent.tsx";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import {RedigerTekstKomponent} from "../komponenter/kontrollpanel/TekstKomponent.tsx";
-import {BaseKomponentKontrollpanel, DataProvider} from "../komponenter/kontrollpanel/BaseKomponentKontrollpanel.tsx";
+import {BaseKomponentKontrollpanel} from "../komponenter/kontrollpanel/BaseKomponentKontrollpanel.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 
 interface KontrollpanelKomponent {
@@ -48,13 +48,12 @@ function Kontrollpanel() {
                                             KomponentUUID: {item.komponentUUID}<br/>
                                             KomponentType: {item.komponentType}
                                         </div>
-                                        <DataProvider
-                                            komponentUUID={item.komponentUUID}
-                                        >
-                                            <BaseKomponentKontrollpanel navn={item.navn}>
-                                                <RedigerTekstKomponent/>
-                                            </BaseKomponentKontrollpanel>
-                                        </DataProvider>
+                                        <BaseKomponentKontrollpanel navn={item.navn}>
+                                            <RedigerTekstKomponent
+                                                komponentData={item.data}
+                                                komponentUUID={item.komponentUUID}
+                                            />
+                                        </BaseKomponentKontrollpanel>
                                     </div>
                                 )
                             } else if (item.komponentType == "VarselKomponent") {
@@ -64,13 +63,12 @@ function Kontrollpanel() {
                                             KomponentUUID: {item.komponentUUID}<br/>
                                             KomponentType: {item.komponentType}
                                         </div>
-                                        <DataProvider
-                                            komponentUUID={item.komponentUUID}
-                                        >
-                                            <BaseKomponentKontrollpanel navn={item.navn}>
-                                                <VarselKomponent/>
-                                            </BaseKomponentKontrollpanel>
-                                        </DataProvider>
+                                        <BaseKomponentKontrollpanel navn={item.navn}>
+                                            <VarselKomponent
+                                                komponentUUID={item.komponentUUID}
+                                                komponentData={item.data}
+                                            />
+                                        </BaseKomponentKontrollpanel>
                                     </div>
                                 )
                             }

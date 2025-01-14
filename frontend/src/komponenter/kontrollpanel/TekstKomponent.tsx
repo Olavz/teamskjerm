@@ -1,18 +1,16 @@
-import {useContext, useEffect, useState} from "react";
-import {DataContext} from "./BaseKomponentKontrollpanel.tsx";
+import {useEffect, useState} from "react";
 import {stompService} from "../../WebSocketService.tsx";
 
 type MeldingData = {
     melding: string;
 };
 
-type KomponentData = {
-    melding: string;
-    seMerInformasjonUrl: string;
-};
+type MessageProp = {
+    komponentUUID: string
+    komponentData: string
+}
 
-const TekstKomponent: React.FC = () => {
-    const {komponentKonfigurasjon, komponentData, loading} = useContext(DataContext);
+const TekstKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: MessageProp) => {
     const [message, setMessage] = useState<string | null>(null);
 
     const handleEvent = (message: MeldingData): void => {
@@ -23,14 +21,10 @@ const TekstKomponent: React.FC = () => {
         }
     };
 
-
     useEffect(() => {
-        if (!komponentKonfigurasjon) {
-            console.error('Komponentkonfigurasjon er ikke tilgjengelig');
-            return;
-        }
-
-        const topic = `/komponent/${komponentKonfigurasjon.komponentUUID}`;
+        let data = JSON.parse(komponentData) as MeldingData
+        setMessage(data.melding)
+        const topic = `/komponent/${komponentUUID}`;
         const subscription = stompService.subscribe<MeldingData>(topic, handleEvent);
 
         return () => {
@@ -38,56 +32,35 @@ const TekstKomponent: React.FC = () => {
                 stompService.unsubscribe(topic, subscription);
             }
         };
-    }, [komponentKonfigurasjon]);
+    }, []);
 
-    const seMerInformasjonNaviger = (url: string) => {
-        window.open(url, '_blank');
-    };
+    /*    const seMerInformasjonNaviger = (url: string) => {
+            window.open(url, '_blank');
+        };*/
 
-    if (loading) {
-        return (<p>Laster...</p>)
-    } else {
-        let data = JSON.parse(komponentData) as KomponentData;
+    return (
+        <>
+            {message && <p>{message}</p>}
 
-        return (
-            <>
-                {message && <p>{message}</p>}
-                {!message && <p>{data.melding}</p>}
-                {data.seMerInformasjonUrl && <button type="button" onClick={() => seMerInformasjonNaviger(data.seMerInformasjonUrl)} className="btn btn-light">Se mer informasjon</button>}
-            </>
-        )
-    }
+            {/*{data.seMerInformasjonUrl && <button type="button" onClick={() => seMerInformasjonNaviger(data.seMerInformasjonUrl)} className="btn btn-light">Se mer informasjon</button>}*/}
+        </>
+    )
+
 }
 
-export const RedigerTekstKomponent: React.FC = () => {
-    const { komponentKonfigurasjon, komponentData, loading } = useContext(DataContext);
-
+export const RedigerTekstKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: MessageProp) => {
     const [inputValue, setInputValue] = useState<string>('');
-    const [inputMerInformasjonUrl, setInputMerInformasjonUrl] = useState<string>('');
 
     useEffect(() => {
-        if (komponentData) {
-            try {
-                const data = typeof komponentData === 'string' ? JSON.parse(komponentData) : komponentData;
-                setInputValue(data.melding ?? '');
-                setInputMerInformasjonUrl(data.seMerInformasjonUrl ?? '');
-            } catch (error) {
-                console.error('Error parsing komponentData:', error);
-            }
-        }
+        let data = JSON.parse(komponentData) as MeldingData
+        setInputValue(data.melding ?? '');
     }, [komponentData]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(event.target.value);
     };
 
-    const handleInputHjelpUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setInputMerInformasjonUrl(event.target.value);
-    };
-
     const oppdaterData = async () => {
-        if (!komponentKonfigurasjon) return;
-        const { komponentUUID } = komponentKonfigurasjon;
 
         try {
             const response = await fetch(`/api/komponent/${komponentUUID}/data`, {
@@ -95,7 +68,7 @@ export const RedigerTekstKomponent: React.FC = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ melding: inputValue }),
+                body: JSON.stringify({melding: inputValue}),
             });
 
             if (!response.ok) {
@@ -109,10 +82,6 @@ export const RedigerTekstKomponent: React.FC = () => {
         }
     };
 
-    if (loading || !komponentKonfigurasjon) {
-        return <p>Laster...</p>;
-    }
-
     return (
         <div className="mb-3">
             <label className="form-label">Verdi</label>
@@ -124,12 +93,10 @@ export const RedigerTekstKomponent: React.FC = () => {
             />
 
             <button onClick={oppdaterData}>Send oppdatering</button>
-<br />
+            <br/>
             <label className="form-label">Se mer informasjon url</label>
             <input
-                onChange={handleInputHjelpUrlChange}
                 className="form-control"
-                value={inputMerInformasjonUrl}
             />
         </div>
     );
