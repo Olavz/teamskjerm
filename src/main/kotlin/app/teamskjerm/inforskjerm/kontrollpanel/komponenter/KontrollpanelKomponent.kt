@@ -1,6 +1,8 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.networknt.schema.JsonSchema
 import com.networknt.schema.JsonSchemaFactory
@@ -8,13 +10,23 @@ import com.networknt.schema.SpecVersion
 
 data class Skjemavalidering(val harFeil: Boolean, val skjemafeil: List<String>)
 
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "komponentType"
+)
+@JsonSubTypes(
+    value = [
+        JsonSubTypes.Type(value = TekstKomponent::class, name = "TekstKomponent"),
+        JsonSubTypes.Type(value = VarselKomponent::class, name = "VarselKomponent")
+    ]
+)
 interface KontrollpanelKomponent {
-    val id: String
+    var id: String
+    var komponentUUID: String
     var navn: String
     var data: String
-
-    @JsonProperty(value = "komponentNavn", required = true)
-    fun komponentNavn(): String
+    var komponentType: String
 
     @JsonProperty(value = "jsonSkjema", required = true)
     fun jsonSkjema(): String

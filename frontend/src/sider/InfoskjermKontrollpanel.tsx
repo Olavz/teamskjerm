@@ -8,10 +8,10 @@ import {stompService} from "../WebSocketService.tsx";
 
 
 interface KontrollpanelKomponent {
-    id: string;
+    komponentUUID: string;
     navn: string;
     data: string;
-    komponentNavn: string;
+    komponentType: string;
 }
 
 type KontrollpanelParams = {
@@ -55,12 +55,11 @@ function InfoskjermKontrollpanel() {
                 <div className="container">
                     <div className="row">
                         {data.map((item) => {
-                            if (item.komponentNavn == "TekstKomponent") {
+                            if (item.komponentType == "TekstKomponent") {
                                 return (
-                                    <div className="col" key={item.id}>
+                                    <div className="col" key={item.komponentUUID}>
                                         <DataProvider
-                                            kontrollpanelId={kontrollpanelId}
-                                            komponentId={item.id}
+                                            komponentUUID={item.komponentUUID}
                                            >
                                             <BaseKomponentKontrollpanel navn={item.navn}>
                                                 <TekstKomponent></TekstKomponent>
@@ -68,12 +67,11 @@ function InfoskjermKontrollpanel() {
                                         </DataProvider>
                                     </div>
                                 )
-                            } else if (item.komponentNavn == "VarselKomponent") {
+                            } else if (item.komponentType == "VarselKomponent") {
                                 return (
-                                    <div className="col" key={item.id}>
+                                    <div className="col" key={item.komponentUUID}>
                                         <DataProvider
-                                            kontrollpanelId={kontrollpanelId}
-                                            komponentId={item.id}
+                                            komponentUUID={item.komponentUUID}
                                         >
                                             <BaseKomponentKontrollpanel navn={item.navn}>
                                                 <VarselKomponent/>

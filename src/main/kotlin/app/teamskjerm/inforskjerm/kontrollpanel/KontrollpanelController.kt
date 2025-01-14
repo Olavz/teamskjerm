@@ -1,5 +1,6 @@
 package app.teamskjerm.inforskjerm.kontrollpanel
 
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KomponentRepository
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KontrollpanelKomponent
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -10,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api")
 class KontrollpanelController(
-    val kontrollpanelRepository: KontrollpanelRepository
+    val kontrollpanelRepository: KontrollpanelRepository,
+    val komponentRepository: KomponentRepository
 ) {
 
     @GetMapping("/kontrollpanel")
@@ -18,15 +20,20 @@ class KontrollpanelController(
         return ResponseEntity.ok(kontrollpanelRepository.alleKontrollpanel())
     }
 
-    @GetMapping("/kontrollpanel/{id}/komponenter")
+    @GetMapping("/nyttkontrollpanel")
+    fun nyttkontrollpanel(): ResponseEntity<List<String>> {
+        return ResponseEntity.ok(kontrollpanelRepository.nyttkontrollpanel())
+    }
+
+    @GetMapping("/kontrollpanel/{kontrollpanelUUID}/komponenter")
     fun kontrollpanelSineKomponenter(
-        @PathVariable id: String
+        @PathVariable kontrollpanelUUID: String
     ): ResponseEntity<List<KontrollpanelKomponent>> {
         return ResponseEntity.ok(
-            kontrollpanelRepository.alleKontrollpanel()
-                .filter { it.id.equals(id) }
-                .single()
-                .komponenter
+            komponentRepository.finnKomponenterMedId(
+                kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
+                    .komponenter
+            )
         )
     }
 

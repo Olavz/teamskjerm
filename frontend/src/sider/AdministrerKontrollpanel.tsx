@@ -7,10 +7,10 @@ import {BaseKomponentKontrollpanel, DataProvider} from "../komponenter/kontrollp
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 
 interface KontrollpanelKomponent {
-    id: string;
+    komponentUUID: string;
     navn: string;
     data: string;
-    komponentNavn: string;
+    komponentType: string;
 }
 
 type KontrollpanelParams = {
@@ -41,16 +41,15 @@ function Kontrollpanel() {
                 <div className="container">
                     <div className="row">
                         {data.map((item) => {
-                            if (item.komponentNavn == "TekstKomponent") {
+                            if (item.komponentType == "TekstKomponent") {
                                 return (
-                                    <div className="col" key={item.id}>
+                                    <div className="col" key={item.komponentUUID}>
                                         <div>
-                                            KomponentId: {item.id}<br/>
-                                            KomponentType: {item.komponentNavn}
+                                            KomponentUUID: {item.komponentUUID}<br/>
+                                            KomponentType: {item.komponentType}
                                         </div>
                                         <DataProvider
-                                            kontrollpanelId={kontrollpanelId}
-                                            komponentId={item.id}
+                                            komponentUUID={item.komponentUUID}
                                         >
                                             <BaseKomponentKontrollpanel navn={item.navn}>
                                                 <RedigerTekstKomponent/>
@@ -58,16 +57,15 @@ function Kontrollpanel() {
                                         </DataProvider>
                                     </div>
                                 )
-                            } else if (item.komponentNavn == "VarselKomponent") {
+                            } else if (item.komponentType == "VarselKomponent") {
                                 return (
-                                    <div className="col" key={item.id}>
+                                    <div className="col" key={item.komponentUUID}>
                                         <div>
-                                            KomponentId: {item.id}<br/>
-                                            KomponentType: {item.komponentNavn}
+                                            KomponentUUID: {item.komponentUUID}<br/>
+                                            KomponentType: {item.komponentType}
                                         </div>
                                         <DataProvider
-                                            kontrollpanelId={kontrollpanelId}
-                                            komponentId={item.id}
+                                            komponentUUID={item.komponentUUID}
                                         >
                                             <BaseKomponentKontrollpanel navn={item.navn}>
                                                 <VarselKomponent/>

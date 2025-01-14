@@ -1,4 +1,4 @@
-package app.teamskjerm.inforskjerm.kontrollpanel
+package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
 import com.fasterxml.jackson.databind.JsonNode
 import org.springframework.http.ResponseEntity
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api")
 class KomponenttjenerController(
     val simpMessagingTemplate: SimpMessagingTemplate,
-    val kontrollpanelRepository: KontrollpanelRepository
+    val komponentRepository: KomponentRepository
 ) {
 
     data class KomponenttDataResponse(
@@ -24,23 +24,18 @@ class KomponenttjenerController(
 
     val map: MutableMap<String, String> = mutableMapOf()
 
-    @PutMapping("/kontrollpanel/{kontrollpanelId}/komponent/{komponentId}/data")
+    @PutMapping("/komponent/{komponentUUID}/data")
     fun oppdaterKomponentData(
-        @PathVariable("kontrollpanelId") kontrollpanelId: String,
-        @PathVariable("komponentId") komponentId: String,
+        @PathVariable("komponentUUID") komponentUUID: String,
         @RequestBody payload: JsonNode
     ): ResponseEntity<KomponenttDataResponse> {
-        simpMessagingTemplate.convertAndSend("/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}", payload)
-        val komponent = kontrollpanelRepository.alleKontrollpanel()
-            .filter { it.id == kontrollpanelId }
-            .single()
-            .komponenter
-            .filter { it.id == komponentId }
-            .single()
+        simpMessagingTemplate.convertAndSend("/komponent/${komponentUUID}", payload)
+        val komponent = komponentRepository.finnKomponentMedKomponentUUID(komponentUUID) ?: throw UnsupportedOperationException("ladida fant ikke")
 
         val validerSkjema = komponent.validerSkjema(payload.toString())
         if (!validerSkjema.harFeil) {
             komponent.data = payload.toString()
+            komponentRepository.lagreKomponent(komponent)
             return ResponseEntity.ok(
                 KomponenttDataResponse(
                     "OK"
@@ -56,38 +51,26 @@ class KomponenttjenerController(
 
     }
 
-    @GetMapping("/kontrollpanel/{kontrollpanelId}/komponent/{komponentId}/data")
+    @GetMapping("/komponent/{komponentId}/data")
     fun hentKomponentData(
-        @PathVariable("kontrollpanelId") kontrollpanelId: String,
         @PathVariable("komponentId") komponentId: String
     ): ResponseEntity<KomponenttDataResponse> {
 
         return ResponseEntity.ok(
             KomponenttDataResponse(
-                kontrollpanelRepository.alleKontrollpanel()
-                    .filter { it.id.equals(kontrollpanelId) }
-                    .single()
-                    .komponenter
-                    .filter { it.id.equals(komponentId) }
-                    .single()
-                    .data
+                komponentRepository.finnKomponentMedKomponentUUID(komponentId)
+                    ?.data ?: throw UnsupportedOperationException("ladida fant ikke noen komponent..")
             )
         )
     }
 
-    @GetMapping("/kontrollpanel/{kontrollpanelId}/komponent/{komponentId}/data/schema")
+    @GetMapping("/komponent/{komponentId}/data/schema")
     fun hentJsonSkjema(
-        @PathVariable("kontrollpanelId") kontrollpanelId: String,
         @PathVariable("komponentId") komponentId: String
     ): ResponseEntity<String> {
         return ResponseEntity.ok(
-            kontrollpanelRepository.alleKontrollpanel()
-                .filter { it.id.equals(kontrollpanelId) }
-                .single()
-                .komponenter
-                .filter { it.id.equals(komponentId) }
-                .single()
-                .jsonSkjema()
+            komponentRepository.finnKomponentMedKomponentUUID(komponentId)
+                ?.jsonSkjema() ?: throw UnsupportedOperationException("ladida fant ikke noen komponent..")
         )
     }
 

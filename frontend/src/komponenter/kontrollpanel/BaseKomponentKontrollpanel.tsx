@@ -6,8 +6,7 @@ type BaseKomponentKontrollpanelProps = {
 }
 
 type KomponentKonfigurasjon = {
-    kontrollpanelId: string,
-    komponentId: string
+    komponentUUID: string
 }
 
 // Context for data
@@ -15,16 +14,14 @@ export const DataContext = createContext<{
     komponentKonfigurasjon: KomponentKonfigurasjon,
     komponentData: any;
     loading: boolean
-}>({komponentKonfigurasjon: {kontrollpanelId: "", komponentId: ""}, komponentData: null, loading: true});
+}>({komponentKonfigurasjon: {komponentUUID: ""}, komponentData: null, loading: true});
 
 export const DataProvider: React.FC<{
-    kontrollpanelId: string,
-    komponentId: string,
+    komponentUUID: string,
     children: React.ReactNode
-}> = ({kontrollpanelId, komponentId, children}) => {
+}> = ({komponentUUID, children}) => {
     const [komponentKonfigurasjon, setKomponentKonfigurasjon] = useState<KomponentKonfigurasjon>({
-        kontrollpanelId: "",
-        komponentId: ""
+        komponentUUID: ""
     });
     const [komponentData, setKomponentData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -32,8 +29,7 @@ export const DataProvider: React.FC<{
     useEffect(() => {
         setKomponentKonfigurasjon(
             {
-                kontrollpanelId: kontrollpanelId,
-                komponentId: komponentId
+                komponentUUID: komponentUUID
             }
         )
     }, []);
@@ -43,7 +39,7 @@ export const DataProvider: React.FC<{
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`/api/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}/data`);
+                const response = await fetch(`/api/komponent/${komponentUUID}/data`);
                 const result = await response.json();
                 setKomponentData(result.data);
             } catch (error) {

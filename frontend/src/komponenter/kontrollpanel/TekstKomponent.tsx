@@ -30,7 +30,7 @@ const TekstKomponent: React.FC = () => {
             return;
         }
 
-        const topic = `/kontrollpanel/${komponentKonfigurasjon.kontrollpanelId}/komponent/${komponentKonfigurasjon.komponentId}`;
+        const topic = `/komponent/${komponentKonfigurasjon.komponentUUID}`;
         const subscription = stompService.subscribe<MeldingData>(topic, handleEvent);
 
         return () => {
@@ -87,10 +87,10 @@ export const RedigerTekstKomponent: React.FC = () => {
 
     const oppdaterData = async () => {
         if (!komponentKonfigurasjon) return;
-        const { kontrollpanelId, komponentId } = komponentKonfigurasjon;
+        const { komponentUUID } = komponentKonfigurasjon;
 
         try {
-            const response = await fetch(`/api/kontrollpanel/${kontrollpanelId}/komponent/${komponentId}/data`, {
+            const response = await fetch(`/api/komponent/${komponentUUID}/data`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

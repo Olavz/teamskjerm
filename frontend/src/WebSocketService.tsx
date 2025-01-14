@@ -6,7 +6,7 @@ type EventListeners = {
 };
 
 class STOMPService {
-    private client: Client | null = null;
+    client: Client | null = null;
     private isConnected = false;
     private pendingSubscriptions: Array<() => void> = [];
     private eventListeners: EventListeners = {};
