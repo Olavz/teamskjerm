@@ -11,7 +11,7 @@ RUN mvn clean package -DskipTests
 
 
 # Bruk en offisiell baseimage for Java 21
-FROM eclipse-temurin:21-jre-alpine
+FROM openjdk:21-slim-bullseye
 
 # Sett arbeidskatalog i containeren
 WORKDIR /app
