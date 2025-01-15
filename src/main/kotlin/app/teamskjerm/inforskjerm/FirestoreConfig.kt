@@ -18,7 +18,7 @@ class FirestoreConfig {
 
     @Throws(Exception::class)
     fun firestoreSecret(): String {
-        val filePath = Paths.get(secretsPath, "teamskjerm-firestore:latest")
+        val filePath = Paths.get(secretsPath)
         return Files.readString(filePath)
     }
 
