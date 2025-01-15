@@ -6,18 +6,17 @@ import com.google.cloud.firestore.FirestoreOptions
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.Resource
 
 @Configuration
 class FirestoreConfig {
 
-    @Value("file:/secrets/teamskjerm-firestore")
-    private lateinit var secretContent: String
+    @Value("file:\${firestore.secret.path}")
+    private lateinit var firestoreSecretResource: Resource
 
     @Bean
     fun firestoreClient(): Firestore {
-//        val credentialsPath = "src/main/resources/monitor-404-firestore-credentials.json"
-//        val credentials = GoogleCredentials.fromStream(FileInputStream(credentialsPath))
-        val credentials = GoogleCredentials.fromStream(secretContent.byteInputStream())
+        val credentials = GoogleCredentials.fromStream(firestoreSecretResource.inputStream)
 
         val options = FirestoreOptions.newBuilder()
             .setCredentials(credentials)
