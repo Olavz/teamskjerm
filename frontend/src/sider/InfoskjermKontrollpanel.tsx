@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
-import {BaseKomponentKontrollpanel} from "../komponenter/kontrollpanel/BaseKomponentKontrollpanel.tsx";
+import {KomponentKontrollpanel} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 import {stompService} from "../WebSocketService.tsx";
 
@@ -58,23 +58,23 @@ function InfoskjermKontrollpanel() {
                             if (item.komponentType == "TekstKomponent") {
                                 return (
                                     <div className="col" key={item.komponentUUID}>
-                                        <BaseKomponentKontrollpanel navn={item.navn}>
+                                        <KomponentKontrollpanel kontrollpanelKomponent={item}>
                                             <TekstKomponent
                                                 komponentUUID={item.komponentUUID}
                                                 komponentData={item.data}
                                             />
-                                        </BaseKomponentKontrollpanel>
+                                        </KomponentKontrollpanel>
                                     </div>
                                 )
                             } else if (item.komponentType == "VarselKomponent") {
                                 return (
                                     <div className="col" key={item.komponentUUID}>
-                                        <BaseKomponentKontrollpanel navn={item.navn}>
+                                        <KomponentKontrollpanel kontrollpanelKomponent={item}>
                                             <VarselKomponent
                                                 komponentUUID={item.komponentUUID}
                                                 komponentData={item.data}
                                             />
-                                        </BaseKomponentKontrollpanel>
+                                        </KomponentKontrollpanel>
                                     </div>
                                 )
                             }

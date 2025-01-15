@@ -3,15 +3,12 @@ import {NavLink, useParams} from "react-router-dom";
 import AdministrerNyttKontrollpanelKomponent from "../komponenter/AdministrerNyttKontrollpanelKomponent.tsx";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import {RedigerTekstKomponent} from "../komponenter/kontrollpanel/TekstKomponent.tsx";
-import {BaseKomponentKontrollpanel} from "../komponenter/kontrollpanel/BaseKomponentKontrollpanel.tsx";
+import {KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
+import {
+    AdministrerBaseKomponentKontrollpanel
+} from "../komponenter/kontrollpanel/AdministrerKomponentKontrollpanel.tsx";
 
-interface KontrollpanelKomponent {
-    komponentUUID: string;
-    navn: string;
-    data: string;
-    komponentType: string;
-}
 
 type KontrollpanelParams = {
     kontrollpanelId: string;
@@ -43,33 +40,21 @@ function Kontrollpanel() {
                         {data.map((item) => {
                             if (item.komponentType == "TekstKomponent") {
                                 return (
-                                    <div className="col" key={item.komponentUUID}>
-                                        <div>
-                                            KomponentUUID: {item.komponentUUID}<br/>
-                                            KomponentType: {item.komponentType}
-                                        </div>
-                                        <BaseKomponentKontrollpanel navn={item.navn}>
-                                            <RedigerTekstKomponent
-                                                komponentData={item.data}
-                                                komponentUUID={item.komponentUUID}
-                                            />
-                                        </BaseKomponentKontrollpanel>
-                                    </div>
+                                    <AdministrerBaseKomponentKontrollpanel kontrollpanelKomponent={item}>
+                                        <RedigerTekstKomponent
+                                            komponentData={item.data}
+                                            komponentUUID={item.komponentUUID}
+                                        />
+                                    </AdministrerBaseKomponentKontrollpanel>
                                 )
                             } else if (item.komponentType == "VarselKomponent") {
                                 return (
-                                    <div className="col" key={item.komponentUUID}>
-                                        <div>
-                                            KomponentUUID: {item.komponentUUID}<br/>
-                                            KomponentType: {item.komponentType}
-                                        </div>
-                                        <BaseKomponentKontrollpanel navn={item.navn}>
-                                            <VarselKomponent
-                                                komponentUUID={item.komponentUUID}
-                                                komponentData={item.data}
-                                            />
-                                        </BaseKomponentKontrollpanel>
-                                    </div>
+                                    <AdministrerBaseKomponentKontrollpanel kontrollpanelKomponent={item}>
+                                        <VarselKomponent
+                                            komponentUUID={item.komponentUUID}
+                                            komponentData={item.data}
+                                        />
+                                    </AdministrerBaseKomponentKontrollpanel>
                                 )
                             }
                         })}
