@@ -6,6 +6,8 @@ import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.QuerySnapshot
 import org.springframework.stereotype.Repository
 
+private const val COLLECTION = "kontrollpanel"
+
 @Repository
 class KontrollpanelRepository(
     val firestore: Firestore,
@@ -107,6 +109,23 @@ class KontrollpanelRepository(
                 )
             }
             .single()
+    }
+
+    fun lagre(kontrollpanel: Kontrollpanel): Kontrollpanel {
+        val kontrollpaneler = firestore.collection(COLLECTION)
+
+        if(kontrollpanel.id.isNotBlank()) {
+            kontrollpaneler
+                .document(kontrollpanel.id)
+                .set(kontrollpanel)
+            return kontrollpanel
+        } else {
+            val f = kontrollpaneler.add(kontrollpanel).get()
+            val convertValue = objectMapper.convertValue(f.get(), Kontrollpanel::class.java)
+            convertValue.id = f.id
+            return convertValue
+        }
+
     }
 
 }

@@ -5,7 +5,8 @@ class TekstKomponent(
     override var komponentUUID:String = "",
     override var navn: String = "",
     override var data: String = "",
-    override var komponentType: String = "TekstKomponent"
+    override var komponentType: String = "TekstKomponent",
+    override var seMerInformasjon: String = ""
 ) : KontrollpanelKomponent {
 
     override fun jsonSkjema(): String {

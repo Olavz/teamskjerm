@@ -1,5 +1,6 @@
 import './App.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.js';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import FantIkkeSiden from "./sider/FantIkkeSiden.tsx";
 import InfoskjermKontrollpanel from "./sider/InfoskjermKontrollpanel.tsx";
@@ -16,8 +17,8 @@ createRoot(document.getElementById('root')!).render(
         <BrowserRouter>
             <Routes>
                 <Route index={true} element={<Startside/>}/>
-                <Route path="/kontrollpanel/:kontrollpanelId" element={<InfoskjermKontrollpanel/>}/>
-                <Route path="/administrer/kontrollpanel/:kontrollpanelId" element={<AdministrerKontrollpanel/>}/>
+                <Route path="/kontrollpanel/:kontrollpanelUUID" element={<InfoskjermKontrollpanel/>}/>
+                <Route path="/administrer/kontrollpanel/:kontrollpanelUUID" element={<AdministrerKontrollpanel/>}/>
 
                 <Route path="*" element={<FantIkkeSiden/>}/>
             </Routes>

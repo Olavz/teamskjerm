@@ -15,14 +15,14 @@ interface KontrollpanelKomponent {
 }
 
 type KontrollpanelParams = {
-    kontrollpanelId: string;
+    kontrollpanelUUID: string;
 };
 
 function InfoskjermKontrollpanel() {
     const [data, setData] = useState<KontrollpanelKomponent[]>([]);
-    const {kontrollpanelId} = useParams<KontrollpanelParams>();
+    const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
 
-    if (!kontrollpanelId) {
+    if (!kontrollpanelUUID) {
         return <p>Ingen ID spesifisert!</p>;
     }
 
@@ -40,12 +40,12 @@ function InfoskjermKontrollpanel() {
     }, []);
 
     useEffect(() => {
-        fetch(`/api/kontrollpanel/${kontrollpanelId}/komponenter`)
+        fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponenter`)
             .then((response) => response.json())
             .then((data: KontrollpanelKomponent[]) => setData(data));
     }, []);
 
-    let adminside = `/administrer/kontrollpanel/${kontrollpanelId}`
+    let adminside = `/administrer/kontrollpanel/${kontrollpanelUUID}`
 
     return (
         <>

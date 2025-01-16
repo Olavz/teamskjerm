@@ -1,22 +1,85 @@
 import {KomponentKontrollpanel, KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
-import {ReactNode} from "react";
-
+import {ReactNode, useEffect, useState} from "react";
+import {Badge, Button, FormControl, FormGroup, FormLabel} from "react-bootstrap";
 
 type BaseKomponentKontrollpanelProps = {
     kontrollpanelKomponent: KontrollpanelKomponent
+    slettKomponent: (komponentUUID: string) => void
     children: ReactNode
 }
 
-export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> = ({kontrollpanelKomponent, children}) => {
+export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> = ({
+                                                                                                     slettKomponent,
+                                                                                                     kontrollpanelKomponent,
+                                                                                                     children
+                                                                                                 }) => {
+
+    const [inpSeMerInformasjon, setInpSeMerInformasjon] = useState<string>('')
+    const [inpNavn, setInpNavn] = useState<string>('')
+
+
+    const oppdaterKomponent  = async () => {
+        try {
+            const response = await fetch(`/api/komponent/${kontrollpanelKomponent.komponentUUID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    navn: inpNavn,
+                    seMerInformasjon: inpSeMerInformasjon
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send data');
+            }
+
+            // const result = await response.json();
+            // console.log('Success:', result);
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    useEffect(() => {
+        setInpNavn(kontrollpanelKomponent.navn)
+        setInpSeMerInformasjon(kontrollpanelKomponent.seMerInformasjon)
+    }, []);
+
     return (
         <div className="col" key={kontrollpanelKomponent.komponentUUID}>
-            <div>
-                KomponentUUID: {kontrollpanelKomponent.komponentUUID}<br/>
-                KomponentType: {kontrollpanelKomponent.komponentType}
+            <div className="card">
+                <div className="card-body">
+                    KomponentUUID: <Badge>{kontrollpanelKomponent.komponentUUID}</Badge><br/>
+                    KomponentType: <Badge>{kontrollpanelKomponent.komponentType}</Badge>
+
+                    <FormGroup>
+                        <FormLabel>
+                            Navn
+                        </FormLabel>
+                        <FormControl onChange={(e) => setInpNavn(e.target.value)} type="text" value={inpNavn}></FormControl>
+                    </FormGroup>
+
+                    <KomponentKontrollpanel kontrollpanelKomponent={kontrollpanelKomponent}>
+                        {children}
+                    </KomponentKontrollpanel>
+
+                    <FormGroup>
+                        <FormLabel>
+                            Se mer informasjon lenke
+                        </FormLabel>
+                        <FormControl onChange={(e) => setInpSeMerInformasjon(e.target.value)} type="text" placeholder="http://..." value={inpSeMerInformasjon}></FormControl>
+                    </FormGroup>
+
+                    <hr/>
+                    <Button size={"sm"} onClick={() => slettKomponent(kontrollpanelKomponent.komponentUUID)} variant="danger">Slett</Button> {' '}
+                    <Button size={"sm"} onClick={oppdaterKomponent}>Oppdater</Button>
+                </div>
+                <div>
+                    APIURL: TODO + schema
+                </div>
             </div>
-            <KomponentKontrollpanel kontrollpanelKomponent={kontrollpanelKomponent}>
-                {children}
-            </KomponentKontrollpanel>
         </div>
     )
 }

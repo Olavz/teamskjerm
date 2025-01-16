@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.javaField
 
 
 @RestController
 @RequestMapping("/api")
-class KomponenttjenerController(
+class KomponentController(
     val simpMessagingTemplate: SimpMessagingTemplate,
     val komponentRepository: KomponentRepository
 ) {
@@ -30,12 +32,13 @@ class KomponenttjenerController(
         @RequestBody payload: JsonNode
     ): ResponseEntity<KomponenttDataResponse> {
         simpMessagingTemplate.convertAndSend("/komponent/${komponentUUID}", payload)
-        val komponent = komponentRepository.finnKomponentMedKomponentUUID(komponentUUID) ?: throw UnsupportedOperationException("ladida fant ikke")
+        val komponent = komponentRepository.finnKomponentMedKomponentUUID(komponentUUID)
+            ?: throw UnsupportedOperationException("ladida fant ikke")
 
         val validerSkjema = komponent.validerSkjema(payload.toString())
         if (!validerSkjema.harFeil) {
             komponent.data = payload.toString()
-            komponentRepository.lagreKomponent(komponent)
+            komponentRepository.lagre(komponent)
             return ResponseEntity.ok(
                 KomponenttDataResponse(
                     "OK"
@@ -72,6 +75,38 @@ class KomponenttjenerController(
             komponentRepository.finnKomponentMedKomponentUUID(komponentId)
                 ?.jsonSkjema() ?: throw UnsupportedOperationException("ladida fant ikke noen komponent..")
         )
+    }
+
+    @PutMapping("/komponent/{komponentUUID}")
+    fun oppdaterKomponent(
+        @PathVariable("komponentUUID") komponentUUID: String,
+        @RequestBody payload: JsonNode
+    ): ResponseEntity<KomponenttDataResponse> {
+        val komponent = komponentRepository.finnKomponentMedKomponentUUID(komponentUUID)
+            ?: throw UnsupportedOperationException("ladida fant ikke")
+
+        oppdaterKomponentMedNiftyReflectionVirkerLurtHerOgNå(payload, komponent)
+
+        komponentRepository.lagre(komponent)
+
+        return ResponseEntity.ok(
+            KomponenttDataResponse(
+                "OK"
+            )
+        )
+    }
+
+    fun oppdaterKomponentMedNiftyReflectionVirkerLurtHerOgNå(jsonNode: JsonNode, component: KontrollpanelKomponent): KontrollpanelKomponent {
+        val properties = component::class.memberProperties.associateBy { it.name }
+
+        jsonNode.fields().forEach { (key, value) ->
+            properties[key]?.javaField?.let { field ->
+                field.isAccessible = true
+                println("Updating field: $key with value: ${value.asText()}") // Feilsøk her
+                field.set(component, value.asText())
+            }
+        }
+        return component
     }
 
 }

@@ -5,7 +5,8 @@ class VarselKomponent(
     override var komponentUUID:String = "",
     override var navn: String = "",
     override var data: String = "",
-    override var komponentType: String = "VarselKomponent"
+    override var komponentType: String = "VarselKomponent",
+    override var seMerInformasjon: String = ""
 ) : KontrollpanelKomponent {
 
     override fun jsonSkjema(): String {

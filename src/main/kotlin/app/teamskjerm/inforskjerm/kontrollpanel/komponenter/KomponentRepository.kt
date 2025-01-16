@@ -11,16 +11,18 @@ class KomponentRepository(
     val firestore: Firestore,
     val objectMapper: ObjectMapper
 ) {
-
-    fun lagreKomponent(kontrollpanelKomponent: KontrollpanelKomponent) {
+    fun lagre(kontrollpanelKomponent: KontrollpanelKomponent): KontrollpanelKomponent {
         val komponenter = firestore.collection(COLLECTION)
 
         if(kontrollpanelKomponent.id.isNotBlank()) {
             komponenter
                 .document(kontrollpanelKomponent.id)
                 .set(kontrollpanelKomponent)
+            return kontrollpanelKomponent
         } else {
-            komponenter.add(kontrollpanelKomponent)
+            val f = komponenter.add(kontrollpanelKomponent).get()
+            kontrollpanelKomponent.id = f.id
+            return kontrollpanelKomponent
         }
 
     }
@@ -60,6 +62,21 @@ class KomponentRepository(
                 komponent
             }
 
+    }
+
+    fun slettKomponentMed(komponentUUID: String): String {
+
+        val komponentId = firestore.collection(COLLECTION)
+            .whereEqualTo("komponentUUID", komponentUUID)
+            .get()
+            .get()
+            .documents
+            .map { it.id }
+            .single()
+
+        firestore.collection(COLLECTION).document(komponentId).delete()
+
+        return komponentId
     }
 
 }

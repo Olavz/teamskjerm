@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import {NavLink, useParams} from "react-router-dom";
-import AdministrerNyttKontrollpanelKomponent from "../komponenter/AdministrerNyttKontrollpanelKomponent.tsx";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import {RedigerTekstKomponent} from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
@@ -8,62 +7,104 @@ import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 import {
     AdministrerBaseKomponentKontrollpanel
 } from "../komponenter/kontrollpanel/AdministrerKomponentKontrollpanel.tsx";
+import {LeggTilKomponentButton} from "../komponenter/kontrollpanel/LeggTilKomponentButton.tsx";
+import {Button} from "react-bootstrap";
 
 
 type KontrollpanelParams = {
-    kontrollpanelId: string;
+    kontrollpanelUUID: string;
 };
 
 function Kontrollpanel() {
-    const [data, setData] = useState<KontrollpanelKomponent[]>([]);
-    const {kontrollpanelId} = useParams<KontrollpanelParams>(); //01941ebb-4356-7bce-8489-c66ee4f77c13
+    const [komponentopprettet, setKomponentopprettet] = useState<number>(0);
+    const [kontrollpanelKomponenter, setKontrollpanelKomponenter] = useState<KontrollpanelKomponent[]>([]);
+    const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
 
-    if (!kontrollpanelId) {
+    if (!kontrollpanelUUID) {
         return <p>Ingen ID spesifisert!</p>;
     }
 
     useEffect(() => {
-        fetch(`/api/kontrollpanel/${kontrollpanelId}/komponenter`)
+        fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponenter`)
             .then((response) => response.json())
-            .then((data: KontrollpanelKomponent[]) => setData(data));
-    }, []);
+            .then((data: KontrollpanelKomponent[]) => setKontrollpanelKomponenter(data));
+    }, [komponentopprettet]);
 
-    let infoskjerm = `/kontrollpanel/${kontrollpanelId}`
+    const slettKomponent  = async (komponentUUID: string) => {
+        try {
+            const response = await fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponent/${komponentUUID}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        setKontrollpanelKomponenter(
+            kontrollpanelKomponenter.filter((it) => it.komponentUUID != komponentUUID)
+        )
+    }
+
+   const opprettKomponent = async (kontrollpanelUUID: string, kontrollpanelKomponent: KontrollpanelKomponent) => {
+        try {
+            const response = await fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponent`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(kontrollpanelKomponent),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send data');
+            }
+            await response;
+            setKomponentopprettet(komponentopprettet+1)
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    let infoskjerm = `/kontrollpanel/${kontrollpanelUUID}`
 
     return (
         <>
             <div className="container">
                 <HeaderKontrollpanel></HeaderKontrollpanel>
-                <NavLink to={infoskjerm}>Se infoskjerm</NavLink>
+                <LeggTilKomponentButton opprettKomponent={opprettKomponent}/> {' '}
+                <NavLink to={infoskjerm}><Button>Se inforskjerm</Button></NavLink>
+                <br/>
+                <br/>
                 <div className="container">
-                    <div className="row">
-                        {data.map((item) => {
-                            if (item.komponentType == "TekstKomponent") {
-                                return (
-                                    <AdministrerBaseKomponentKontrollpanel kontrollpanelKomponent={item}>
+                    {kontrollpanelKomponenter.map((item) => {
+                        if (item.komponentType == "TekstKomponent") {
+                            return (
+                                <div className="row">
+                                    <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                           kontrollpanelKomponent={item}>
                                         <RedigerTekstKomponent
                                             komponentData={item.data}
                                             komponentUUID={item.komponentUUID}
                                         />
                                     </AdministrerBaseKomponentKontrollpanel>
-                                )
-                            } else if (item.komponentType == "VarselKomponent") {
-                                return (
-                                    <AdministrerBaseKomponentKontrollpanel kontrollpanelKomponent={item}>
+                                </div>
+                            )
+                        } else if (item.komponentType == "VarselKomponent") {
+                            return (
+                                <div className="row">
+                                    <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                           kontrollpanelKomponent={item}>
                                         <VarselKomponent
                                             komponentUUID={item.komponentUUID}
                                             komponentData={item.data}
                                         />
                                     </AdministrerBaseKomponentKontrollpanel>
-                                )
-                            }
-                        })}
-                    </div>
-                    <div className="row">
-                        <div className="col">
-                            <AdministrerNyttKontrollpanelKomponent/>
-                        </div>
-                    </div>
+                                </div>
+                            )
+                        }
+                    })}
                 </div>
             </div>
         </>

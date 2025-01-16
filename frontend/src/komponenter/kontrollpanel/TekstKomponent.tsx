@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {stompService} from "../../WebSocketService.tsx";
+import {Button} from "react-bootstrap";
 
 type MeldingData = {
     melding: string;
@@ -92,12 +93,7 @@ export const RedigerTekstKomponent: React.FC<MessageProp> = ({komponentUUID, kom
                 value={inputValue}
             />
 
-            <button onClick={oppdaterData}>Send oppdatering</button>
-            <br/>
-            <label className="form-label">Se mer informasjon url</label>
-            <input
-                className="form-control"
-            />
+            <Button size="sm" variant="info" onClick={oppdaterData}>Send oppdatering</Button>
         </div>
     );
 };
