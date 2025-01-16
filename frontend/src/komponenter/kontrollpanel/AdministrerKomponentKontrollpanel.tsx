@@ -44,7 +44,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
 
     useEffect(() => {
         setInpNavn(kontrollpanelKomponent.navn)
-        setInpSeMerInformasjon(kontrollpanelKomponent.seMerInformasjon)
+        setInpSeMerInformasjon(kontrollpanelKomponent.seMerInformasjon ?? "")
     }, []);
 
     return (
