@@ -1,3 +1,6 @@
+import {useEffect, useState} from "react";
+import {stompService} from "../../WebSocketService.tsx";
+
 type VarselData = {
     varseltype: "grønnt" | "gult" | "rødt";
     tekst: string;
@@ -8,24 +11,46 @@ type MessageProp = {
     komponentData: string
 }
 
-const VarselKomponent: React.FC<MessageProp> = ({komponentData}: MessageProp) => {
-    let varsel = JSON.parse(komponentData) as VarselData;
-    if (varsel.varseltype == "rødt") {
+const VarselKomponent: React.FC<MessageProp> = ({komponentData, komponentUUID}: MessageProp) => {
+    const [data, setData] = useState<VarselData>();
+
+    const handleEvent = (varseldata: VarselData): void => {
+        setData(varseldata);
+    };
+
+    useEffect(() => {
+        let data = JSON.parse(komponentData) as VarselData
+        setData(data)
+        const topic = `/komponent/${komponentUUID}`;
+        const subscription = stompService.subscribe<VarselData>(topic, handleEvent);
+
+        return () => {
+            if (subscription) {
+                stompService.unsubscribe(topic, subscription);
+            }
+        };
+    }, []);
+
+    if(!data) {
+        return <p>Noe gikk galt ved lasting av komponentdata</p>
+    }
+
+    if (data.varseltype == "rødt") {
         return (
             <div className="alert alert-danger" role="alert">
-                {varsel.tekst ?? ""}
+                {data.tekst ?? ""}
             </div>
         )
-    } else if (varsel.varseltype == "gult") {
+    } else if (data.varseltype == "gult") {
         return (
             <div className="alert alert-warning" role="alert">
-                {varsel.tekst ?? ""}
+                {data.tekst ?? ""}
             </div>
         )
     } else {
         return (
             <div className="alert alert-success" role="alert">
-                {varsel.tekst ?? ""}
+                {data.tekst ?? ""}
             </div>
         )
     }
