@@ -3,7 +3,7 @@ import {stompService} from "../../WebSocketService.tsx";
 import {Button} from "react-bootstrap";
 
 type MeldingData = {
-    melding: string;
+    tekst: string;
 };
 
 type MessageProp = {
@@ -12,11 +12,11 @@ type MessageProp = {
 }
 
 const TekstKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: MessageProp) => {
-    const [message, setMessage] = useState<string | null>(null);
+    const [message, setMessage] = useState<string>('');
 
     const handleEvent = (message: MeldingData): void => {
         try {
-            setMessage(message.melding);
+            setMessage(message.tekst);
         } catch (error) {
             console.error('Failed to parse message body:', message, error);
         }
@@ -24,7 +24,7 @@ const TekstKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: M
 
     useEffect(() => {
         let data = JSON.parse(komponentData) as MeldingData
-        setMessage(data.melding)
+        setMessage(data.tekst)
         const topic = `/komponent/${komponentUUID}`;
         const subscription = stompService.subscribe<MeldingData>(topic, handleEvent);
 
@@ -54,7 +54,7 @@ export const RedigerTekstKomponent: React.FC<MessageProp> = ({komponentUUID, kom
 
     useEffect(() => {
         let data = JSON.parse(komponentData) as MeldingData
-        setInputValue(data.melding ?? '');
+        setInputValue(data.tekst ?? '');
     }, [komponentData]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -69,7 +69,7 @@ export const RedigerTekstKomponent: React.FC<MessageProp> = ({komponentUUID, kom
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({melding: inputValue}),
+                body: JSON.stringify({tekst: inputValue}),
             });
 
             if (!response.ok) {

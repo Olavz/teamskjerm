@@ -1,6 +1,6 @@
 type VarselData = {
     varseltype: "grønnt" | "gult" | "rødt";
-    melding: string;
+    tekst: string;
 };
 
 type MessageProp = {
@@ -13,19 +13,19 @@ const VarselKomponent: React.FC<MessageProp> = ({komponentData}: MessageProp) =>
     if (varsel.varseltype == "rødt") {
         return (
             <div className="alert alert-danger" role="alert">
-                {varsel.melding ?? ""}
+                {varsel.tekst ?? ""}
             </div>
         )
     } else if (varsel.varseltype == "gult") {
         return (
             <div className="alert alert-warning" role="alert">
-                {varsel.melding ?? ""}
+                {varsel.tekst ?? ""}
             </div>
         )
     } else {
         return (
             <div className="alert alert-success" role="alert">
-                {varsel.melding ?? ""}
+                {varsel.tekst ?? ""}
             </div>
         )
     }

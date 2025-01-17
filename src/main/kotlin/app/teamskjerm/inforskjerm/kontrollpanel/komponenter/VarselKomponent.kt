@@ -23,12 +23,12 @@ class VarselKomponent(
                   "type": "string",
                   "enum": ["grønnt", "gult", "rødt"]
                 },
-                "melding": {
-                  "description": "Melding/tekst som skal formidles som varsel",
+                "tekst": {
+                  "description": "Tekst som skal formidles som varsel",
                   "type": "string"
                 }
               },
-              "required": ["varseltype", "melding"]
+              "required": ["varseltype", "tekst"]
             }
         """.trimIndent()
     }

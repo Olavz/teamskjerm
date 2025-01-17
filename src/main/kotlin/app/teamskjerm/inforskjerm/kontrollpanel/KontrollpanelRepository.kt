@@ -74,7 +74,7 @@ class KontrollpanelRepository(
                     "", // Genereres av firestore
                     "a-b-c-d",
                     "ladida",
-                    "{\"melding\": \"-\"}"
+                    "{\"tekst\": \"-\"}"
                 )
             )
             .get()

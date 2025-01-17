@@ -30,9 +30,9 @@ export const LeggTilKomponentButton : React.FC<LeggTilKomponentProps> = ({oppret
 
         let tomData: string
         if(valgtVeiviser == "TekstKomponent") {
-            tomData = '{"melding": ""}'
+            tomData = '{"tekst": ""}'
         } else if(valgtVeiviser == "VarselKomponent") {
-            tomData = '{"melding": "", "varselType": "grønnt"}'
+            tomData = '{"tekst": "", "varseltype": "grønnt"}'
         } else {
             throw new Error("Har ikke standard mal for varselType "+ valgtVeiviser)
         }

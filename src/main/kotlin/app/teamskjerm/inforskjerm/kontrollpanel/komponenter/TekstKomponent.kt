@@ -18,12 +18,12 @@ class TekstKomponent(
               "description": "",
               "type": "object",
               "properties": {
-                "melding": {
-                  "description": "Melding/tekst som skal formidles til tekst komponentet",
+                "tekst": {
+                  "description": "Tekst som skal formidles til komponentet",
                   "type": "string"
                 }
               },
-              "required": ["melding"]
+              "required": ["tekst"]
             }
         """.trimIndent()
     }
