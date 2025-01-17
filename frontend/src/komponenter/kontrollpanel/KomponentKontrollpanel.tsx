@@ -6,6 +6,7 @@ export interface KontrollpanelKomponent {
     data: string;
     komponentType: string;
     seMerInformasjon?: string;
+    jsonSkjema: string
 }
 
 type BaseKomponentKontrollpanelProps = {

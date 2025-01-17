@@ -1,6 +1,6 @@
 import {KomponentKontrollpanel, KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 import {ReactNode, useEffect, useState} from "react";
-import {Badge, Button, FormControl, FormGroup, FormLabel} from "react-bootstrap";
+import {Accordion, Badge, Button, FormControl, FormGroup, FormLabel} from "react-bootstrap";
 
 type BaseKomponentKontrollpanelProps = {
     kontrollpanelKomponent: KontrollpanelKomponent
@@ -18,7 +18,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
     const [inpNavn, setInpNavn] = useState<string>('')
 
 
-    const oppdaterKomponent  = async () => {
+    const oppdaterKomponent = async () => {
         try {
             const response = await fetch(`/api/komponent/${kontrollpanelKomponent.komponentUUID}`, {
                 method: 'PUT',
@@ -47,18 +47,23 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
         setInpSeMerInformasjon(kontrollpanelKomponent.seMerInformasjon ?? "")
     }, []);
 
+    const getBaseUrl = () => {
+        const {protocol, host} = window.location;
+        return `${protocol}//${host}`;
+    };
+
     return (
         <div className="col" key={kontrollpanelKomponent.komponentUUID}>
             <div className="card">
                 <div className="card-body">
-                    KomponentUUID: <Badge>{kontrollpanelKomponent.komponentUUID}</Badge><br/>
                     KomponentType: <Badge>{kontrollpanelKomponent.komponentType}</Badge>
 
                     <FormGroup>
                         <FormLabel>
                             Navn
                         </FormLabel>
-                        <FormControl onChange={(e) => setInpNavn(e.target.value)} type="text" value={inpNavn}></FormControl>
+                        <FormControl onChange={(e) => setInpNavn(e.target.value)} type="text"
+                                     value={inpNavn}></FormControl>
                     </FormGroup>
 
                     <KomponentKontrollpanel kontrollpanelKomponent={kontrollpanelKomponent}>
@@ -69,15 +74,41 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                         <FormLabel>
                             Se mer informasjon lenke
                         </FormLabel>
-                        <FormControl onChange={(e) => setInpSeMerInformasjon(e.target.value)} type="text" placeholder="http://..." value={inpSeMerInformasjon}></FormControl>
+                        <FormControl onChange={(e) => setInpSeMerInformasjon(e.target.value)} type="text"
+                                     placeholder="http://..." value={inpSeMerInformasjon}></FormControl>
                     </FormGroup>
 
                     <hr/>
-                    <Button size={"sm"} onClick={() => slettKomponent(kontrollpanelKomponent.komponentUUID)} variant="danger">Slett</Button> {' '}
-                    <Button size={"sm"} onClick={oppdaterKomponent}>Oppdater</Button>
-                </div>
-                <div>
-                    APIURL: TODO + schema
+
+                    <Button onClick={() => slettKomponent(kontrollpanelKomponent.komponentUUID)}
+                            variant="danger">Slett</Button> {' '}
+                    <Button onClick={oppdaterKomponent}>Oppdater</Button>
+
+<hr/>
+
+                    <Accordion defaultActiveKey={null}>
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>Endepunkt</Accordion.Header>
+                            <Accordion.Body>
+                                <pre className="bg-light p-3 rounded">
+                                    <code className="text-monospace">
+                                        {getBaseUrl()}/api/komponent/{kontrollpanelKomponent.komponentUUID}/data
+                                    </code>
+                                </pre>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        <Accordion.Item eventKey="1">
+                            <Accordion.Header>JSON skjema</Accordion.Header>
+                            <Accordion.Body>
+                                <pre className="bg-light p-3 rounded">
+                                    <code className="text-monospace">
+                                        {kontrollpanelKomponent.jsonSkjema}
+                                    </code>
+                                </pre>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
+
                 </div>
             </div>
         </div>
