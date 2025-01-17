@@ -2,17 +2,10 @@ import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
-import {KomponentKontrollpanel} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
+import {KomponentKontrollpanel, KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 import {stompService} from "../WebSocketService.tsx";
 
-
-interface KontrollpanelKomponent {
-    komponentUUID: string;
-    navn: string;
-    data: string;
-    komponentType: string;
-}
 
 type KontrollpanelParams = {
     kontrollpanelUUID: string;
