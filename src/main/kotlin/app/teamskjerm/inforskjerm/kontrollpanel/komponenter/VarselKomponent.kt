@@ -23,7 +23,7 @@ class VarselKomponent(
                 "varseltype": {
                   "description": "Varseltype ala trafikklys.",
                   "type": "string",
-                  "enum": ["grønnt", "gult", "rødt"]
+                  "enum": ["grønt", "gult", "rødt"]
                 },
                 "tekst": {
                   "description": "Tekst som skal formidles som varsel",

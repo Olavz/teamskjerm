@@ -32,7 +32,7 @@ export const LeggTilKomponentButton : React.FC<LeggTilKomponentProps> = ({oppret
         if(valgtVeiviser == "TekstKomponent") {
             tomData = '{"tekst": ""}'
         } else if(valgtVeiviser == "VarselKomponent") {
-            tomData = '{"tekst": "", "varseltype": "grønnt"}'
+            tomData = '{"tekst": "", "varseltype": "grønt"}'
         } else if(valgtVeiviser == "PieChartKomponent") {
             tomData = '[]'
         } else {

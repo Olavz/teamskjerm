@@ -4,7 +4,7 @@ import {FormControl, FormSelect} from "react-bootstrap";
 import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 
 type VarselData = {
-    varseltype: "grønnt" | "gult" | "rødt";
+    varseltype: "grønt" | "gult" | "rødt";
     tekst: string;
 };
 
@@ -72,7 +72,7 @@ export const RedigerVarselKomponent: React.FC<KontrollpanelKomponent> = ({data}:
             <FormSelect value={valgtVarseltype} onChange={(e) => setValgtVarseltype(e.target.value)}>
                 <option key="rødt" value="rødt">Rødt</option>
                 <option key="gult" value="gult">Gult</option>
-                <option key="grønnt" value="grønnt">Grønnt</option>
+                <option key="grønt" value="grønt">Grønt</option>
             </FormSelect>
             <FormControl type="text" defaultValue={varseldata.tekst}></FormControl>
         </>
