@@ -33,6 +33,8 @@ export const LeggTilKomponentButton : React.FC<LeggTilKomponentProps> = ({oppret
             tomData = '{"tekst": ""}'
         } else if(valgtVeiviser == "VarselKomponent") {
             tomData = '{"tekst": "", "varseltype": "grønnt"}'
+        } else if(valgtVeiviser == "PieChartKomponent") {
+            tomData = '[]'
         } else {
             throw new Error("Har ikke standard mal for varselType "+ valgtVeiviser)
         }
@@ -68,6 +70,7 @@ export const LeggTilKomponentButton : React.FC<LeggTilKomponentProps> = ({oppret
                         <option value="">Velg mal</option>
                         <option value="TekstKomponent">Tekst</option>
                         <option value="VarselKomponent">Varsel</option>
+                        <option value="PieChartKomponent">Pie chart</option>
                     </FormSelect>
 
                 </Modal.Body>

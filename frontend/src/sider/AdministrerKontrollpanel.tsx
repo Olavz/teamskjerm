@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {NavLink, useNavigate, useParams} from "react-router-dom";
+import {NavLink, useParams} from "react-router-dom";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import {RedigerTekstKomponent} from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
@@ -10,13 +10,14 @@ import {
 import {LeggTilKomponentButton} from "../komponenter/kontrollpanel/LeggTilKomponentButton.tsx";
 import {Button} from "react-bootstrap";
 import {teamskjermTokenCookie} from "../CookieHjelper.tsx";
+import {RedigerPieChartKomponent} from "../komponenter/kontrollpanel/PieChatKomponent.tsx";
 
 
 type KontrollpanelParams = {
     kontrollpanelUUID: string;
 };
 
-function Kontrollpanel() {
+function AdministrerKontrollpanel() {
     const [komponentopprettet, setKomponentopprettet] = useState<number>(0);
     const [kontrollpanelKomponenter, setKontrollpanelKomponenter] = useState<KontrollpanelKomponent[]>([]);
     const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
@@ -26,7 +27,6 @@ function Kontrollpanel() {
     }
 
     useEffect(() => {
-        const navigate = useNavigate()
         fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponenter`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -34,16 +34,12 @@ function Kontrollpanel() {
             }
         })
             .then((response) => {
-                if (response.status == 403) {
-                    navigate("/logginn")
-                }
                 return response.json()
             })
             .then((data: KontrollpanelKomponent[]) => setKontrollpanelKomponenter(data));
     }, [komponentopprettet]);
 
     const slettKomponent = async (komponentUUID: string) => {
-        const navigate = useNavigate()
         try {
             const response = await fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponent/${komponentUUID}`, {
                 method: 'DELETE',
@@ -51,10 +47,6 @@ function Kontrollpanel() {
                     "Authorization": `Bearer ${teamskjermTokenCookie()}`
                 }
             });
-
-            if (response.status == 403) {
-                navigate("/logginn")
-            }
 
             if (!response.ok) {
                 throw new Error('Failed to send data');
@@ -68,7 +60,6 @@ function Kontrollpanel() {
     }
 
     const opprettKomponent = async (kontrollpanelUUID: string, kontrollpanelKomponent: KontrollpanelKomponent) => {
-        const navigate = useNavigate()
 
         try {
             const response = await fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponent`, {
@@ -79,10 +70,6 @@ function Kontrollpanel() {
                 },
                 body: JSON.stringify(kontrollpanelKomponent),
             });
-
-            if (response.status == 403) {
-                navigate("/logginn")
-            }
 
             if (!response.ok) {
                 throw new Error('Failed to send data');
@@ -108,7 +95,7 @@ function Kontrollpanel() {
                     {kontrollpanelKomponenter.map((item) => {
                         if (item.komponentType == "TekstKomponent") {
                             return (
-                                <div className="row">
+                                <div className="row" key={item.komponentUUID}>
                                     <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
                                                                            kontrollpanelKomponent={item}>
                                         <RedigerTekstKomponent
@@ -120,10 +107,22 @@ function Kontrollpanel() {
                             )
                         } else if (item.komponentType == "VarselKomponent") {
                             return (
-                                <div className="row">
+                                <div className="row" key={item.komponentUUID}>
                                     <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
                                                                            kontrollpanelKomponent={item}>
                                         <RedigerVarselKomponent
+                                            komponentUUID={item.komponentUUID}
+                                            komponentData={item.data}
+                                        />
+                                    </AdministrerBaseKomponentKontrollpanel>
+                                </div>
+                            )
+                        } else if (item.komponentType == "PieChartKomponent") {
+                            return (
+                                <div className="row" key={item.komponentUUID}>
+                                    <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                           kontrollpanelKomponent={item}>
+                                        <RedigerPieChartKomponent
                                             komponentUUID={item.komponentUUID}
                                             komponentData={item.data}
                                         />
@@ -138,4 +137,4 @@ function Kontrollpanel() {
     )
 }
 
-export default Kontrollpanel
+export default AdministrerKontrollpanel

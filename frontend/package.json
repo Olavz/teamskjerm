@@ -13,6 +13,8 @@
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@stomp/stompjs": "^7.0.0",
     "bootstrap": "^5.3.3",
+    "echarts": "^5.6.0",
+    "echarts-for-react": "^3.0.2",
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.7",
     "react-dom": "^18.3.1",

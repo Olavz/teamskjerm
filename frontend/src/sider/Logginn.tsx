@@ -1,11 +1,24 @@
 import {Button} from "react-bootstrap";
-import {clearTeamskjermTokenCookie, setTeamskjermTokenCookie} from "../CookieHjelper.tsx";
+import {clearTeamskjermTokenCookie, setTeamskjermTokenCookie, teamskjermTokenCookie} from "../CookieHjelper.tsx";
+import {useEffect} from "react";
 
 type AccessTokenResponse = {
     accessToken: string
 }
 
 function Logginnside() {
+
+    useEffect(() => {
+        fetch(`/api/user`, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${teamskjermTokenCookie()}`
+            }
+        })
+            .then((response) => {
+                alert("We got " + response.status)
+            })
+    }, []);
 
     const handleLogginn = async () => {
 

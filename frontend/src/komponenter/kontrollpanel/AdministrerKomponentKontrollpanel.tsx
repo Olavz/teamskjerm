@@ -2,7 +2,6 @@ import {KomponentKontrollpanel, KontrollpanelKomponent} from "./KomponentKontrol
 import {ReactNode, useEffect, useState} from "react";
 import {Accordion, Badge, Button, FormControl, FormGroup, FormLabel} from "react-bootstrap";
 import {teamskjermTokenCookie} from "../../CookieHjelper.tsx";
-import {useNavigate} from "react-router-dom";
 
 type BaseKomponentKontrollpanelProps = {
     kontrollpanelKomponent: KontrollpanelKomponent
@@ -21,7 +20,6 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
 
 
     const oppdaterKomponent = async () => {
-        const navigate = useNavigate();
         try {
             const response = await fetch(`/api/komponent/${kontrollpanelKomponent.komponentUUID}`, {
                 method: 'PUT',
@@ -35,16 +33,10 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                 }),
             });
 
-            if(response.status == 403) {
-                navigate("/logginn")
-            }
-
             if (!response.ok) {
                 throw new Error('Failed to send data');
             }
 
-            // const result = await response.json();
-            // console.log('Success:', result);
         } catch (error) {
             console.error('Error:', error);
         }
@@ -92,7 +84,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                             variant="danger">Slett</Button> {' '}
                     <Button onClick={oppdaterKomponent}>Oppdater</Button>
 
-<hr/>
+                    <hr/>
 
                     <Accordion defaultActiveKey={null}>
                         <Accordion.Item eventKey="0">
@@ -100,7 +92,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                             <Accordion.Body>
                                 <pre className="bg-light p-3 rounded">
                                     <code className="text-monospace">
-                                        {getBaseUrl()}/api/komponent/{kontrollpanelKomponent.komponentUUID}/data
+                                        {getBaseUrl()}/api/ext/komponent/{kontrollpanelKomponent.komponentUUID}/data
                                     </code>
                                 </pre>
                             </Accordion.Body>

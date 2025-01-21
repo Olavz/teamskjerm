@@ -18,7 +18,8 @@ data class Skjemavalidering(val harFeil: Boolean, val skjemafeil: List<String>)
 @JsonSubTypes(
     value = [
         JsonSubTypes.Type(value = TekstKomponent::class, name = "TekstKomponent"),
-        JsonSubTypes.Type(value = VarselKomponent::class, name = "VarselKomponent")
+        JsonSubTypes.Type(value = VarselKomponent::class, name = "VarselKomponent"),
+        JsonSubTypes.Type(value = PieChartKomponent::class, name = "PieChartKomponent")
     ]
 )
 interface KontrollpanelKomponent {

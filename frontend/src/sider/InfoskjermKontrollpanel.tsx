@@ -5,6 +5,7 @@ import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {KomponentKontrollpanel, KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 import {stompService} from "../WebSocketService.tsx";
+import PieChartKomponent from "../komponenter/kontrollpanel/PieChatKomponent.tsx";
 
 
 type KontrollpanelParams = {
@@ -64,6 +65,17 @@ function InfoskjermKontrollpanel() {
                                     <div className="col" key={item.komponentUUID}>
                                         <KomponentKontrollpanel kontrollpanelKomponent={item}>
                                             <VarselKomponent
+                                                komponentUUID={item.komponentUUID}
+                                                komponentData={item.data}
+                                            />
+                                        </KomponentKontrollpanel>
+                                    </div>
+                                )
+                            } else if (item.komponentType == "PieChartKomponent") {
+                                return (
+                                    <div className="col" key={item.komponentUUID}>
+                                        <KomponentKontrollpanel kontrollpanelKomponent={item}>
+                                            <PieChartKomponent
                                                 komponentUUID={item.komponentUUID}
                                                 komponentData={item.data}
                                             />
