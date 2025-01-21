@@ -52,7 +52,7 @@ const PieChartKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}
             {
                 name: 'asd',
                 type: 'pie',
-                radius: '80%',
+                radius: '60%',
                 data: data,
                 emphasis: {
                     itemStyle: {

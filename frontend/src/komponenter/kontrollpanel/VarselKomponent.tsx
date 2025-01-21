@@ -39,19 +39,19 @@ const VarselKomponent: React.FC<MessageProp> = ({komponentData, komponentUUID}: 
     if (data.varseltype == "rødt") {
         return (
             <div className="alert alert-danger" role="alert">
-                {data.tekst ?? ""}
+                <h1>{data.tekst ?? ""}</h1>
             </div>
         )
     } else if (data.varseltype == "gult") {
         return (
             <div className="alert alert-warning" role="alert">
-                {data.tekst ?? ""}
+                <h1>{data.tekst ?? ""}</h1>
             </div>
         )
     } else {
         return (
             <div className="alert alert-success" role="alert">
-                {data.tekst ?? ""}
+                <h1>{data.tekst ?? ""}</h1>
             </div>
         )
     }

@@ -41,7 +41,7 @@ const TekstKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: M
 
     return (
         <>
-            {message && <p>{message}</p>}
+            {message && <h1>{message}</h1>}
 
             {/*{data.seMerInformasjonUrl && <button type="button" onClick={() => seMerInformasjonNaviger(data.seMerInformasjonUrl)} className="btn btn-light">Se mer informasjon</button>}*/}
         </>

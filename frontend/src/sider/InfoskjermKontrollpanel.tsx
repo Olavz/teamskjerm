@@ -1,11 +1,11 @@
 import {useEffect, useState} from "react";
 import {Link, useParams} from "react-router-dom";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
-import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {KomponentKontrollpanel, KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
-import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 import {stompService} from "../WebSocketService.tsx";
 import PieChartKomponent from "../komponenter/kontrollpanel/PieChatKomponent.tsx";
+import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
+import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 
 
 type KontrollpanelParams = {
@@ -41,54 +41,60 @@ function InfoskjermKontrollpanel() {
 
     let adminside = `/administrer/kontrollpanel/${kontrollpanelUUID}`
 
+    const pairs = [];
+    for (let i = 0; i < data.length; i += 3) {
+        pairs.push(data.slice(i, i + 3));
+    }
+
     return (
         <>
             <div>
                 <HeaderKontrollpanel></HeaderKontrollpanel>
                 <Link to={adminside}>Admin</Link>
-                <div className="container">
-                    <div className="row">
-                        {data.map((item) => {
-                            if (item.komponentType == "TekstKomponent") {
-                                return (
-                                    <div className="col" key={item.komponentUUID}>
-                                        <KomponentKontrollpanel kontrollpanelKomponent={item}>
-                                            <TekstKomponent
-                                                komponentUUID={item.komponentUUID}
-                                                komponentData={item.data}
-                                            />
-                                        </KomponentKontrollpanel>
-                                    </div>
-                                )
-                            } else if (item.komponentType == "VarselKomponent") {
-                                return (
-                                    <div className="col" key={item.komponentUUID}>
-                                        <KomponentKontrollpanel kontrollpanelKomponent={item}>
-                                            <VarselKomponent
-                                                komponentUUID={item.komponentUUID}
-                                                komponentData={item.data}
-                                            />
-                                        </KomponentKontrollpanel>
-                                    </div>
-                                )
-                            } else if (item.komponentType == "PieChartKomponent") {
-                                return (
-                                    <div className="col" key={item.komponentUUID}>
-                                        <KomponentKontrollpanel kontrollpanelKomponent={item}>
-                                            <PieChartKomponent
-                                                komponentUUID={item.komponentUUID}
-                                                komponentData={item.data}
-                                            />
-                                        </KomponentKontrollpanel>
-                                    </div>
-                                )
-                            }
-                        })}
-                    </div>
+                <div className="bittelittepadding">
+                    {pairs.map((pair, rowIndex) => (
+                        <div className="row" key={rowIndex}>
+                            {pair.map((item) => (
+                                <div className="col" key={item.komponentUUID}>
+                                    <KomponentKontrollpanel kontrollpanelKomponent={item}>
+                                        {utledKomponentType(item)}
+                                    </KomponentKontrollpanel>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
                 </div>
             </div>
         </>
     )
+}
+
+const utledKomponentType = (item: KontrollpanelKomponent) => {
+    switch (item.komponentType) {
+        case 'TekstKomponent':
+            return (
+                <TekstKomponent
+                    komponentUUID={item.komponentUUID}
+                    komponentData={item.data}
+                />
+            )
+        case 'VarselKomponent':
+            return (
+                <VarselKomponent
+                    komponentUUID={item.komponentUUID}
+                    komponentData={item.data}
+                />
+            )
+        case 'PieChartKomponent':
+            return (
+                <PieChartKomponent
+                    komponentUUID={item.komponentUUID}
+                    komponentData={item.data}
+                />
+            )
+        default:
+            throw new Error("Støtter ikke " + item.komponentType)
+    }
 }
 
 export default InfoskjermKontrollpanel
