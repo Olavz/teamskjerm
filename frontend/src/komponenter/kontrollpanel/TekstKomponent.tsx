@@ -64,7 +64,7 @@ export const RedigerTekstKomponent: React.FC<MessageProp> = ({komponentUUID, kom
     const oppdaterData = async () => {
 
         try {
-            const response = await fetch(`/api/komponent/${komponentUUID}/data`, {
+            const response = await fetch(`/api/ext/komponent/${komponentUUID}/data`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

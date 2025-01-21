@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import {stompService} from "../../WebSocketService.tsx";
+import {FormControl, FormSelect} from "react-bootstrap";
 
 type VarselData = {
     varseltype: "grønnt" | "gult" | "rødt";
@@ -31,7 +32,7 @@ const VarselKomponent: React.FC<MessageProp> = ({komponentData, komponentUUID}: 
         };
     }, []);
 
-    if(!data) {
+    if (!data) {
         return <p>Noe gikk galt ved lasting av komponentdata</p>
     }
 
@@ -54,6 +55,32 @@ const VarselKomponent: React.FC<MessageProp> = ({komponentData, komponentUUID}: 
             </div>
         )
     }
+}
+
+export const RedigerVarselKomponent: React.FC<MessageProp> = ({komponentData}: MessageProp) => {
+    const [data, setData] = useState<VarselData>();
+    const [valgtVarseltype, setValgtVarseltype] = useState<string>('');
+
+
+    useEffect(() => {
+        let data = JSON.parse(komponentData) as VarselData
+        setData(data)
+    }, []);
+
+    if (!data) {
+        return <p>Noe gikk galt ved lasting av komponentdata</p>
+    }
+
+    return (
+<>
+        <FormSelect value={valgtVarseltype} onChange={(e) => setValgtVarseltype(e.target.value)}>
+            <option key="rødt" value="rødt">Rødt</option>
+            <option key="gult" value="gult">Gult</option>
+            <option key="grønnt" value="grønnt">Grønnt</option>
+        </FormSelect>
+            <FormControl type="text" defaultValue={data.tekst}></FormControl>
+</>
+    )
 }
 
 export default VarselKomponent;

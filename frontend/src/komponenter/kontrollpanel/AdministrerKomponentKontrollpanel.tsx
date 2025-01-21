@@ -1,6 +1,8 @@
 import {KomponentKontrollpanel, KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 import {ReactNode, useEffect, useState} from "react";
 import {Accordion, Badge, Button, FormControl, FormGroup, FormLabel} from "react-bootstrap";
+import {teamskjermTokenCookie} from "../../CookieHjelper.tsx";
+import {useNavigate} from "react-router-dom";
 
 type BaseKomponentKontrollpanelProps = {
     kontrollpanelKomponent: KontrollpanelKomponent
@@ -19,17 +21,23 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
 
 
     const oppdaterKomponent = async () => {
+        const navigate = useNavigate();
         try {
             const response = await fetch(`/api/komponent/${kontrollpanelKomponent.komponentUUID}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${teamskjermTokenCookie()}`,
                 },
                 body: JSON.stringify({
                     navn: inpNavn,
                     seMerInformasjon: inpSeMerInformasjon
                 }),
             });
+
+            if(response.status == 403) {
+                navigate("/logginn")
+            }
 
             if (!response.ok) {
                 throw new Error('Failed to send data');

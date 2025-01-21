@@ -1,14 +1,15 @@
 import {useEffect, useState} from "react";
-import {NavLink, useParams} from "react-router-dom";
+import {NavLink, useNavigate, useParams} from "react-router-dom";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import {RedigerTekstKomponent} from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
-import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
+import {RedigerVarselKomponent} from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 import {
     AdministrerBaseKomponentKontrollpanel
 } from "../komponenter/kontrollpanel/AdministrerKomponentKontrollpanel.tsx";
 import {LeggTilKomponentButton} from "../komponenter/kontrollpanel/LeggTilKomponentButton.tsx";
 import {Button} from "react-bootstrap";
+import {teamskjermTokenCookie} from "../CookieHjelper.tsx";
 
 
 type KontrollpanelParams = {
@@ -25,16 +26,35 @@ function Kontrollpanel() {
     }
 
     useEffect(() => {
-        fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponenter`)
-            .then((response) => response.json())
+        const navigate = useNavigate()
+        fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponenter`, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${teamskjermTokenCookie()}`
+            }
+        })
+            .then((response) => {
+                if (response.status == 403) {
+                    navigate("/logginn")
+                }
+                return response.json()
+            })
             .then((data: KontrollpanelKomponent[]) => setKontrollpanelKomponenter(data));
     }, [komponentopprettet]);
 
-    const slettKomponent  = async (komponentUUID: string) => {
+    const slettKomponent = async (komponentUUID: string) => {
+        const navigate = useNavigate()
         try {
             const response = await fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponent/${komponentUUID}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    "Authorization": `Bearer ${teamskjermTokenCookie()}`
+                }
             });
+
+            if (response.status == 403) {
+                navigate("/logginn")
+            }
 
             if (!response.ok) {
                 throw new Error('Failed to send data');
@@ -47,21 +67,28 @@ function Kontrollpanel() {
         )
     }
 
-   const opprettKomponent = async (kontrollpanelUUID: string, kontrollpanelKomponent: KontrollpanelKomponent) => {
+    const opprettKomponent = async (kontrollpanelUUID: string, kontrollpanelKomponent: KontrollpanelKomponent) => {
+        const navigate = useNavigate()
+
         try {
             const response = await fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponent`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${teamskjermTokenCookie()}`
                 },
                 body: JSON.stringify(kontrollpanelKomponent),
             });
+
+            if (response.status == 403) {
+                navigate("/logginn")
+            }
 
             if (!response.ok) {
                 throw new Error('Failed to send data');
             }
             await response;
-            setKomponentopprettet(komponentopprettet+1)
+            setKomponentopprettet(komponentopprettet + 1)
         } catch (error) {
             console.error('Error:', error);
         }
@@ -96,7 +123,7 @@ function Kontrollpanel() {
                                 <div className="row">
                                     <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
                                                                            kontrollpanelKomponent={item}>
-                                        <VarselKomponent
+                                        <RedigerVarselKomponent
                                             komponentUUID={item.komponentUUID}
                                             komponentData={item.data}
                                         />

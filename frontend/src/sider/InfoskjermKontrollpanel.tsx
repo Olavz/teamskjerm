@@ -33,7 +33,7 @@ function InfoskjermKontrollpanel() {
     }, []);
 
     useEffect(() => {
-        fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponenter`)
+        fetch(`/api/ext/kontrollpanel/${kontrollpanelUUID}/komponenter`)
             .then((response) => response.json())
             .then((data: KontrollpanelKomponent[]) => setData(data));
     }, []);

@@ -9,7 +9,7 @@ import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
 import AdministrerKontrollpanel from "./sider/AdministrerKontrollpanel.tsx";
 import Startside from "./sider/Startside.tsx";
-
+import Logginnside from "./sider/Logginn.tsx";
 
 
 createRoot(document.getElementById('root')!).render(
@@ -19,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
                 <Route index={true} element={<Startside/>}/>
                 <Route path="/kontrollpanel/:kontrollpanelUUID" element={<InfoskjermKontrollpanel/>}/>
                 <Route path="/administrer/kontrollpanel/:kontrollpanelUUID" element={<AdministrerKontrollpanel/>}/>
+                <Route path="/logginn" element={<Logginnside/>}/>
 
                 <Route path="*" element={<FantIkkeSiden/>}/>
             </Routes>
