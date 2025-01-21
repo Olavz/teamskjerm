@@ -1,17 +1,14 @@
 import {useEffect, useState} from "react";
 import {stompService} from "../../WebSocketService.tsx";
 import {Button} from "react-bootstrap";
+import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 
 type MeldingData = {
     tekst: string;
 };
 
-type MessageProp = {
-    komponentUUID: string
-    komponentData: string
-}
 
-const TekstKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: MessageProp) => {
+const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}: KontrollpanelKomponent) => {
     const [message, setMessage] = useState<string>('');
 
     const handleEvent = (message: MeldingData): void => {
@@ -23,8 +20,8 @@ const TekstKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: M
     };
 
     useEffect(() => {
-        let data = JSON.parse(komponentData) as MeldingData
-        setMessage(data.tekst)
+        let parsedata = JSON.parse(data) as MeldingData
+        setMessage(parsedata.tekst)
         const topic = `/komponent/${komponentUUID}`;
         const subscription = stompService.subscribe<MeldingData>(topic, handleEvent);
 
@@ -42,20 +39,18 @@ const TekstKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: M
     return (
         <>
             {message && <h1>{message}</h1>}
-
-            {/*{data.seMerInformasjonUrl && <button type="button" onClick={() => seMerInformasjonNaviger(data.seMerInformasjonUrl)} className="btn btn-light">Se mer informasjon</button>}*/}
         </>
     )
 
 }
 
-export const RedigerTekstKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: MessageProp) => {
+export const RedigerTekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID, secret, secretHashKey}: KontrollpanelKomponent) => {
     const [inputValue, setInputValue] = useState<string>('');
 
     useEffect(() => {
-        let data = JSON.parse(komponentData) as MeldingData
-        setInputValue(data.tekst ?? '');
-    }, [komponentData]);
+        let dataleser = JSON.parse(data) as MeldingData
+        setInputValue(dataleser.tekst ?? '');
+    }, [data]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setInputValue(event.target.value);
@@ -64,7 +59,7 @@ export const RedigerTekstKomponent: React.FC<MessageProp> = ({komponentUUID, kom
     const oppdaterData = async () => {
 
         try {
-            const response = await fetch(`/api/ext/komponent/${komponentUUID}/data`, {
+            const response = await fetch(`/api/ext/komponent/${komponentUUID}/${secret}/${secretHashKey}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -90,9 +90,10 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Endepunkt</Accordion.Header>
                             <Accordion.Body>
+                                <Badge>PUT</Badge>
                                 <pre className="bg-light p-3 rounded">
                                     <code className="text-monospace">
-                                        {getBaseUrl()}/api/ext/komponent/{kontrollpanelKomponent.komponentUUID}/data
+                                        {getBaseUrl()}/api/ext/komponent/{kontrollpanelKomponent.komponentUUID}/{kontrollpanelKomponent.secret}/{kontrollpanelKomponent.secretHashKey}
                                     </code>
                                 </pre>
                             </Accordion.Body>

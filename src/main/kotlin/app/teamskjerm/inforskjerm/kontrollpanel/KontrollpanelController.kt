@@ -26,10 +26,6 @@ class KontrollpanelController(
         return ResponseEntity.ok(kontrollpanelRepository.alleKontrollpanel())
     }
 
-    @GetMapping("/nyttkontrollpanel")
-    fun nyttkontrollpanel(): ResponseEntity<List<String>> {
-        return ResponseEntity.ok(kontrollpanelRepository.nyttkontrollpanel())
-    }
 
     @GetMapping("/kontrollpanel/{kontrollpanelUUID}/komponenter")
     fun kontrollpanelSineKomponenter(

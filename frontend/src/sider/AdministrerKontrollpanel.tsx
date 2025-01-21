@@ -98,10 +98,7 @@ function AdministrerKontrollpanel() {
                                 <div className="row" key={item.komponentUUID}>
                                     <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
                                                                            kontrollpanelKomponent={item}>
-                                        <RedigerTekstKomponent
-                                            komponentData={item.data}
-                                            komponentUUID={item.komponentUUID}
-                                        />
+                                        <RedigerTekstKomponent  {...item}/>
                                     </AdministrerBaseKomponentKontrollpanel>
                                 </div>
                             )
@@ -110,10 +107,7 @@ function AdministrerKontrollpanel() {
                                 <div className="row" key={item.komponentUUID}>
                                     <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
                                                                            kontrollpanelKomponent={item}>
-                                        <RedigerVarselKomponent
-                                            komponentUUID={item.komponentUUID}
-                                            komponentData={item.data}
-                                        />
+                                        <RedigerVarselKomponent {...item} />
                                     </AdministrerBaseKomponentKontrollpanel>
                                 </div>
                             )
@@ -122,10 +116,7 @@ function AdministrerKontrollpanel() {
                                 <div className="row" key={item.komponentUUID}>
                                     <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
                                                                            kontrollpanelKomponent={item}>
-                                        <RedigerPieChartKomponent
-                                            komponentUUID={item.komponentUUID}
-                                            komponentData={item.data}
-                                        />
+                                        <RedigerPieChartKomponent {...item} />
                                     </AdministrerBaseKomponentKontrollpanel>
                                 </div>
                             )

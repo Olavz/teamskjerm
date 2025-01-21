@@ -24,7 +24,7 @@ class EksterntKontrollpanelController(
         @PathVariable kontrollpanelUUID: String
     ): ResponseEntity<List<KontrollpanelKomponent>> {
         return ResponseEntity.ok(
-            komponentRepository.finnKomponenterMedId(
+            komponentRepository.finnKomponenterMedIdUtenSecret(
                 kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
                     .komponenter
             )

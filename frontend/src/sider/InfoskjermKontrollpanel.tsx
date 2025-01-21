@@ -73,24 +73,15 @@ const utledKomponentType = (item: KontrollpanelKomponent) => {
     switch (item.komponentType) {
         case 'TekstKomponent':
             return (
-                <TekstKomponent
-                    komponentUUID={item.komponentUUID}
-                    komponentData={item.data}
-                />
+                <TekstKomponent {...item} />
             )
         case 'VarselKomponent':
             return (
-                <VarselKomponent
-                    komponentUUID={item.komponentUUID}
-                    komponentData={item.data}
-                />
+                <VarselKomponent {...item} />
             )
         case 'PieChartKomponent':
             return (
-                <PieChartKomponent
-                    komponentUUID={item.komponentUUID}
-                    komponentData={item.data}
-                />
+                <PieChartKomponent {...item} />
             )
         default:
             throw new Error("Støtter ikke " + item.komponentType)

@@ -1,6 +1,5 @@
 package app.teamskjerm.inforskjerm.kontrollpanel
 
-import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.TekstKomponent
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.QuerySnapshot
@@ -28,33 +27,6 @@ class KontrollpanelRepository(
                 komponenter = data["komponenter"] as List<String>
             )
         }
-    }
-
-    fun nyttkontrollpanel(): List<String> {
-        val collectionRef = firestore.collection("kontrollpanel")
-
-        val id = firestore.collection("komponenter")
-            .add(
-                TekstKomponent(
-                    "", // Genereres av firestore
-                    "a-b-c-d",
-                    "ladida",
-                    "{\"tekst\": \"-\"}"
-                )
-            )
-            .get()
-            .id
-
-        collectionRef.add(Kontrollpanel(
-            "",
-            "uuid-1-2-3-4",
-            "en test",
-            listOf(
-               id
-            )
-        ))
-
-        return emptyList()
     }
 
     fun finnKontrollpanel(kontrollpanelUUID: String): Kontrollpanel {

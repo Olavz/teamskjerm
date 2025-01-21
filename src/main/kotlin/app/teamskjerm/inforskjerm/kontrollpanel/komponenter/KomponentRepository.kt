@@ -1,15 +1,18 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
+import app.teamskjerm.inforskjerm.sikkerhet.KomponentSecretHashkeyService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.cloud.firestore.Firestore
 import org.springframework.stereotype.Repository
+import java.util.UUID
 
 private const val COLLECTION = "komponenter"
 
 @Repository
 class KomponentRepository(
     val firestore: Firestore,
-    val objectMapper: ObjectMapper
+    val objectMapper: ObjectMapper,
+    val komponentSecretHashkeyService: KomponentSecretHashkeyService
 ) {
     fun lagre(kontrollpanelKomponent: KontrollpanelKomponent): KontrollpanelKomponent {
         val komponenter = firestore.collection(COLLECTION)
@@ -20,6 +23,8 @@ class KomponentRepository(
                 .set(kontrollpanelKomponent)
             return kontrollpanelKomponent
         } else {
+            kontrollpanelKomponent.secret = UUID.randomUUID().toString().replace("-", "")
+            kontrollpanelKomponent.secretHashKey = komponentSecretHashkeyService.hashkey(kontrollpanelKomponent.komponentUUID, kontrollpanelKomponent.secret)
             val f = komponenter.add(kontrollpanelKomponent).get()
             kontrollpanelKomponent.id = f.id
             return kontrollpanelKomponent
@@ -50,7 +55,6 @@ class KomponentRepository(
     }
 
     fun finnKomponenterMedId(komponenter: List<String>): List<KontrollpanelKomponent>? {
-
         return komponenter
             .map {
                 firestore.collection(COLLECTION).document(it).get().get()
@@ -61,7 +65,21 @@ class KomponentRepository(
                 komponent.id = it.id
                 komponent
             }
+    }
 
+    fun finnKomponenterMedIdUtenSecret(komponenter: List<String>): List<KontrollpanelKomponent>? {
+        return komponenter
+            .map {
+                firestore.collection(COLLECTION).document(it).get().get()
+            }
+            .filter { it.exists() }
+            .map {
+                val komponent = objectMapper.convertValue(it.data, KontrollpanelKomponent::class.java)
+                komponent.id = it.id
+                komponent.secret = ""
+                komponent.secretHashKey = ""
+                komponent
+            }
     }
 
     fun slettKomponentMed(komponentUUID: String): String {

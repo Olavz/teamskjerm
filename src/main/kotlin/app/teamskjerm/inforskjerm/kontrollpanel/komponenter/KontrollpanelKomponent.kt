@@ -29,6 +29,8 @@ interface KontrollpanelKomponent {
     var data: String
     var komponentType: String
     var seMerInformasjon: String
+    var secret: String
+    var secretHashKey: String
 
     @JsonProperty(value = "jsonSkjema", required = true)
     fun jsonSkjema(): String

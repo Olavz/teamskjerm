@@ -6,7 +6,9 @@ class VarselKomponent(
     override var navn: String = "",
     override var data: String = "",
     override var komponentType: String = "VarselKomponent",
-    override var seMerInformasjon: String = ""
+    override var seMerInformasjon: String = "",
+    override var secret: String = "",
+    override var secretHashKey: String = "",
 ) : KontrollpanelKomponent {
 
     override fun jsonSkjema(): String {

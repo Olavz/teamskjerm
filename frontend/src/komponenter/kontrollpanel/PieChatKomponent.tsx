@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {stompService} from "../../WebSocketService.tsx";
 import EChartsReact from "echarts-for-react";
+import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 
 type PieChart = {
     data: PieChartData[];
@@ -11,25 +12,20 @@ type PieChartData = {
     name: string;
 }
 
-type MessageProp = {
-    komponentUUID: string
-    komponentData: string
-}
-
-const PieChartKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}: MessageProp) => {
-    const [data, setData] = useState<PieChartData[]>();
+const PieChartKomponent: React.FC<KontrollpanelKomponent> = ({komponentUUID, data}: KontrollpanelKomponent) => {
+    const [chartdata, setChartdata] = useState<PieChartData[]>();
 
     const handleEvent = (pieChartData: PieChart): void => {
         try {
-            setData(pieChartData.data);
+            setChartdata(pieChartData.data);
         } catch (error) {
             console.error('Failed to parse message body:', pieChartData, error);
         }
     };
 
     useEffect(() => {
-        let data = JSON.parse(komponentData) as PieChart
-        setData(data.data)
+        let parsedata = JSON.parse(data) as PieChart
+        setChartdata(parsedata.data)
         const topic = `/komponent/${komponentUUID}`;
         const subscription = stompService.subscribe<PieChart>(topic, handleEvent);
 
@@ -50,10 +46,10 @@ const PieChartKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}
         },
         series: [
             {
-                name: 'asd',
+                name: 'PieChartKomponent',
                 type: 'pie',
                 radius: '60%',
-                data: data,
+                data: chartdata,
                 emphasis: {
                     itemStyle: {
                         shadowBlur: 10,
@@ -73,7 +69,7 @@ const PieChartKomponent: React.FC<MessageProp> = ({komponentUUID, komponentData}
 
 }
 
-export const RedigerPieChartKomponent: React.FC<MessageProp> = () => {
+export const RedigerPieChartKomponent: React.FC<KontrollpanelKomponent> = () => {
     return (
         <div className="mb-3">
             <p>Ikke støttet</p>
