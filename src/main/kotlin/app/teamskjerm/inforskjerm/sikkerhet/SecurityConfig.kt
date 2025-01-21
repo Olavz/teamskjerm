@@ -42,10 +42,11 @@ class SecurityConfig {
             .csrf { it.disable() }
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/auth", "/api/ext/**", "/ws/**")
-                    .permitAll()
+                    .requestMatchers("/api/auth").permitAll()
+                    .requestMatchers("/api/ext/**").permitAll()
+                    .requestMatchers("/api/**").authenticated()
                     .anyRequest()
-                    .fullyAuthenticated()
+                    .permitAll()
             }
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
