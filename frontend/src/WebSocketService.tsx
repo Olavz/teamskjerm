@@ -8,6 +8,7 @@ type EventListeners = {
 class STOMPService {
     client: Client | null = null;
     private isConnected = false;
+    private activeSubscriptions: Array<() => void> = [];
     private pendingSubscriptions: Array<() => void> = [];
     private eventListeners: EventListeners = {};
 
@@ -25,8 +26,15 @@ class STOMPService {
             console.log('STOMP connected');
             this.isConnected = true;
 
+            console.log("active", this.activeSubscriptions.length)
+            console.log("pending", this.pendingSubscriptions.length)
+
             // Utfør alle abonnementer i køen
-            this.pendingSubscriptions.forEach((subscribe) => subscribe());
+            this.activeSubscriptions.forEach((subscribe) => subscribe());
+            this.pendingSubscriptions.forEach((subscribe) => {
+                this.activeSubscriptions.push(subscribe)
+                subscribe()
+            });
             this.pendingSubscriptions = []; // Tøm køen
         };
 
@@ -56,6 +64,7 @@ class STOMPService {
         };
 
         if (this.isConnected) {
+            this.activeSubscriptions.push(subscribeAction)
             return subscribeAction();
         } else {
             console.log('STOMP client not connected, queuing subscription');
@@ -74,16 +83,6 @@ class STOMPService {
         }
     }
 
-    send<T>(destination: string, payload: T): void {
-        if (this.client && this.client.connected) {
-            this.client.publish({
-                destination,
-                body: JSON.stringify(payload),
-            });
-        } else {
-            console.error('STOMP client is not connected');
-        }
-    }
 }
 
 export const stompService = new STOMPService();
