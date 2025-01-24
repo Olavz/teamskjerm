@@ -1,15 +1,8 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
-class VarselKomponent(
-    override var id: String = "",
-    override var komponentUUID:String = "",
-    override var navn: String = "",
-    override var data: String = "",
-    override var komponentType: String = "VarselKomponent",
-    override var seMerInformasjon: String = "",
-    override var secret: String = "",
-    override var secretHashKey: String = "",
-) : KontrollpanelKomponent {
+class VarselKomponent : KontrollpanelKomponent(
+    komponentType = "VarselKomponent"
+) {
 
     override fun jsonSkjema(): String {
         return """

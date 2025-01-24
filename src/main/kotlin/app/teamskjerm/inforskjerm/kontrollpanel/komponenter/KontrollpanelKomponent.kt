@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.cloud.Timestamp
 import com.networknt.schema.JsonSchema
 import com.networknt.schema.JsonSchemaFactory
 import com.networknt.schema.SpecVersion
@@ -22,18 +23,21 @@ data class Skjemavalidering(val harFeil: Boolean, val skjemafeil: List<String>)
         JsonSubTypes.Type(value = PieChartKomponent::class, name = "PieChartKomponent")
     ]
 )
-interface KontrollpanelKomponent {
-    var id: String
-    var komponentUUID: String
-    var navn: String
-    var data: String
-    var komponentType: String
-    var seMerInformasjon: String
-    var secret: String
-    var secretHashKey: String
+abstract class KontrollpanelKomponent(
+    var id: String = "",
+    var komponentUUID: String = "",
+    var navn: String = "",
+    var data: String = "",
+    var komponentType: String,
+    var seMerInformasjon: String? = null,
+    var secret: String? = null,
+    var secretHashKey: String? = null,
+    var sistOppdatert: Timestamp? = null,
+) {
+
 
     @JsonProperty(value = "jsonSkjema", required = true)
-    fun jsonSkjema(): String
+    abstract fun jsonSkjema(): String
 
     fun validerSkjema(dataJson: String): Skjemavalidering {
         val schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)

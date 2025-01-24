@@ -1,15 +1,8 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
-class TekstKomponent(
-    override var id: String = "",
-    override var komponentUUID:String = "",
-    override var navn: String = "",
-    override var data: String = "",
-    override var komponentType: String = "TekstKomponent",
-    override var seMerInformasjon: String = "",
-    override var secret: String = "",
-    override var secretHashKey: String = "",
-) : KontrollpanelKomponent {
+class TekstKomponent: KontrollpanelKomponent(
+    komponentType = "TekstKomponent"
+) {
 
     override fun jsonSkjema(): String {
         return """

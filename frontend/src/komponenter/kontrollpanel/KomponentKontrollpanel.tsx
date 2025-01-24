@@ -1,4 +1,5 @@
 import {ReactNode} from "react";
+import {CardFooter} from "react-bootstrap";
 
 export interface KontrollpanelKomponent {
     komponentUUID: string;
@@ -9,6 +10,7 @@ export interface KontrollpanelKomponent {
     secret?: string;
     secretHashKey?: string;
     jsonSkjema: string;
+    sistOppdatert?: string;
 }
 
 type BaseKomponentKontrollpanelProps = {
@@ -16,13 +18,19 @@ type BaseKomponentKontrollpanelProps = {
     children: ReactNode
 }
 
-export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> = ({kontrollpanelKomponent, children}) => {
+export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> = ({
+                                                                                      kontrollpanelKomponent,
+                                                                                      children
+                                                                                  }) => {
+
+    const sistOppdatert = kontrollpanelKomponent.sistOppdatert ? kontrollpanelKomponent.sistOppdatert : ""
     return (
         <div className="card">
             <div className="card-body">
-                <h5 className="card-title">{kontrollpanelKomponent.navn}</h5>
+                <h3 className="card-title">{kontrollpanelKomponent.navn}</h3>
                 {children}
             </div>
+            <CardFooter>{sistOppdatert}</CardFooter>
         </div>
     )
 }

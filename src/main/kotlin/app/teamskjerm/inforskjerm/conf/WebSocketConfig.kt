@@ -1,4 +1,4 @@
-package app.teamskjerm.inforskjerm
+package app.teamskjerm.inforskjerm.conf
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker

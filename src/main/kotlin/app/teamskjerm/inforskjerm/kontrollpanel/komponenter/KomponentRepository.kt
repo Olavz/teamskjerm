@@ -24,7 +24,7 @@ class KomponentRepository(
             return kontrollpanelKomponent
         } else {
             kontrollpanelKomponent.secret = UUID.randomUUID().toString().replace("-", "")
-            kontrollpanelKomponent.secretHashKey = komponentSecretHashkeyService.hashkey(kontrollpanelKomponent.komponentUUID, kontrollpanelKomponent.secret)
+            kontrollpanelKomponent.secretHashKey = komponentSecretHashkeyService.hashkey(kontrollpanelKomponent.komponentUUID, kontrollpanelKomponent.secret ?: "")
             val f = komponenter.add(kontrollpanelKomponent).get()
             kontrollpanelKomponent.id = f.id
             return kontrollpanelKomponent

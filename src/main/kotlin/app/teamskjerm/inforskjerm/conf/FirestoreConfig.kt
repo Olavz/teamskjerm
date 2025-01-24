@@ -1,4 +1,4 @@
-package app.teamskjerm.inforskjerm
+package app.teamskjerm.inforskjerm.conf
 
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.cloud.firestore.Firestore

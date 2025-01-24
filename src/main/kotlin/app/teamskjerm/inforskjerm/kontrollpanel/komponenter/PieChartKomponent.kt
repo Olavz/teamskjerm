@@ -1,15 +1,8 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
-class PieChartKomponent(
-    override var id: String = "",
-    override var komponentUUID: String = "",
-    override var navn: String = "",
-    override var data: String = "",
-    override var komponentType: String = "PieChartKomponent",
-    override var seMerInformasjon: String = "",
-    override var secret: String = "",
-    override var secretHashKey: String = "",
-) : KontrollpanelKomponent {
+class PieChartKomponent: KontrollpanelKomponent(
+    komponentType = "PieChartKomponent"
+) {
 
     override fun jsonSkjema(): String {
         return """
