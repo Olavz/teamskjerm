@@ -81,7 +81,7 @@ function AdministrerKontrollpanel() {
         }
     }
 
-    let infoskjerm = `/kontrollpanel/${kontrollpanelUUID}`
+    const infoskjerm = `/kontrollpanel/${kontrollpanelUUID}`
 
     return (
         <>

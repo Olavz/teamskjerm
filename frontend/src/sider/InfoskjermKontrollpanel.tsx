@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Link, useParams} from "react-router-dom";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import {KomponentKontrollpanel, KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
@@ -6,13 +6,14 @@ import {stompService} from "../WebSocketService.tsx";
 import PieChartKomponent from "../komponenter/kontrollpanel/PieChatKomponent.tsx";
 import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
-
+import Masonry from "masonry-layout";
 
 type KontrollpanelParams = {
     kontrollpanelUUID: string;
 };
 
 function InfoskjermKontrollpanel() {
+    const gridRef = useRef<HTMLDivElement | null>(null);
     const [data, setData] = useState<KontrollpanelKomponent[]>([]);
     const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
 
@@ -39,12 +40,20 @@ function InfoskjermKontrollpanel() {
             .then((data: KontrollpanelKomponent[]) => setData(data));
     }, []);
 
-    let adminside = `/administrer/kontrollpanel/${kontrollpanelUUID}`
+    useEffect(() => {
+        if (gridRef.current) {
+            setTimeout(() => {
+                new Masonry(gridRef.current as Element, {
+                    itemSelector: ".masonry-item",
+                    percentPosition: true,
+                    gutter: 0,
+                });
+            }, 1000);
+        }
+    }, []);
 
-    const pairs = [];
-    for (let i = 0; i < data.length; i += 3) {
-        pairs.push(data.slice(i, i + 3));
-    }
+    const adminside = `/administrer/kontrollpanel/${kontrollpanelUUID}`
+
 
     return (
         <>
@@ -52,17 +61,15 @@ function InfoskjermKontrollpanel() {
                 <HeaderKontrollpanel></HeaderKontrollpanel>
                 <Link to={adminside}>Admin</Link>
                 <div className="bittelittepadding">
-                    {pairs.map((pair, rowIndex) => (
-                        <div className="row" key={rowIndex}>
-                            {pair.map((item) => (
-                                <div className="col" key={item.komponentUUID}>
-                                    <KomponentKontrollpanel kontrollpanelKomponent={item}>
-                                        {utledKomponentType(item)}
-                                    </KomponentKontrollpanel>
-                                </div>
-                            ))}
-                        </div>
-                    ))}
+                    <div className="row masonry-grid" ref={gridRef}>
+                        {data.map((item) => (
+                            <div className="col-md-4 masonry-item g-3" key={item.komponentUUID}>
+                                <KomponentKontrollpanel kontrollpanelKomponent={item}>
+                                    {utledKomponentType(item)}
+                                </KomponentKontrollpanel>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </>
