@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import {NavLink, useParams} from "react-router-dom";
-import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import {RedigerTekstKomponent} from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import {RedigerVarselKomponent} from "../komponenter/kontrollpanel/VarselKomponent.tsx";
@@ -11,6 +10,7 @@ import {LeggTilKomponentButton} from "../komponenter/kontrollpanel/LeggTilKompon
 import {Button} from "react-bootstrap";
 import {teamskjermTokenCookie} from "../CookieHjelper.tsx";
 import {RedigerPieChartKomponent} from "../komponenter/kontrollpanel/PieChatKomponent.tsx";
+import NavbarInnlogget from "../komponenter/NavbarInnlogget.tsx";
 
 
 type KontrollpanelParams = {
@@ -86,9 +86,9 @@ function AdministrerKontrollpanel() {
     return (
         <>
             <div className="container">
-                <HeaderKontrollpanel></HeaderKontrollpanel>
+                <NavbarInnlogget/>
                 <LeggTilKomponentButton opprettKomponent={opprettKomponent}/> {' '}
-                <NavLink to={infoskjerm}><Button>Se inforskjerm</Button></NavLink>
+                <NavLink target="_blank" to={infoskjerm}><Button>Vis teamskjerm</Button></NavLink>
                 <br/>
                 <br/>
                 <div className="container">

@@ -1,21 +1,20 @@
 package app.teamskjerm.inforskjerm.sikkerhet
 
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 
 class JwtUserDetailsService(
-    private val userRepository: UserRepository
+    private val brukerRepository: BrukerRepository
 ) : UserDetailsService {
     override fun loadUserByUsername(username: String): UserDetails {
-        val user = userRepository.findByUsername(username)
+        val user = brukerRepository.finnBruker(username)
             ?: throw UsernameNotFoundException("User $username not found!")
 
-        return User.builder()
-            .username(user.name)
-            .password(user.password)
-            .roles(user.role.name)
-            .build()
+        return TeamskjermUserDetails(
+            user.id,
+            user.navn,
+            user.passord
+        )
     }
 }

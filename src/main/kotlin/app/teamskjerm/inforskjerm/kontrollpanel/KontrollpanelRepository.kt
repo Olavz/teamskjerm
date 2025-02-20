@@ -2,7 +2,6 @@ package app.teamskjerm.inforskjerm.kontrollpanel
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.cloud.firestore.Firestore
-import com.google.cloud.firestore.QuerySnapshot
 import org.springframework.stereotype.Repository
 
 private const val COLLECTION = "kontrollpanel"
@@ -13,17 +12,19 @@ class KontrollpanelRepository(
     val objectMapper: ObjectMapper
 ) {
 
-    fun alleKontrollpanel(): List<Kontrollpanel> {
-        val collectionRef = firestore.collection("kontrollpanel")
-        val querySnapshot: QuerySnapshot = collectionRef.get().get()
-
-        return querySnapshot.documents.mapNotNull { document ->
+    fun kontrollpanelForBruker(brukerId: String): List<Kontrollpanel> {
+        return firestore.collection("kontrollpanel")
+            .whereEqualTo("eierId", brukerId)
+            .get()
+            .get()
+            .documents.mapNotNull { document ->
             val data = document.data ?: return@mapNotNull null
 
             Kontrollpanel(
                 id = document.id,
                 kontrollpanelUUID = data["kontrollpanelUUID"] as String,
                 navn = data["navn"] as String,
+                eierId = data["eierId"] as String,
                 komponenter = data["komponenter"] as List<String>
             )
         }
@@ -42,6 +43,7 @@ class KontrollpanelRepository(
                     id = document.id,
                     kontrollpanelUUID = data["kontrollpanelUUID"] as String,
                     navn = data["navn"] as String,
+                    eierId = data["eierId"] as String,
                     komponenter = data["komponenter"] as List<String>
                 )
             }

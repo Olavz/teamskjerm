@@ -1,5 +1,5 @@
 import {useEffect, useRef, useState} from "react";
-import {Link, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
 import {KomponentKontrollpanel, KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import {stompService} from "../WebSocketService.tsx";
@@ -17,10 +17,6 @@ function InfoskjermKontrollpanel() {
     const [data, setData] = useState<KontrollpanelKomponent[]>([]);
     const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
 
-    if (!kontrollpanelUUID) {
-        return <p>Ingen ID spesifisert!</p>;
-    }
-
     useEffect(() => {
         // Opprett SockJS WebSocket-forbindelse
         const currentPort = window.location.port;
@@ -35,6 +31,9 @@ function InfoskjermKontrollpanel() {
     }, []);
 
     useEffect(() => {
+        if (!kontrollpanelUUID) {
+            return;
+        }
         fetch(`/api/ext/kontrollpanel/${kontrollpanelUUID}/komponenter`)
             .then((response) => response.json())
             .then((data: KontrollpanelKomponent[]) => setData(data));
@@ -52,14 +51,15 @@ function InfoskjermKontrollpanel() {
         }
     }, []);
 
-    const adminside = `/administrer/kontrollpanel/${kontrollpanelUUID}`
 
+    if (!kontrollpanelUUID) {
+        return <p>Ingen ID spesifisert!</p>;
+    }
 
     return (
         <>
             <div>
-                <HeaderKontrollpanel></HeaderKontrollpanel>
-                <Link to={adminside}>Admin</Link>
+                <HeaderKontrollpanel/>
                 <div className="bittelittepadding">
                     <div className="row masonry-grid" ref={gridRef}>
                         {data.map((item) => (

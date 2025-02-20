@@ -17,18 +17,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 class SecurityConfig {
     @Bean
-    fun userDetailsService(userRepository: UserRepository): UserDetailsService =
-        JwtUserDetailsService(userRepository)
+    fun userDetailsService(brukerRepository: BrukerRepository): UserDetailsService =
+        JwtUserDetailsService(brukerRepository)
 
     @Bean
     fun authenticationManager(config: AuthenticationConfiguration): AuthenticationManager =
         config.authenticationManager
 
     @Bean
-    fun authenticationProvider(userRepository: UserRepository): AuthenticationProvider =
+    fun authenticationProvider(brukerRepository: BrukerRepository): AuthenticationProvider =
         DaoAuthenticationProvider()
             .also {
-                it.setUserDetailsService(userDetailsService(userRepository))
+                it.setUserDetailsService(userDetailsService(brukerRepository))
                 it.setPasswordEncoder(encoder())
             }
 
@@ -43,6 +43,7 @@ class SecurityConfig {
             .authorizeHttpRequests {
                 it
                     .requestMatchers("/api/auth").permitAll()
+                    .requestMatchers("/api/register").permitAll()
                     .requestMatchers("/api/ext/**").permitAll()
                     .requestMatchers("/api/**").authenticated()
                     .anyRequest()

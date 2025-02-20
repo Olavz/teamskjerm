@@ -2,9 +2,11 @@ package app.teamskjerm.inforskjerm.kontrollpanel
 
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KomponentRepository
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KontrollpanelKomponent
+import app.teamskjerm.inforskjerm.sikkerhet.TeamskjermUserDetails
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,8 +24,10 @@ class KontrollpanelController(
 ) {
 
     @GetMapping("/kontrollpanel")
-    fun kontrollpanel(): ResponseEntity<List<Kontrollpanel>> {
-        return ResponseEntity.ok(kontrollpanelRepository.alleKontrollpanel())
+    fun kontrollpanel(
+        @AuthenticationPrincipal bruker: TeamskjermUserDetails
+    ): ResponseEntity<List<Kontrollpanel>> {
+        return ResponseEntity.ok(kontrollpanelRepository.kontrollpanelForBruker(bruker.id()))
     }
 
 

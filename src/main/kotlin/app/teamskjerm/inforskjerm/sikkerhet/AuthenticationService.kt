@@ -3,7 +3,6 @@ package app.teamskjerm.inforskjerm.sikkerhet
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 import java.util.Date
@@ -24,7 +23,7 @@ class AuthenticationService(
             )
         )
 
-        val user = userDetailsService.loadUserByUsername(authenticationRequest.username)
+        val user = userDetailsService.loadUserByUsername(authenticationRequest.username) as TeamskjermUserDetails
 
         val accessToken = createAccessToken(user)
         val refreshToken = createRefreshToken(user)
@@ -35,14 +34,16 @@ class AuthenticationService(
         )
     }
 
-    private fun createAccessToken(user: UserDetails): String {
+    private fun createAccessToken(user: TeamskjermUserDetails): String {
         return tokenService.generateToken(
+            userId = user.id(),
             subject = user.username,
             expiration = Date(System.currentTimeMillis() + accessTokenExpiration)
         )
     }
 
-    private fun createRefreshToken(user: UserDetails) = tokenService.generateToken(
+    private fun createRefreshToken(user: TeamskjermUserDetails) = tokenService.generateToken(
+        userId = user.id(),
         subject = user.username,
         expiration = Date(System.currentTimeMillis() + refreshTokenExpiration)
     )

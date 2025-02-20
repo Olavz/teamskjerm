@@ -5,3 +5,9 @@
 .bittelittepadding {
     padding: 10px;
 }
+
+.teamskjerm-header {
+    border-bottom: 1px solid #212121;
+    background: #f6f6f6;
+    padding: 10px;
+}

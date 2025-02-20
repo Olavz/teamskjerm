@@ -1,22 +1,15 @@
 import {Button, Container, Form} from "react-bootstrap";
-import {clearTeamskjermTokenCookie, setTeamskjermTokenCookie} from "../CookieHjelper.tsx";
 import {useState} from "react";
-import {NavLink, useNavigate} from "react-router-dom";
 
-type AccessTokenResponse = {
-    accessToken: string
-}
 
-function Logginnside() {
+function Registreringsside() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const navigate = useNavigate();
-
-    const handleLogginn = async (event: React.FormEvent) => {
+    const handleRegistrering = async (event: React.FormEvent) => {
         event.preventDefault();
         try {
-            const response = await fetch(`/api/auth`, {
+            await fetch(`/api/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,24 +19,16 @@ function Logginnside() {
                     password: password
                 }),
             });
-
-            if(response.ok) {
-                const token: AccessTokenResponse = await response.json()
-                setTeamskjermTokenCookie(token.accessToken)
-                navigate("/kontrollpanel")
-            }
-
         } catch (e) {
-            console.log(e)
-            clearTeamskjermTokenCookie()
+            alert(e)
         }
 
     }
 
     return (
         <Container className="mt-5" style={{maxWidth: "400px"}}>
-            <h2 className="mb-4">Logg inn</h2>
-            <Form onSubmit={handleLogginn}>
+            <h2 className="mb-4">Registrer</h2>
+            <Form onSubmit={handleRegistrering}>
                 <Form.Group controlId="username">
                     <Form.Label>Brukernavn</Form.Label>
                     <Form.Control
@@ -67,17 +52,12 @@ function Logginnside() {
                 </Form.Group>
 
                 <Button variant="primary" type="submit" className="mt-4">
-                    Logg inn
+                    Registrer
                 </Button>
-
-                <br/>
-                <br/>
-
-                <NavLink to="/registrer">Registrer bruker</NavLink>
             </Form>
         </Container>
     );
 
 }
 
-export default Logginnside
+export default Registreringsside

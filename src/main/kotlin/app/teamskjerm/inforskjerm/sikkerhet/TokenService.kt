@@ -18,9 +18,10 @@ class TokenService(
             return SecretKeySpec(keyBytes, 0, keyBytes.size, "HmacSHA256")
         }
 
-    fun generateToken(subject: String, expiration: Date, additionalClaims: Map<String, Any> = emptyMap()): String {
+    fun generateToken(userId: String, subject: String, expiration: Date, additionalClaims: Map<String, Any> = emptyMap()): String {
         return Jwts.builder()
             .setClaims(additionalClaims)
+            .claim("userId", userId)
             .setSubject(subject)
             .setIssuedAt(Date(System.currentTimeMillis()))
             .setExpiration(expiration)
