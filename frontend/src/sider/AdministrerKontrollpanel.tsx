@@ -11,6 +11,7 @@ import {Button} from "react-bootstrap";
 import {teamskjermTokenCookie} from "../CookieHjelper.tsx";
 import {RedigerPieChartKomponent} from "../komponenter/kontrollpanel/PieChatKomponent.tsx";
 import NavbarInnlogget from "../komponenter/NavbarInnlogget.tsx";
+import {RedigerBarChartKomponent} from "../komponenter/kontrollpanel/BarChatKomponent.tsx";
 
 
 type KontrollpanelParams = {
@@ -117,6 +118,15 @@ function AdministrerKontrollpanel() {
                                     <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
                                                                            kontrollpanelKomponent={item}>
                                         <RedigerPieChartKomponent {...item} />
+                                    </AdministrerBaseKomponentKontrollpanel>
+                                </div>
+                            )
+                        } else if (item.komponentType == "BarChartKomponent") {
+                            return (
+                                <div className="row" key={item.komponentUUID}>
+                                    <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                           kontrollpanelKomponent={item}>
+                                        <RedigerBarChartKomponent {...item} />
                                     </AdministrerBaseKomponentKontrollpanel>
                                 </div>
                             )

@@ -7,6 +7,7 @@ import PieChartKomponent from "../komponenter/kontrollpanel/PieChatKomponent.tsx
 import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 import Masonry from "masonry-layout";
+import BarChartKomponent from "../komponenter/kontrollpanel/BarChatKomponent.tsx";
 
 type KontrollpanelParams = {
     kontrollpanelUUID: string;
@@ -89,6 +90,10 @@ const utledKomponentType = (item: KontrollpanelKomponent) => {
         case 'PieChartKomponent':
             return (
                 <PieChartKomponent {...item} />
+            )
+        case 'BarChartKomponent':
+            return (
+                <BarChartKomponent {...item} />
             )
         default:
             throw new Error("Støtter ikke " + item.komponentType)
