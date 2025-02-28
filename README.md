@@ -1,5 +1,3 @@
+# Teamskjerm
 
-Typisk docker kommandoer for bygging og pushing lokalt
-docker build -t europe-west4-docker.pkg.dev/monitor-404/cr/monitorapp:latest .
-docker push europe-west4-docker.pkg.dev/monitor-404/cr/monitorapp:latest
-
+Ett team skal følge med på mye, men hva er viktig? Visjonen er å ha enn skjerm som viser teamhelse og hvor man er på vei.
