@@ -13,6 +13,13 @@ import {RedigerPieChartKomponent} from "../komponenter/kontrollpanel/PieChatKomp
 import NavbarInnlogget from "../komponenter/NavbarInnlogget.tsx";
 import {RedigerBarChartKomponent} from "../komponenter/kontrollpanel/BarChatKomponent.tsx";
 
+export interface NyttKontrollpanel {
+    id?: string;
+    eierId?: string;
+    navn: string;
+    kontrollpanelUUID: string;
+    komponenter?: string[];
+}
 
 type KontrollpanelParams = {
     kontrollpanelUUID: string;

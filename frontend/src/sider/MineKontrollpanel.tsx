@@ -1,8 +1,9 @@
 import {useEffect, useState} from "react";
 import {teamskjermTokenCookie} from "../CookieHjelper.tsx";
-import {Button} from "react-bootstrap";
 import {NavLink, useNavigate} from "react-router-dom";
 import NavbarInnlogget from "../komponenter/NavbarInnlogget.tsx";
+import {LeggTilKontrollpanelButton} from "../komponenter/kontrollpanel/LeggTilKontrollpanelButton.tsx";
+import {NyttKontrollpanel} from "./AdministrerKontrollpanel.tsx";
 
 interface Kontrollpanel {
     kontrollpanelUUID: string;
@@ -12,7 +13,9 @@ interface Kontrollpanel {
 
 function MineKontrollpanel() {
 
+
     const [kontrollpaneler, setKontrollpaneler] = useState<Kontrollpanel[]>([]);
+    const [kontrollpanelOpprettet, setKontrollpanelOpprettet] = useState<number>(0);
 
     const navigate = useNavigate();
 
@@ -31,7 +34,29 @@ function MineKontrollpanel() {
                 return response.json()
             })
             .then((data: Kontrollpanel[]) => setKontrollpaneler(data));
-    }, []);
+    }, [kontrollpanelOpprettet]);
+
+    const opprettKontrollpanel = async (kontrollpanel: NyttKontrollpanel) => {
+
+        try {
+            const response = await fetch(`/api/kontrollpanel`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${teamskjermTokenCookie()}`
+                },
+                body: JSON.stringify(kontrollpanel),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send data');
+            }
+            await response;
+            setKontrollpanelOpprettet(kontrollpanelOpprettet + 1)
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
 
     return (
         <>
@@ -40,7 +65,7 @@ function MineKontrollpanel() {
                 <h1>Mine kontrollpanel</h1>
                 <br/>
                 <div className="container">
-                    <Button>Nytt kontrollpanel</Button>
+                    <LeggTilKontrollpanelButton opprettKontrollpanel={opprettKontrollpanel}/>
                     {kontrollpaneler.map((item, index) => {
                         return (
                             <div className="row" key={index}>

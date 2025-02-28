@@ -43,6 +43,25 @@ class KontrollpanelController(
         )
     }
 
+    @PostMapping("/kontrollpanel")
+    fun opprettKontrollpanel(
+        @AuthenticationPrincipal bruker: TeamskjermUserDetails,
+        @RequestBody komponent: JsonNode
+    ): ResponseEntity<Kontrollpanel> {
+
+        val nyttKontrollpanel = objectMapper.convertValue(komponent, Kontrollpanel::class.java)
+
+        nyttKontrollpanel.eierId = bruker.id()
+
+        val lagretKomponent = kontrollpanelRepository.lagre(
+            nyttKontrollpanel
+        )
+
+        return ResponseEntity.ok(
+            lagretKomponent
+        )
+    }
+
     @PostMapping("/kontrollpanel/{kontrollpanelUUID}/komponent")
     fun opprettKomponent(
         @PathVariable kontrollpanelUUID: String,
