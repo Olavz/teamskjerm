@@ -2,6 +2,7 @@ package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
 import app.teamskjerm.inforskjerm.sikkerhet.KomponentSecretHashkeyService
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.cloud.Timestamp
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,7 +21,8 @@ import java.time.LocalDateTime
 class EksternKomponentController(
     val simpMessagingTemplate: SimpMessagingTemplate,
     val komponentRepository: KomponentRepository,
-    val komponentSecretHashkeyService: KomponentSecretHashkeyService
+    val komponentSecretHashkeyService: KomponentSecretHashkeyService,
+    val objectMapper: ObjectMapper
 ) {
 
     data class KomponenttDataResponse(
@@ -50,13 +52,20 @@ class EksternKomponentController(
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(KomponenttDataResponse("Ugyldig nøkkel"))
         }
 
-        simpMessagingTemplate.convertAndSend("/komponent/${komponentUUID}", payload)
-
         val validerSkjema = komponent.validerSkjema(payload.toString())
         if (!validerSkjema.harFeil) {
-            komponent.data = payload.toString()
+
+            if(komponent.hukommelse()) {
+                komponent.data = komponent.flettKomponentdataMedHukommelse(payload, objectMapper.readTree(komponent.data)).toString()
+            } else {
+                komponent.data = payload.toString()
+            }
+
             komponent.sistOppdatert = nå()
             komponentRepository.lagre(komponent)
+
+            simpMessagingTemplate.convertAndSend("/komponent/${komponentUUID}", komponent.data)
+
             return ResponseEntity.ok(
                 KomponenttDataResponse(
                     "OK"

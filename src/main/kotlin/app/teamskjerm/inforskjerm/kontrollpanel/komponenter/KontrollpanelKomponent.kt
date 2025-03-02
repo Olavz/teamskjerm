@@ -3,6 +3,7 @@ package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.cloud.Timestamp
 import com.networknt.schema.JsonSchema
@@ -21,7 +22,8 @@ data class Skjemavalidering(val harFeil: Boolean, val skjemafeil: List<String>)
         JsonSubTypes.Type(value = TekstKomponent::class, name = "TekstKomponent"),
         JsonSubTypes.Type(value = VarselKomponent::class, name = "VarselKomponent"),
         JsonSubTypes.Type(value = PieChartKomponent::class, name = "PieChartKomponent"),
-        JsonSubTypes.Type(value = BarChartKomponent::class, name = "BarChartKomponent")
+        JsonSubTypes.Type(value = BarChartKomponent::class, name = "BarChartKomponent"),
+        JsonSubTypes.Type(value = GrafanaKomponent::class, name = "GrafanaKomponent")
     ]
 )
 abstract class KontrollpanelKomponent(
@@ -39,6 +41,12 @@ abstract class KontrollpanelKomponent(
 
     @JsonProperty(value = "jsonSkjema", required = true)
     abstract fun jsonSkjema(): String
+
+    open fun hukommelse(): Boolean = false
+
+    open fun flettKomponentdataMedHukommelse(payload: JsonNode, eksisterendeKomponentData: JsonNode): JsonNode {
+        return payload
+    }
 
     fun validerSkjema(dataJson: String): Skjemavalidering {
         val schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)

@@ -12,6 +12,7 @@ import {teamskjermTokenCookie} from "../CookieHjelper.tsx";
 import {RedigerPieChartKomponent} from "../komponenter/kontrollpanel/PieChatKomponent.tsx";
 import NavbarInnlogget from "../komponenter/NavbarInnlogget.tsx";
 import {RedigerBarChartKomponent} from "../komponenter/kontrollpanel/BarChatKomponent.tsx";
+import {RedigerGrafanaKomponent} from "../komponenter/kontrollpanel/GrafanaKomponent.tsx";
 
 export interface NyttKontrollpanel {
     id?: string;
@@ -134,6 +135,15 @@ function AdministrerKontrollpanel() {
                                     <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
                                                                            kontrollpanelKomponent={item}>
                                         <RedigerBarChartKomponent {...item} />
+                                    </AdministrerBaseKomponentKontrollpanel>
+                                </div>
+                            )
+                        } else if (item.komponentType == "GrafanaKomponent") {
+                            return (
+                                <div className="row" key={item.komponentUUID}>
+                                    <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                           kontrollpanelKomponent={item}>
+                                        <RedigerGrafanaKomponent {...item} />
                                     </AdministrerBaseKomponentKontrollpanel>
                                 </div>
                             )

@@ -8,6 +8,7 @@ import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
 import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 import Masonry from "masonry-layout";
 import BarChartKomponent from "../komponenter/kontrollpanel/BarChatKomponent.tsx";
+import GrafanaKomponent from "../komponenter/kontrollpanel/GrafanaKomponent.tsx";
 
 type KontrollpanelParams = {
     kontrollpanelUUID: string;
@@ -94,6 +95,10 @@ const utledKomponentType = (item: KontrollpanelKomponent) => {
         case 'BarChartKomponent':
             return (
                 <BarChartKomponent {...item} />
+            )
+        case 'GrafanaKomponent':
+            return (
+                <GrafanaKomponent {...item} />
             )
         default:
             throw new Error("Støtter ikke " + item.komponentType)
