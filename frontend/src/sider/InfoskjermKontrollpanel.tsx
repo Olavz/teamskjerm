@@ -9,7 +9,6 @@ import VarselKomponent from "../komponenter/kontrollpanel/VarselKomponent.tsx";
 import Masonry from "masonry-layout";
 import BarChartKomponent from "../komponenter/kontrollpanel/BarChatKomponent.tsx";
 import GrafanaKomponent from "../komponenter/kontrollpanel/GrafanaKomponent.tsx";
-import SpiderOverlay from "./SpiderOverlay.tsx";
 
 type KontrollpanelParams = {
     kontrollpanelUUID: string;
@@ -63,7 +62,6 @@ function InfoskjermKontrollpanel() {
         <>
             <div>
                 <HeaderKontrollpanel/>
-                <SpiderOverlay />
                 <div className="bittelittepadding">
                     <div className="row masonry-grid" ref={gridRef}>
                         {data.map((item) => (
