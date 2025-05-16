@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {stompService} from "../../WebSocketService.tsx";
 import {Button} from "react-bootstrap";
 import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
+import React from "react";
 
 type MeldingData = {
     tekst: string;
@@ -37,9 +38,14 @@ const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}:
         };*/
 
     return (
-        <>
-            {message && <h1>{message}</h1>}
-        </>
+        <div className="h1">
+            {message && message.split('\n').map((line, index) => (
+                <React.Fragment key={index}>
+                    {line}
+                    <br />
+                </React.Fragment>
+            ))}
+        </div>
     )
 
 }
