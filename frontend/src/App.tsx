@@ -7,7 +7,7 @@ import InfoskjermKontrollpanel from "./sider/InfoskjermKontrollpanel.tsx";
 
 import {StrictMode} from 'react'
 import {createRoot} from 'react-dom/client'
-import AdministrerKontrollpanel from "./sider/AdministrerKontrollpanel.tsx";
+import AdministrerKontrollpanel from "./sider/administrerkontrollpanel/AdministrerKontrollpanel.tsx";
 import Logginnside from "./sider/Logginn.tsx";
 import Registreringsside from "./sider/Registrer.tsx";
 import MineKontrollpanel from "./sider/MineKontrollpanel.tsx";

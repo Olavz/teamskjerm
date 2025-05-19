@@ -25,7 +25,8 @@ class KontrollpanelRepository(
                 kontrollpanelUUID = data["kontrollpanelUUID"] as String,
                 navn = data["navn"] as String,
                 eierId = data["eierId"] as String,
-                komponenter = data["komponenter"] as List<String>
+                komponenter = data["komponenter"] as List<String>,
+                komponentPlassering = data["komponentPlassering"] as? String ?: ""
             )
         }
     }
@@ -38,14 +39,9 @@ class KontrollpanelRepository(
             .documents
             .mapNotNull { document ->
                 val data = document.data ?: return@mapNotNull null
-
-                Kontrollpanel(
-                    id = document.id,
-                    kontrollpanelUUID = data["kontrollpanelUUID"] as String,
-                    navn = data["navn"] as String,
-                    eierId = data["eierId"] as String,
-                    komponenter = data["komponenter"] as List<String>
-                )
+                objectMapper.convertValue(data, Kontrollpanel::class.java).apply {
+                    id = document.id
+                }
             }
             .single()
     }

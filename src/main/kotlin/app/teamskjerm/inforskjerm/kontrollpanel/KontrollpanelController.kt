@@ -43,6 +43,56 @@ class KontrollpanelController(
         )
     }
 
+    @GetMapping("/kontrollpanel/{kontrollpanelUUID}/komponentPlassering")
+    fun kontrollpanelKomponentPlassering(
+        @PathVariable kontrollpanelUUID: String
+    ): ResponseEntity<String> {
+        return ResponseEntity.ok(
+            kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID).komponentPlassering
+        )
+    }
+
+    @GetMapping("/kontrollpanel/{kontrollpanelUUID}/komponenterUtenPlassering")
+    fun komponenterUtenPlassering(
+        @PathVariable kontrollpanelUUID: String
+    ): ResponseEntity<List<String>> {
+        val kontrollpanel = kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
+
+        if (kontrollpanel.komponentPlassering.isEmpty()) {
+            val alleKomponenter = komponentRepository.finnKomponenterMedId(kontrollpanel.komponenter)
+            return ResponseEntity.ok(alleKomponenter?.map { it.komponentUUID } ?: emptyList())
+        }
+
+        val (venstre, midten, høyre) = objectMapper.readValue(
+            kontrollpanel.komponentPlassering,
+            KomponentPlassering::class.java
+        )
+
+        listOf(venstre, midten, høyre)
+            .flatten()
+            .map { it.komponentUUID }
+            .let { plassertKomponenter ->
+                komponentRepository.finnKomponenterMedId(kontrollpanel.komponenter)?.filterNot { plassertKomponenter.contains(it.komponentUUID) }
+            }
+            ?.map { it.komponentUUID }
+            .let {
+                return ResponseEntity.ok(it)
+            }
+    }
+
+    @PostMapping("/kontrollpanel/{kontrollpanelUUID}/komponentPlassering")
+    fun oppdaterKontrollpanelKomponentPlassering(
+        @PathVariable kontrollpanelUUID: String,
+        @RequestBody kontrollpanelKomponentPlassering: String
+    ): ResponseEntity<String> {
+        val kontrollpanel = kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
+        kontrollpanel.komponentPlassering = kontrollpanelKomponentPlassering
+        kontrollpanelRepository.lagre(kontrollpanel)
+        return ResponseEntity.ok(
+            ""
+        )
+    }
+
     @PostMapping("/kontrollpanel")
     fun opprettKontrollpanel(
         @AuthenticationPrincipal bruker: TeamskjermUserDetails,
@@ -52,6 +102,13 @@ class KontrollpanelController(
         val nyttKontrollpanel = objectMapper.convertValue(komponent, Kontrollpanel::class.java)
 
         nyttKontrollpanel.eierId = bruker.id()
+        nyttKontrollpanel.komponentPlassering = """
+            {
+              "venstre": [],
+              "midten": [],
+              "høyre": []
+            }
+        """.trimIndent()
 
         val lagretKomponent = kontrollpanelRepository.lagre(
             nyttKontrollpanel
@@ -102,6 +159,17 @@ class KontrollpanelController(
         oppdatertKomponenter.remove(slettetKomponentId)
 
         kontrollpanel.komponenter = oppdatertKomponenter
+
+        val komponentPlassering =
+            objectMapper.readValue(kontrollpanel.komponentPlassering, KomponentPlassering::class.java)
+
+        KomponentPlassering(
+            venstre = komponentPlassering.venstre.filter { it.komponentUUID != komponentUUID },
+            midten = komponentPlassering.midten.filter { it.komponentUUID != komponentUUID },
+            høyre = komponentPlassering.høyre.filter { it.komponentUUID != komponentUUID }
+        ).let {
+            kontrollpanel.komponentPlassering = objectMapper.writeValueAsString(it)
+        }
 
         kontrollpanelRepository.lagre(kontrollpanel)
 

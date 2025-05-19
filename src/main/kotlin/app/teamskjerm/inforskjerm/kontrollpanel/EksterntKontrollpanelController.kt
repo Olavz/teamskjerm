@@ -30,4 +30,17 @@ class EksterntKontrollpanelController(
             )
         )
     }
+
+    @GetMapping("/kontrollpanel/{kontrollpanelUUID}/komponentPlassering")
+    fun kontrollpanelKomponentPlassering(
+        @PathVariable kontrollpanelUUID: String
+    ): ResponseEntity<KomponentPlassering> {
+
+        return ResponseEntity.ok(
+            objectMapper.readValue(
+                kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID).komponentPlassering,
+                KomponentPlassering::class.java
+            )
+        )
+    }
 }

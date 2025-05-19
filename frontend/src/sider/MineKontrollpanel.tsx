@@ -3,7 +3,7 @@ import {teamskjermTokenCookie} from "../CookieHjelper.tsx";
 import {NavLink, useNavigate} from "react-router-dom";
 import NavbarInnlogget from "../komponenter/NavbarInnlogget.tsx";
 import {LeggTilKontrollpanelButton} from "../komponenter/kontrollpanel/LeggTilKontrollpanelButton.tsx";
-import {NyttKontrollpanel} from "./AdministrerKontrollpanel.tsx";
+import {NyttKontrollpanel} from "./administrerkontrollpanel/AdministrerKontrollpanel.tsx";
 
 interface Kontrollpanel {
     kontrollpanelUUID: string;

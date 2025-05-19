@@ -1,7 +1,7 @@
 import {Button, Modal} from "react-bootstrap";
 import {useState} from "react";
 import {v4 as uuidv4} from 'uuid';
-import {NyttKontrollpanel} from "../../sider/AdministrerKontrollpanel.tsx";
+import {NyttKontrollpanel} from "../../sider/administrerkontrollpanel/AdministrerKontrollpanel.tsx";
 
 
 type LeggTilKontrollpanelProps = {

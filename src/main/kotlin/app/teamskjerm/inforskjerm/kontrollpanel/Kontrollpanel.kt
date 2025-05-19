@@ -5,5 +5,6 @@ data class Kontrollpanel(
     val kontrollpanelUUID: String = "",
     var navn: String = "",
     var eierId: String = "",
-    var komponenter: List<String> = mutableListOf<String>()
+    var komponenter: List<String> = mutableListOf(),
+    var komponentPlassering: String = ""
 )

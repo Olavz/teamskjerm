@@ -11,3 +11,16 @@
     background: #f6f6f6;
     padding: 10px;
 }
+
+.draggableKomponentKortFlyttes {
+    cursor: grab;
+}
+
+.draggableKomponentKort {
+    cursor: default !important;
+}
+
+.komponentkort {
+    padding-left: 1rem;
+    padding-bottom: 1rem;
+}
