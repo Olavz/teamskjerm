@@ -6,6 +6,7 @@ import app.teamskjerm.inforskjerm.sikkerhet.TeamskjermUserDetails
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.ResponseEntity
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 class KontrollpanelController(
     val kontrollpanelRepository: KontrollpanelRepository,
     val komponentRepository: KomponentRepository,
+    val simpMessagingTemplate: SimpMessagingTemplate,
     private val objectMapper: ObjectMapper
 ) {
 
@@ -88,6 +90,12 @@ class KontrollpanelController(
         val kontrollpanel = kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
         kontrollpanel.komponentPlassering = kontrollpanelKomponentPlassering
         kontrollpanelRepository.lagre(kontrollpanel)
+
+        simpMessagingTemplate.convertAndSend("/kontrollpanel/${kontrollpanelUUID}", """
+            {
+              "oppdater": true
+            }
+        """.trimIndent())
         return ResponseEntity.ok(
             ""
         )

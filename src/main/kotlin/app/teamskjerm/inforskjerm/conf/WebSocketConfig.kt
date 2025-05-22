@@ -11,7 +11,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 
     override fun configureMessageBroker(config: org.springframework.messaging.simp.config.MessageBrokerRegistry) {
         // Aktiver en enkel meldingsmegler med prefikset "/topic"
-        config.enableSimpleBroker("/komponent", "/ping")
+        config.enableSimpleBroker("/komponent", "/ping", "/kontrollpanel")
 
         // Sti for meldinger fra klienten til serveren
         config.setApplicationDestinationPrefixes("/app")

@@ -25,6 +25,10 @@ function InfoskjermKontrollpanel() {
     const [komponenterMidten, setKomponenterMidten] = useState<KomponentRekkefølge[]>([]);
     const [komponenterHøyre, setKomponenterHøyre] = useState<KomponentRekkefølge[]>([]);
 
+    const handleEvent = (): void => {
+        location.reload() // TODO: Altså, ja, gjør jobben er konklusjon. #react4life
+    };
+
     useEffect(() => {
         // Opprett SockJS WebSocket-forbindelse
         const currentPort = window.location.port;
@@ -32,6 +36,9 @@ function InfoskjermKontrollpanel() {
         const baseUrl = `${window.location.protocol}//${window.location.hostname}:${backendPort}`;
 
         stompService.connect(`${baseUrl}/ws`);
+
+        const topic = `/kontrollpanel/${kontrollpanelUUID}`;
+        stompService.subscribe(topic, handleEvent);
 
         return () => {
             stompService.client?.deactivate();
