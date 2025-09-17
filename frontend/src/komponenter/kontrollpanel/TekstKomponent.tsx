@@ -40,7 +40,9 @@ const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}:
 
     return (
         <>
-            <div className="h1" dangerouslySetInnerHTML={{ __html: message }} />
+            <div className="h1">
+                {message}
+            </div>
         </>
     )
 
