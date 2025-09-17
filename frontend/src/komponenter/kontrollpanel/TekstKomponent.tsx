@@ -3,7 +3,6 @@ import {stompService} from "../../WebSocketService.tsx";
 import {Button} from "react-bootstrap";
 import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 import React from "react";
-import {marked} from "marked";
 
 type MeldingData = {
     tekst: string;
@@ -15,7 +14,7 @@ const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}:
 
     const handleEvent = (message: MeldingData): void => {
         try {
-            setMessage(marked.parse(message.tekst) as string);
+            setMessage(message.tekst);
         } catch (error) {
             console.error('Failed to parse message body:', message, error);
         }
@@ -23,7 +22,7 @@ const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}:
 
     useEffect(() => {
         const parsedata = JSON.parse(data) as MeldingData
-        setMessage(marked.parse(parsedata.tekst) as string);
+        setMessage(parsedata.tekst);
         const topic = `/komponent/${komponentUUID}`;
         const subscription = stompService.subscribe<MeldingData>(topic, handleEvent);
 
@@ -41,7 +40,12 @@ const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}:
     return (
         <>
             <div className="h1">
-                {message}
+                {message && message.split('\n').map((line, index) => (
+                    <React.Fragment key={index}>
+                        {line}
+                        <br />
+                    </React.Fragment>
+                ))}
             </div>
         </>
     )
