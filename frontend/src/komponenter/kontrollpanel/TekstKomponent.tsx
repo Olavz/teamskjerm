@@ -3,6 +3,7 @@ import {stompService} from "../../WebSocketService.tsx";
 import {Button} from "react-bootstrap";
 import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 import React from "react";
+import {marked} from "marked";
 
 type MeldingData = {
     tekst: string;
@@ -14,15 +15,15 @@ const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}:
 
     const handleEvent = (message: MeldingData): void => {
         try {
-            setMessage(message.tekst);
+            setMessage(marked.parse(message.tekst) as string);
         } catch (error) {
             console.error('Failed to parse message body:', message, error);
         }
     };
 
     useEffect(() => {
-        let parsedata = JSON.parse(data) as MeldingData
-        setMessage(parsedata.tekst)
+        const parsedata = JSON.parse(data) as MeldingData
+        setMessage(marked.parse(parsedata.tekst) as string);
         const topic = `/komponent/${komponentUUID}`;
         const subscription = stompService.subscribe<MeldingData>(topic, handleEvent);
 
@@ -38,14 +39,9 @@ const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}:
         };*/
 
     return (
-        <div className="h1">
-            {message && message.split('\n').map((line, index) => (
-                <React.Fragment key={index}>
-                    {line}
-                    <br />
-                </React.Fragment>
-            ))}
-        </div>
+        <>
+            <div className="h1" dangerouslySetInnerHTML={{ __html: message }} />
+        </>
     )
 
 }
@@ -54,7 +50,7 @@ export const RedigerTekstKomponent: React.FC<KontrollpanelKomponent> = ({data, k
     const [inputValue, setInputValue] = useState<string>('');
 
     useEffect(() => {
-        let dataleser = JSON.parse(data) as MeldingData
+        const dataleser = JSON.parse(data) as MeldingData
         setInputValue(dataleser.tekst ?? '');
     }, [data]);
 
