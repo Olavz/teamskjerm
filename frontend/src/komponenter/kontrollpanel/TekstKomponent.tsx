@@ -3,6 +3,7 @@ import {stompService} from "../../WebSocketService.tsx";
 import {Button} from "react-bootstrap";
 import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 import React from "react";
+import {MarkdownView} from "../MarkdownView.tsx";
 
 type MeldingData = {
     tekst: string;
@@ -40,12 +41,7 @@ const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}:
     return (
         <>
             <div className="h1">
-                {message && message.split('\n').map((line, index) => (
-                    <React.Fragment key={index}>
-                        {line}
-                        <br />
-                    </React.Fragment>
-                ))}
+                <MarkdownView markdown={message}></MarkdownView>
             </div>
         </>
     )
