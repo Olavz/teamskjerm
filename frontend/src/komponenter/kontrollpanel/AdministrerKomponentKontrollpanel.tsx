@@ -17,6 +17,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
 
     const [inpSeMerInformasjon, setInpSeMerInformasjon] = useState<string>('')
     const [inpNavn, setInpNavn] = useState<string>('')
+    const [utdatertKomponentEtterMinutter, setUtdatertKomponentEtterMinutter] = useState(0)
 
 
     const oppdaterKomponent = async () => {
@@ -29,7 +30,8 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                 },
                 body: JSON.stringify({
                     navn: inpNavn,
-                    seMerInformasjon: inpSeMerInformasjon
+                    seMerInformasjon: inpSeMerInformasjon,
+                    utdatertKomponentEtterMinutter: utdatertKomponentEtterMinutter
                 }),
             });
 
@@ -45,6 +47,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
     useEffect(() => {
         setInpNavn(kontrollpanelKomponent.navn)
         setInpSeMerInformasjon(kontrollpanelKomponent.seMerInformasjon ?? "")
+        setUtdatertKomponentEtterMinutter(kontrollpanelKomponent.utdatertKomponentEtterMinutter ?? 0)
     }, []);
 
     const getBaseUrl = () => {
@@ -56,7 +59,10 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
         <div className="col" key={kontrollpanelKomponent.komponentUUID}>
             <div className="card">
                 <div className="card-body">
-                    KomponentType: <Badge>{kontrollpanelKomponent.komponentType}</Badge>
+
+                    <FormGroup>
+                        <FormControl type="text" disabled={true} value={kontrollpanelKomponent.komponentType}></FormControl>
+                    </FormGroup>
 
                     <FormGroup>
                         <FormLabel>
@@ -66,10 +72,6 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                                      value={inpNavn}></FormControl>
                     </FormGroup>
 
-                    <KomponentKontrollpanel kontrollpanelKomponent={kontrollpanelKomponent}>
-                        {children}
-                    </KomponentKontrollpanel>
-
                     <FormGroup>
                         <FormLabel>
                             Se mer informasjon lenke
@@ -78,11 +80,33 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                                      placeholder="http://..." value={inpSeMerInformasjon}></FormControl>
                     </FormGroup>
 
+                    <FormGroup>
+                        <FormLabel>
+                            Sett komponent utdatert etter minutter uten oppdatering (0 for deaktivering)
+                        </FormLabel>
+                        <FormControl onChange={(e) => setUtdatertKomponentEtterMinutter(Number.parseInt(e.target.value))} type="text"
+                                     placeholder="0" value={utdatertKomponentEtterMinutter}></FormControl>
+                    </FormGroup>
+
                     <hr/>
 
                     <Button onClick={() => slettKomponent(kontrollpanelKomponent.komponentUUID)}
                             variant="danger">Slett</Button> {' '}
-                    <Button onClick={oppdaterKomponent}>Oppdater</Button>
+                    <Button onClick={oppdaterKomponent}>Lagre</Button>
+
+                    <hr/>
+
+                    <Accordion defaultActiveKey={null}>
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>Data</Accordion.Header>
+                            <Accordion.Body>
+                                <KomponentKontrollpanel kontrollpanelKomponent={kontrollpanelKomponent}>
+                                    {children}
+                                </KomponentKontrollpanel>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
+
 
                     <hr/>
 

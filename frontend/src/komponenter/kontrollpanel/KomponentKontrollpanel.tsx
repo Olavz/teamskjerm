@@ -12,7 +12,7 @@ export interface KontrollpanelKomponent {
     secretHashKey?: string;
     jsonSkjema: string;
     sistOppdatert?: string;
-    varsleUtenOppdateringerEtterMinutter?: number;
+    utdatertKomponentEtterMinutter?: number;
 }
 
 type BaseKomponentKontrollpanelProps = {
@@ -58,7 +58,7 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
     }, []);
 
     useEffect(() => {
-        const varselEtterMinutter = kontrollpanelKomponent.varsleUtenOppdateringerEtterMinutter ?? 0;
+        const varselEtterMinutter = kontrollpanelKomponent.utdatertKomponentEtterMinutter ?? 0;
 
         function evaluerOmKomponentBetraktesSomUtdatert() {
             if (varselEtterMinutter > 0 && sistOppdatert) {
@@ -83,7 +83,7 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
                 clearInterval(intervalId);
             }
         };
-    }, [kontrollpanelKomponent.varsleUtenOppdateringerEtterMinutter, sistOppdatert]);
+    }, [kontrollpanelKomponent.utdatertKomponentEtterMinutter, sistOppdatert]);
 
     return (
         <div className={`card ${sistOppdatertVarsel ? " bg-warning" : ""}`}>

@@ -70,8 +70,18 @@ class KomponentController(
         jsonNode.fields().forEach { (key, value) ->
             properties[key]?.javaField?.let { field ->
                 field.isAccessible = true
-                println("Updating field: $key with value: ${value.asText()}") // Feilsøk her
-                field.set(component, value.asText())
+                val targetType = field.type
+                val convertedValue = when (targetType) {
+                    Int::class.java, java.lang.Integer::class.java -> value.asInt()
+                    Long::class.java, java.lang.Long::class.java -> value.asLong()
+                    Double::class.java, java.lang.Double::class.java -> value.asDouble()
+                    Float::class.java, java.lang.Float::class.java -> value.floatValue()
+                    Number::class.java, java.lang.Number::class.java -> value.numberValue()
+                    Boolean::class.java, java.lang.Boolean::class.java -> value.asBoolean()
+                    else -> value.asText()
+                }
+                println("Updating field: $key with value: $convertedValue") // Feilsøk her
+                field.set(component, convertedValue)
             }
         }
         return component
