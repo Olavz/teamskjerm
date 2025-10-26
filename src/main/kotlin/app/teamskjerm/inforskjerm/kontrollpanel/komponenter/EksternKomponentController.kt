@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import java.time.Instant
-import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 
 @RestController
@@ -65,6 +65,10 @@ class EksternKomponentController(
             komponentRepository.lagre(komponent)
 
             simpMessagingTemplate.convertAndSend("/komponent/${komponentUUID}/data", komponent.data)
+            simpMessagingTemplate.convertAndSend(
+                "/komponent/${komponentUUID}/sistOppdatert",
+                objectMapper.createObjectNode().put("timestamp", komponent.sistOppdatert.toString())
+            )
 
             return ResponseEntity.ok(
                 KomponenttDataResponse(
@@ -81,8 +85,8 @@ class EksternKomponentController(
     }
 
     fun nå(): Timestamp {
-        val date: LocalDateTime = LocalDateTime.now()
-        val instant: Instant = date.atOffset(java.time.ZoneOffset.UTC).toInstant()
+        val zoned = ZonedDateTime.now(ZoneId.of("Europe/Oslo"))
+        val instant = zoned.toInstant()
         return Timestamp.ofTimeSecondsAndNanos(instant.epochSecond, instant.nano)
     }
 }

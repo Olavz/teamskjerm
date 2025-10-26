@@ -36,6 +36,7 @@ abstract class KontrollpanelKomponent(
     var secret: String? = null,
     var secretHashKey: String? = null,
     var sistOppdatert: Timestamp? = null,
+    var varsleUtenOppdateringerEtterMinutter: Number? = null,
 ) {
 
 
