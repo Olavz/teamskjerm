@@ -64,7 +64,7 @@ class EksternKomponentController(
             komponent.sistOppdatert = nå()
             komponentRepository.lagre(komponent)
 
-            simpMessagingTemplate.convertAndSend("/komponent/${komponentUUID}", komponent.data)
+            simpMessagingTemplate.convertAndSend("/komponent/${komponentUUID}/data", komponent.data)
 
             return ResponseEntity.ok(
                 KomponenttDataResponse(

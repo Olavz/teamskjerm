@@ -24,7 +24,7 @@ const TekstKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}:
     useEffect(() => {
         const parsedata = JSON.parse(data) as MeldingData
         setMessage(parsedata.tekst);
-        const topic = `/komponent/${komponentUUID}`;
+        const topic = `/komponent/${komponentUUID}/data`;
         const subscription = stompService.subscribe<MeldingData>(topic, handleEvent);
 
         return () => {

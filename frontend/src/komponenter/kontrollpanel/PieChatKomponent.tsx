@@ -26,7 +26,7 @@ const PieChartKomponent: React.FC<KontrollpanelKomponent> = ({komponentUUID, dat
     useEffect(() => {
         let parsedata = JSON.parse(data) as PieChart
         setChartdata(parsedata.data)
-        const topic = `/komponent/${komponentUUID}`;
+        const topic = `/komponent/${komponentUUID}/data`;
         const subscription = stompService.subscribe<PieChart>(topic, handleEvent);
 
         return () => {

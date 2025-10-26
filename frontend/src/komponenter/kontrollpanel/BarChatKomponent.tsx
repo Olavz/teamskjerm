@@ -26,7 +26,7 @@ const BarChartKomponent: React.FC<KontrollpanelKomponent> = ({komponentUUID, dat
     useEffect(() => {
         const parsedata = JSON.parse(data) as BarChart
         setChartdata(parsedata.data)
-        const topic = `/komponent/${komponentUUID}`;
+        const topic = `/komponent/${komponentUUID}/data`;
         const subscription = stompService.subscribe<BarChart>(topic, handleEvent);
 
         return () => {

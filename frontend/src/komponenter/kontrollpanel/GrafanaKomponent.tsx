@@ -27,7 +27,7 @@ const GrafanaKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID
     useEffect(() => {
         const parsedata = JSON.parse(data) as GrafanaData[]
         setGrafanadata(parsedata)
-        const topic = `/komponent/${komponentUUID}`;
+        const topic = `/komponent/${komponentUUID}/data`;
         const subscription = stompService.subscribe<GrafanaData[]>(topic, handleEvent);
 
         return () => {

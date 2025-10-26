@@ -18,7 +18,7 @@ const VarselKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}
     useEffect(() => {
         let parsedata = JSON.parse(data) as VarselData
         setVarseldata(parsedata)
-        const topic = `/komponent/${komponentUUID}`;
+        const topic = `/komponent/${komponentUUID}/data`;
         const subscription = stompService.subscribe<VarselData>(topic, handleEvent);
 
         return () => {
