@@ -59,46 +59,70 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
         <div className="col" key={kontrollpanelKomponent.komponentUUID}>
             <div className="card">
                 <div className="card-body">
+                    <form>
+                        <FormGroup className="mb-3">
+                            <FormLabel>Komponent type</FormLabel>
+                            <FormControl
+                                type="text"
+                                disabled
+                                value={kontrollpanelKomponent.komponentType}
+                                aria-label="Komponenttype"
+                            />
+                        </FormGroup>
 
-                    <FormGroup>
-                        <FormControl type="text" disabled={true} value={kontrollpanelKomponent.komponentType}></FormControl>
-                    </FormGroup>
+                        <FormGroup className="mb-3">
+                            <FormLabel>Navn</FormLabel>
+                            <FormControl
+                                onChange={(e) => setInpNavn(e.target.value)}
+                                type="text"
+                                value={inpNavn}
+                                placeholder="Skriv inn navn"
+                                aria-label="Navn"
+                            />
+                        </FormGroup>
 
-                    <FormGroup>
-                        <FormLabel>
-                            Navn
-                        </FormLabel>
-                        <FormControl onChange={(e) => setInpNavn(e.target.value)} type="text"
-                                     value={inpNavn}></FormControl>
-                    </FormGroup>
+                        <FormGroup className="mb-3">
+                            <FormLabel>Se mer informasjon lenke</FormLabel>
+                            <FormControl
+                                onChange={(e) => setInpSeMerInformasjon(e.target.value)}
+                                type="url"
+                                placeholder="http://..."
+                                value={inpSeMerInformasjon}
+                                aria-label="Se mer informasjon lenke"
+                            />
+                        </FormGroup>
 
-                    <FormGroup>
-                        <FormLabel>
-                            Se mer informasjon lenke
-                        </FormLabel>
-                        <FormControl onChange={(e) => setInpSeMerInformasjon(e.target.value)} type="text"
-                                     placeholder="http://..." value={inpSeMerInformasjon}></FormControl>
-                    </FormGroup>
+                        <FormGroup className="mb-4">
+                            <FormLabel>
+                                Sett komponent utdatert etter minutter uten oppdatering (0 for deaktivering)
+                            </FormLabel>
+                            <FormControl
+                                onChange={(e) => setUtdatertKomponentEtterMinutter(Number.parseInt(e.target.value))}
+                                type="number"
+                                min={0}
+                                placeholder="0"
+                                value={utdatertKomponentEtterMinutter}
+                                aria-label="Utdatert etter minutter"
+                            />
+                        </FormGroup>
 
-                    <FormGroup>
-                        <FormLabel>
-                            Sett komponent utdatert etter minutter uten oppdatering (0 for deaktivering)
-                        </FormLabel>
-                        <FormControl onChange={(e) => setUtdatertKomponentEtterMinutter(Number.parseInt(e.target.value))} type="text"
-                                     placeholder="0" value={utdatertKomponentEtterMinutter}></FormControl>
-                    </FormGroup>
+                        <div className="d-flex justify-content-end mb-4">
+                            <Button
+                                onClick={() => slettKomponent(kontrollpanelKomponent.komponentUUID)}
+                                variant="danger"
+                                className="me-2"
+                            >
+                                Slett
+                            </Button>
+                            <Button onClick={oppdaterKomponent} variant="primary">
+                                Lagre
+                            </Button>
+                        </div>
+                    </form>
 
-                    <hr/>
-
-                    <Button onClick={() => slettKomponent(kontrollpanelKomponent.komponentUUID)}
-                            variant="danger">Slett</Button> {' '}
-                    <Button onClick={oppdaterKomponent}>Lagre</Button>
-
-                    <hr/>
-
-                    <Accordion defaultActiveKey={null}>
+                    <Accordion defaultActiveKey={null} className="mb-3">
                         <Accordion.Item eventKey="0">
-                            <Accordion.Header>Data</Accordion.Header>
+                            <Accordion.Header>Oppdater komponent</Accordion.Header>
                             <Accordion.Body>
                                 <KomponentKontrollpanel kontrollpanelKomponent={kontrollpanelKomponent}>
                                     {children}
@@ -107,19 +131,39 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                         </Accordion.Item>
                     </Accordion>
 
-
-                    <hr/>
-
                     <Accordion defaultActiveKey={null}>
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Endepunkt</Accordion.Header>
                             <Accordion.Body>
-                                <Badge>PUT</Badge>
-                                <pre className="bg-light p-3 rounded">
-                                    <code className="text-monospace">
-                                        {getBaseUrl()}/api/ext/komponent/{kontrollpanelKomponent.komponentUUID}/{kontrollpanelKomponent.secret}/{kontrollpanelKomponent.secretHashKey}
-                                    </code>
-                                </pre>
+                                <div className="d-flex align-items-center">
+                                    <Badge className="me-2 fs-5">PUT</Badge>
+                                    <FormControl
+                                        type="text"
+                                        className="bg-light p-3 rounded mb-0 flex-grow-1 text-monospace"
+                                        value={`${getBaseUrl()}/api/ext/komponent/${kontrollpanelKomponent.komponentUUID}/${kontrollpanelKomponent.secret}/${kontrollpanelKomponent.secretHashKey}`}
+                                        readOnly
+                                        aria-label="Endepunkt URL"
+                                        style={{ minWidth: 0 }}
+                                    />
+                                    <Button
+                                        variant="outline-secondary"
+                                        size="sm"
+                                        className="ms-2"
+                                        onClick={() => {
+                                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                navigator.clipboard.writeText(
+                                                    `${getBaseUrl()}/api/ext/komponent/${kontrollpanelKomponent.komponentUUID}/${kontrollpanelKomponent.secret}/${kontrollpanelKomponent.secretHashKey}`
+                                                );
+                                            } else {
+                                                alert("Kopiering til utklippstavle støttes ikke i denne nettleseren.");
+                                            }
+                                        }}
+                                        aria-label="Kopier URL"
+                                        title="Kopier URL til utklippstavlen"
+                                    >
+                                        Kopier
+                                    </Button>
+                                </div>
                             </Accordion.Body>
                         </Accordion.Item>
                         <Accordion.Item eventKey="1">
@@ -133,7 +177,6 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                             </Accordion.Body>
                         </Accordion.Item>
                     </Accordion>
-
                 </div>
             </div>
         </div>
