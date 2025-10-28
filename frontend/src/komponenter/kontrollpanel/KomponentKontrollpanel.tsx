@@ -1,6 +1,7 @@
 import {ReactNode, useEffect, useState} from "react";
 import {CardFooter} from "react-bootstrap";
 import {stompService} from "../../WebSocketService.tsx";
+import {Komponentlayout} from "../../sider/InfoskjermKontrollpanel.tsx";
 
 export interface KontrollpanelKomponent {
     komponentUUID: string;
@@ -17,6 +18,7 @@ export interface KontrollpanelKomponent {
 
 type BaseKomponentKontrollpanelProps = {
     kontrollpanelKomponent: KontrollpanelKomponent
+    komponentlayout: Komponentlayout
     children: ReactNode
 }
 
@@ -26,6 +28,7 @@ type SistOppdatert = {
 
 export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> = ({
                                                                                       kontrollpanelKomponent,
+                                                                                      komponentlayout,
                                                                                       children
                                                                                   }) => {
 
@@ -72,7 +75,7 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
             }
         }
 
-        const intervalId  = setInterval(() => {
+        const intervalId = setInterval(() => {
             evaluerOmKomponentBetraktesSomUtdatert();
         }, 60000);
 
@@ -86,12 +89,28 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
     }, [kontrollpanelKomponent.utdatertKomponentEtterMinutter, sistOppdatert]);
 
     return (
-        <div className={`card ${sistOppdatertVarsel ? " bg-warning" : ""}`}>
-            <div className="card-body">
-                <h3 className="card-title">{kontrollpanelKomponent.navn}</h3>
-                {children}
-            </div>
-            <CardFooter>{sistOppdatert?.toLocaleString("nb-NO") || ""}</CardFooter>
-        </div>
+        <>
+            {komponentlayout.visning === "ingen" && ""}
+            {komponentlayout.visning === "komprimert" &&
+                <div className={`card ${sistOppdatertVarsel ? " bg-warning" : "bg-success-subtle"}`}>
+                    <CardFooter className="d-flex justify-content-between">
+                        <span>{kontrollpanelKomponent.navn}</span>
+                        <b>{sistOppdatert?.toLocaleString("nb-NO") || ""}</b>
+                    </CardFooter>
+                </div>
+            }
+            {komponentlayout.visning === "innhold" &&
+                children
+            }
+            {komponentlayout.visning === "full" &&
+                <div className={`card ${sistOppdatertVarsel ? " bg-warning" : ""}`}>
+                    <div className="card-body">
+                        <h3 className="card-title">{kontrollpanelKomponent.navn}</h3>
+                        {children}
+                    </div>
+                    <CardFooter>{sistOppdatert?.toLocaleString("nb-NO") || ""}</CardFooter>
+                </div>
+            }
+        </>
     )
 }

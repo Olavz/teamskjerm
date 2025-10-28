@@ -124,7 +124,10 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                         <Accordion.Item eventKey="0">
                             <Accordion.Header>Oppdater komponent</Accordion.Header>
                             <Accordion.Body>
-                                <KomponentKontrollpanel kontrollpanelKomponent={kontrollpanelKomponent}>
+                                <KomponentKontrollpanel
+                                    kontrollpanelKomponent={kontrollpanelKomponent}
+                                    komponentlayout={{ visning: "innhold" }}
+                                >
                                     {children}
                                 </KomponentKontrollpanel>
                             </Accordion.Body>

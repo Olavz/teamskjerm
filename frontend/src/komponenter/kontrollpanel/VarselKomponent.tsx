@@ -2,13 +2,18 @@ import {useEffect, useState} from "react";
 import {stompService} from "../../WebSocketService.tsx";
 import {FormControl, FormSelect} from "react-bootstrap";
 import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
+import {Komponentlayout} from "../../sider/InfoskjermKontrollpanel.tsx";
 
 type VarselData = {
     varseltype: "grønt" | "gult" | "rødt";
     tekst: string;
 };
 
-const VarselKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}: KontrollpanelKomponent) => {
+type VarselKomponentProps = KontrollpanelKomponent & {
+    setKomponentlayout: (komponentlayout: Komponentlayout) => void;
+};
+
+const VarselKomponent: React.FC<VarselKomponentProps> = ({data, komponentUUID, setKomponentlayout}) => {
     const [varseldata, setVarseldata] = useState<VarselData>();
 
     const handleEvent = (varseldata: VarselData): void => {
@@ -16,7 +21,12 @@ const VarselKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}
     };
 
     useEffect(() => {
-        let parsedata = JSON.parse(data) as VarselData
+        // Kan nå overstyre fra VarselKomponent om den har vært "grønn" lenge og kan komprimeres
+        setKomponentlayout({visning: "full"});
+    }, []);
+
+    useEffect(() => {
+        const parsedata = JSON.parse(data) as VarselData
         setVarseldata(parsedata)
         const topic = `/komponent/${komponentUUID}/data`;
         const subscription = stompService.subscribe<VarselData>(topic, handleEvent);
@@ -59,7 +69,7 @@ export const RedigerVarselKomponent: React.FC<KontrollpanelKomponent> = ({data}:
 
 
     useEffect(() => {
-        let parsedata = JSON.parse(data) as VarselData
+        const parsedata = JSON.parse(data) as VarselData
         setVarseldata(parsedata)
     }, []);
 

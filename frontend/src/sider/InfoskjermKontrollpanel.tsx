@@ -1,7 +1,10 @@
 import {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import HeaderKontrollpanel from "../komponenter/kontrollpanel/HeaderKontrollpanel.tsx";
-import {KomponentKontrollpanel, KontrollpanelKomponent} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
+import {
+    KomponentKontrollpanel,
+    KontrollpanelKomponent
+} from "../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import {stompService} from "../WebSocketService.tsx";
 import PieChartKomponent from "../komponenter/kontrollpanel/PieChatKomponent.tsx";
 import TekstKomponent from "../komponenter/kontrollpanel/TekstKomponent.tsx";
@@ -17,6 +20,10 @@ type KontrollpanelParams = {
     kontrollpanelUUID: string;
 };
 
+export type Komponentlayout = {
+    visning: "ingen" | "komprimert" | "full" | "innhold";
+};
+
 function InfoskjermKontrollpanel() {
     const [kontrollpanelKomponent, setKontrollpanelKomponent] = useState<KontrollpanelKomponent[]>([]);
     const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
@@ -24,6 +31,14 @@ function InfoskjermKontrollpanel() {
     const [komponenterVenstre, setKomponenterVenstre] = useState<KomponentRekkefølge[]>([]);
     const [komponenterMidten, setKomponenterMidten] = useState<KomponentRekkefølge[]>([]);
     const [komponenterHøyre, setKomponenterHøyre] = useState<KomponentRekkefølge[]>([]);
+
+    const [komponentlayoutMap, setKomponentlayoutMap] = useState<Record<string, Komponentlayout>>({});
+    const setKomponentlayout = (komponentUUID: string, komponentlayout: Komponentlayout) => {
+        setKomponentlayoutMap(prev => ({
+            ...prev,
+            [komponentUUID]: komponentlayout
+        }));
+    };
 
     const handleEvent = (): void => {
         location.reload() // TODO: Altså, ja, gjør jobben er konklusjon. #react4life
@@ -81,8 +96,11 @@ function InfoskjermKontrollpanel() {
                                 const item = kontrollpanelKomponent.find(it => it.komponentUUID === venstre.komponentUUID);
                                 return item && (
                                     <div className="komponentkort" key={item.komponentUUID}>
-                                        <KomponentKontrollpanel kontrollpanelKomponent={item}>
-                                            {utledKomponentType(item)}
+                                        <KomponentKontrollpanel
+                                            kontrollpanelKomponent={item}
+                                            komponentlayout={komponentlayoutMap[item.komponentUUID] || { visning: "full" }}
+                                        >
+                                            {utledKomponentType(item, (komponentlayout) => setKomponentlayout(item.komponentUUID, komponentlayout))}
                                         </KomponentKontrollpanel>
                                     </div>
                                 );
@@ -93,8 +111,11 @@ function InfoskjermKontrollpanel() {
                                 const item = kontrollpanelKomponent.find(it => it.komponentUUID === midten.komponentUUID);
                                 return item && (
                                     <div className="komponentkort" key={item.komponentUUID}>
-                                        <KomponentKontrollpanel kontrollpanelKomponent={item}>
-                                            {utledKomponentType(item)}
+                                        <KomponentKontrollpanel
+                                            kontrollpanelKomponent={item}
+                                            komponentlayout={komponentlayoutMap[item.komponentUUID] || { visning: "full" }}
+                                        >
+                                            {utledKomponentType(item, (komponentlayout) => setKomponentlayout(item.komponentUUID, komponentlayout))}
                                         </KomponentKontrollpanel>
                                     </div>
                                 );
@@ -105,8 +126,11 @@ function InfoskjermKontrollpanel() {
                                 const item = kontrollpanelKomponent.find(it => it.komponentUUID === høyre.komponentUUID);
                                 return item && (
                                     <div className="komponentkort" key={item.komponentUUID}>
-                                        <KomponentKontrollpanel kontrollpanelKomponent={item}>
-                                            {utledKomponentType(item)}
+                                        <KomponentKontrollpanel
+                                            kontrollpanelKomponent={item}
+                                            komponentlayout={komponentlayoutMap[item.komponentUUID] || { visning: "full" }}
+                                        >
+                                            {utledKomponentType(item, (komponentlayout) => setKomponentlayout(item.komponentUUID, komponentlayout))}
                                         </KomponentKontrollpanel>
                                     </div>
                                 );
@@ -119,7 +143,7 @@ function InfoskjermKontrollpanel() {
     )
 }
 
-const utledKomponentType = (item: KontrollpanelKomponent) => {
+const utledKomponentType = (item: KontrollpanelKomponent, setKomponentlayout: (komponentlayout: Komponentlayout) => void) => {
     switch (item.komponentType) {
         case 'TekstKomponent':
             return (
@@ -127,7 +151,10 @@ const utledKomponentType = (item: KontrollpanelKomponent) => {
             )
         case 'VarselKomponent':
             return (
-                <VarselKomponent {...item} />
+                <VarselKomponent
+                    {...item}
+                    setKomponentlayout={setKomponentlayout}
+                />
             )
         case 'PieChartKomponent':
             return (
