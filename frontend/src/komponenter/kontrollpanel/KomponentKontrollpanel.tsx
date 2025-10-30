@@ -33,6 +33,8 @@ type SistOppdatert = {
 export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> = ({
                                                                                       kontrollpanelKomponent,
                                                                                       komponentlayout,
+                                                                                      oppdaterKomponentData,
+                                                                                      setKomponentSistEndret,
                                                                                       children
                                                                                   }) => {
 
