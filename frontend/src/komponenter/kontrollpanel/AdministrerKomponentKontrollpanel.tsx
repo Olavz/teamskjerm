@@ -18,9 +18,12 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
     const [inpSeMerInformasjon, setInpSeMerInformasjon] = useState<string>('')
     const [inpNavn, setInpNavn] = useState<string>('')
     const [utdatertKomponentEtterMinutter, setUtdatertKomponentEtterMinutter] = useState(0)
+    const [skjulVarselEtterMinutterUtenFeil, setSkjulVarselEtterMinutterUtenFeil] = useState(0)
+    const [lagreknappDeaktivert, setLagreknappDeaktivert] = useState(false)
 
 
     const oppdaterKomponent = async () => {
+        setLagreknappDeaktivert(true)
         try {
             const response = await fetch(`/api/komponent/${kontrollpanelKomponent.komponentUUID}`, {
                 method: 'PUT',
@@ -31,13 +34,18 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                 body: JSON.stringify({
                     navn: inpNavn,
                     seMerInformasjon: inpSeMerInformasjon,
-                    utdatertKomponentEtterMinutter: utdatertKomponentEtterMinutter
+                    utdatertKomponentEtterMinutter: utdatertKomponentEtterMinutter,
+                    skjulVarselEtterMinutterUtenFeil: skjulVarselEtterMinutterUtenFeil
                 }),
             });
 
             if (!response.ok) {
                 throw new Error('Failed to send data');
             }
+
+            setTimeout(() => {
+                setLagreknappDeaktivert(false)
+            }, 400)
 
         } catch (error) {
             console.error('Error:', error);
@@ -48,6 +56,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
         setInpNavn(kontrollpanelKomponent.navn)
         setInpSeMerInformasjon(kontrollpanelKomponent.seMerInformasjon ?? "")
         setUtdatertKomponentEtterMinutter(kontrollpanelKomponent.utdatertKomponentEtterMinutter ?? 0)
+        setSkjulVarselEtterMinutterUtenFeil(kontrollpanelKomponent.skjulVarselEtterMinutterUtenFeil ?? 0)
     }, []);
 
     const getBaseUrl = () => {
@@ -106,6 +115,22 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                             />
                         </FormGroup>
 
+                        {kontrollpanelKomponent.komponentType === "VarselKomponent" &&
+                            <FormGroup className="mb-4">
+                                <FormLabel>
+                                    Sett komponent minimering etter minutter med grønt varsel (0 for deaktivering)
+                                </FormLabel>
+                                <FormControl
+                                    onChange={(e) => setSkjulVarselEtterMinutterUtenFeil(Number.parseInt(e.target.value))}
+                                    type="number"
+                                    min={0}
+                                    placeholder="0"
+                                    value={skjulVarselEtterMinutterUtenFeil}
+                                    aria-label="Minimer etter minutter"
+                                />
+                            </FormGroup>
+                        }
+
                         <div className="d-flex justify-content-end mb-4">
                             <Button
                                 onClick={() => slettKomponent(kontrollpanelKomponent.komponentUUID)}
@@ -114,7 +139,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                             >
                                 Slett
                             </Button>
-                            <Button onClick={oppdaterKomponent} variant="primary">
+                            <Button disabled={lagreknappDeaktivert} onClick={oppdaterKomponent} variant="primary">
                                 Lagre
                             </Button>
                         </div>
@@ -126,7 +151,11 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                             <Accordion.Body>
                                 <KomponentKontrollpanel
                                     kontrollpanelKomponent={kontrollpanelKomponent}
-                                    komponentlayout={{ visning: "innhold" }}
+                                    komponentlayout={{visning: "innhold"}}
+                                    setKomponentSistEndret={() => {
+                                    }}
+                                    oppdaterKomponentData={() => {
+                                    }}
                                 >
                                     {children}
                                 </KomponentKontrollpanel>
@@ -146,7 +175,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                                         value={`${getBaseUrl()}/api/ext/komponent/${kontrollpanelKomponent.komponentUUID}/${kontrollpanelKomponent.secret}/${kontrollpanelKomponent.secretHashKey}`}
                                         readOnly
                                         aria-label="Endepunkt URL"
-                                        style={{ minWidth: 0 }}
+                                        style={{minWidth: 0}}
                                     />
                                     <Button
                                         variant="outline-secondary"

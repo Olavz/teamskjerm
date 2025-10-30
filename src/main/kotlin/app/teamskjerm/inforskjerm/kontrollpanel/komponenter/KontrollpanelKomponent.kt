@@ -37,6 +37,7 @@ abstract class KontrollpanelKomponent(
     var secretHashKey: String? = null,
     var sistOppdatert: Timestamp? = null,
     var utdatertKomponentEtterMinutter: Number? = null,
+    var sistOppdatertMedDataDiff: Timestamp? = null,
 ) {
 
 

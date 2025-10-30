@@ -10,10 +10,20 @@ type VarselData = {
 };
 
 type VarselKomponentProps = KontrollpanelKomponent & {
+    skjulVarselEtterMinutterUtenFeil?: number;
+    sistEndret: Date;
+    komponentlayout: Komponentlayout;
     setKomponentlayout: (komponentlayout: Komponentlayout) => void;
 };
 
-const VarselKomponent: React.FC<VarselKomponentProps> = ({data, komponentUUID, setKomponentlayout}) => {
+const VarselKomponent: React.FC<VarselKomponentProps> = ({
+                                                             data,
+                                                             komponentUUID,
+                                                             komponentlayout,
+                                                             setKomponentlayout,
+                                                             skjulVarselEtterMinutterUtenFeil,
+                                                             sistEndret
+                                                         }) => {
     const [varseldata, setVarseldata] = useState<VarselData>();
 
     const handleEvent = (varseldata: VarselData): void => {
@@ -21,9 +31,38 @@ const VarselKomponent: React.FC<VarselKomponentProps> = ({data, komponentUUID, s
     };
 
     useEffect(() => {
-        // Kan nå overstyre fra VarselKomponent om den har vært "grønn" lenge og kan komprimeres
-        setKomponentlayout({visning: "full"});
-    }, []);
+        if (varseldata === undefined) return;
+        const skjulVarselEtterMinutter = skjulVarselEtterMinutterUtenFeil ?? 0;
+        if (skjulVarselEtterMinutter === 0) return;
+        let intervalId: number;
+
+        const checkShouldHide = () => {
+            if(komponentlayout.visning === "minimal") return;
+
+            const sisteOppdatertSidenDataEndretSeg = sistEndret ? sistEndret.getTime() : Date.now();
+            const now = Date.now();
+            const diffMinutes = (now - sisteOppdatertSidenDataEndretSeg) / 60000;
+            console.log("Minutter siden siste oppdatering med data:", diffMinutes, skjulVarselEtterMinutter);
+            if(diffMinutes > skjulVarselEtterMinutter && varseldata.varseltype === "grønt") {
+                setKomponentlayout({visning: "minimal"});
+            }
+        };
+
+        checkShouldHide();
+
+        if (varseldata.varseltype === "grønt" && skjulVarselEtterMinutter > 0 && komponentlayout.visning !== "minimal") {
+            intervalId = setInterval(checkShouldHide, 10000);
+        }
+        if(varseldata.varseltype !== "grønt" && komponentlayout.visning !== "full") {
+            setKomponentlayout({visning: "full"});
+        }
+
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
+    }, [varseldata, sistEndret]);
 
     useEffect(() => {
         const parsedata = JSON.parse(data) as VarselData
@@ -40,6 +79,10 @@ const VarselKomponent: React.FC<VarselKomponentProps> = ({data, komponentUUID, s
 
     if (!varseldata) {
         return <p>Noe gikk galt ved lasting av komponentdata</p>
+    }
+
+    if(komponentlayout.visning === "minimal") {
+        return <></>;
     }
 
     if (varseldata.varseltype == "rødt") {

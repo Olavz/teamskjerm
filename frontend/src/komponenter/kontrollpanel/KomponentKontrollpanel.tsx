@@ -14,11 +14,15 @@ export interface KontrollpanelKomponent {
     jsonSkjema: string;
     sistOppdatert?: string;
     utdatertKomponentEtterMinutter?: number;
+    sistOppdatertMedDataDiff?: string;
+    skjulVarselEtterMinutterUtenFeil?: number;
 }
 
 type BaseKomponentKontrollpanelProps = {
     kontrollpanelKomponent: KontrollpanelKomponent
     komponentlayout: Komponentlayout
+    setKomponentSistEndret: (komponentSistEndret: Date) => void
+    oppdaterKomponentData: (data: string) => void
     children: ReactNode
 }
 
@@ -36,6 +40,19 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
     const [sistOppdatertVarsel, setUtdatertVarsel] = useState(false)
 
     useEffect(() => {
+        const topic = `/komponent/${kontrollpanelKomponent.komponentUUID}/data`;
+        const subscription = stompService.subscribe<string>(topic, (data: string) : void => {
+            oppdaterKomponentData(JSON.stringify(data));
+        });
+
+        return () => {
+            if (subscription) {
+                stompService.unsubscribe(topic, subscription);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
         if (kontrollpanelKomponent.sistOppdatert) {
             const parsedDate = new Date(kontrollpanelKomponent.sistOppdatert);
             if (!isNaN(parsedDate.getTime())) {
@@ -50,6 +67,24 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
             const parsedDate = new Date(sistOppdatert.timestamp);
             if (!isNaN(parsedDate.getTime())) {
                 setSistOppdatert(parsedDate);
+            }
+        });
+
+        return () => {
+            if (subscription) {
+                stompService.unsubscribe(topic, subscription);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        const topic = `/komponent/${kontrollpanelKomponent.komponentUUID}/sistOppdatertMedDataDiff`;
+        const subscription = stompService.subscribe<SistOppdatert>(topic, (sistOppdatert: SistOppdatert): void => {
+            const parsedDate = new Date(sistOppdatert.timestamp);
+            if (!isNaN(parsedDate.getTime())) {
+                if (setKomponentSistEndret) {
+                    setKomponentSistEndret(parsedDate)
+                }
             }
         });
 
@@ -91,8 +126,9 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
     return (
         <>
             {komponentlayout.visning === "ingen" && ""}
-            {komponentlayout.visning === "komprimert" &&
+            {komponentlayout.visning === "minimal" &&
                 <div className={`card ${sistOppdatertVarsel ? " bg-warning" : "bg-success-subtle"}`}>
+                    {children}
                     <CardFooter className="d-flex justify-content-between">
                         <span>{kontrollpanelKomponent.navn}</span>
                         <b>{sistOppdatert?.toLocaleString("nb-NO") || ""}</b>

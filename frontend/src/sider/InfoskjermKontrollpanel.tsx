@@ -21,7 +21,7 @@ type KontrollpanelParams = {
 };
 
 export type Komponentlayout = {
-    visning: "ingen" | "komprimert" | "full" | "innhold";
+    visning: "ingen" | "minimal" | "full" | "innhold";
 };
 
 function InfoskjermKontrollpanel() {
@@ -39,6 +39,23 @@ function InfoskjermKontrollpanel() {
             [komponentUUID]: komponentlayout
         }));
     };
+    const [komponentSistEndretMap, setKomponentSistEndretMap] = useState<Record<string, Date>>({});
+    const setKomponentSistEndret = (komponentUUID: string, komponentSistEndret: Date) => {
+        setKomponentSistEndretMap(prev => ({
+            ...prev,
+            [komponentUUID]: komponentSistEndret
+        }));
+    };
+
+    function oppdaterDataForKomponent(komponentId: string, data: string): void {
+        setKontrollpanelKomponent(prev =>
+            prev.map(item =>
+                item.komponentUUID === komponentId
+                    ? { ...item, data: data }
+                    : item
+            )
+        );
+    }
 
     const handleEvent = (): void => {
         location.reload() // TODO: Altså, ja, gjør jobben er konklusjon. #react4life
@@ -99,8 +116,15 @@ function InfoskjermKontrollpanel() {
                                         <KomponentKontrollpanel
                                             kontrollpanelKomponent={item}
                                             komponentlayout={komponentlayoutMap[item.komponentUUID] || { visning: "full" }}
+                                            setKomponentSistEndret={(dato: Date) => setKomponentSistEndret(item.komponentUUID, dato)}
+                                            oppdaterKomponentData={(data: string) => oppdaterDataForKomponent(item.komponentUUID, data)}
                                         >
-                                            {utledKomponentType(item, (komponentlayout) => setKomponentlayout(item.komponentUUID, komponentlayout))}
+                                            {utledKomponentType(
+                                                item,
+                                                komponentSistEndretMap[item.komponentUUID] ?? (item.sistOppdatertMedDataDiff ? new Date(item.sistOppdatertMedDataDiff) : new Date(item.sistOppdatert!)),
+                                                komponentlayoutMap[item.komponentUUID] ?? { visning: "full" },
+                                                (komponentlayout: Komponentlayout) => setKomponentlayout(item.komponentUUID, komponentlayout)
+                                            )}
                                         </KomponentKontrollpanel>
                                     </div>
                                 );
@@ -114,8 +138,15 @@ function InfoskjermKontrollpanel() {
                                         <KomponentKontrollpanel
                                             kontrollpanelKomponent={item}
                                             komponentlayout={komponentlayoutMap[item.komponentUUID] || { visning: "full" }}
+                                            setKomponentSistEndret={(dato: Date) => setKomponentSistEndret(item.komponentUUID, dato)}
+                                            oppdaterKomponentData={(data: string) => oppdaterDataForKomponent(item.komponentUUID, data)}
                                         >
-                                            {utledKomponentType(item, (komponentlayout) => setKomponentlayout(item.komponentUUID, komponentlayout))}
+                                            {utledKomponentType(
+                                                item,
+                                                komponentSistEndretMap[item.komponentUUID] ?? (item.sistOppdatertMedDataDiff ? new Date(item.sistOppdatertMedDataDiff) : new Date()),
+                                                komponentlayoutMap[item.komponentUUID] ?? { visning: "full" },
+                                                (komponentlayout) => setKomponentlayout(item.komponentUUID, komponentlayout))
+                                            }
                                         </KomponentKontrollpanel>
                                     </div>
                                 );
@@ -129,8 +160,15 @@ function InfoskjermKontrollpanel() {
                                         <KomponentKontrollpanel
                                             kontrollpanelKomponent={item}
                                             komponentlayout={komponentlayoutMap[item.komponentUUID] || { visning: "full" }}
+                                            setKomponentSistEndret={(dato: Date) => setKomponentSistEndret(item.komponentUUID, dato)}
+                                            oppdaterKomponentData={(data: string) => oppdaterDataForKomponent(item.komponentUUID, data)}
                                         >
-                                            {utledKomponentType(item, (komponentlayout) => setKomponentlayout(item.komponentUUID, komponentlayout))}
+                                            {utledKomponentType(
+                                                item,
+                                                komponentSistEndretMap[item.komponentUUID] ?? (item.sistOppdatertMedDataDiff ? new Date(item.sistOppdatertMedDataDiff) : new Date()),
+                                                komponentlayoutMap[item.komponentUUID] ?? { visning: "full" },
+                                                (komponentlayout) => setKomponentlayout(item.komponentUUID, komponentlayout))
+                                            }
                                         </KomponentKontrollpanel>
                                     </div>
                                 );
@@ -143,7 +181,12 @@ function InfoskjermKontrollpanel() {
     )
 }
 
-const utledKomponentType = (item: KontrollpanelKomponent, setKomponentlayout: (komponentlayout: Komponentlayout) => void) => {
+const utledKomponentType = (
+    item: KontrollpanelKomponent,
+    sistEndret: Date,
+    komponentlayout: Komponentlayout,
+    setKomponentlayout: (komponentlayout: Komponentlayout) => void
+) => {
     switch (item.komponentType) {
         case 'TekstKomponent':
             return (
@@ -153,6 +196,8 @@ const utledKomponentType = (item: KontrollpanelKomponent, setKomponentlayout: (k
             return (
                 <VarselKomponent
                     {...item}
+                    sistEndret={sistEndret}
+                    komponentlayout={komponentlayout}
                     setKomponentlayout={setKomponentlayout}
                 />
             )

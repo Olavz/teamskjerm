@@ -55,6 +55,14 @@ class EksternKomponentController(
         val validerSkjema = komponent.validerSkjema(payload.toString())
         if (!validerSkjema.harFeil) {
 
+            if(!komponent.data.equals(payload.toString())) {
+                komponent.sistOppdatertMedDataDiff = nå()
+                simpMessagingTemplate.convertAndSend(
+                    "/komponent/${komponentUUID}/sistOppdatertMedDataDiff",
+                    objectMapper.createObjectNode().put("timestamp", komponent.sistOppdatertMedDataDiff.toString())
+                )
+            }
+
             if(komponent.hukommelse()) {
                 komponent.data = komponent.flettKomponentdataMedHukommelse(payload, objectMapper.readTree(komponent.data)).toString()
             } else {

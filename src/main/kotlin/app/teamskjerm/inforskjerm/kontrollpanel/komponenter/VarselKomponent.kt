@@ -1,6 +1,8 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
-class VarselKomponent : KontrollpanelKomponent(
+class VarselKomponent(
+    var skjulVarselEtterMinutterUtenFeil: Int? = null,
+) : KontrollpanelKomponent(
     komponentType = "VarselKomponent"
 ) {
 
