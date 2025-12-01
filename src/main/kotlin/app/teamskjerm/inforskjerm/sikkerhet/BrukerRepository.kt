@@ -31,17 +31,23 @@ class BrukerRepository(
 
     fun lagre(bruker: Bruker): Bruker {
         val brukere = firestore.collection("brukere")
+        val eksisterendeBruker = brukere
+            .listDocuments()
+            .map { objectMapper.convertValue(it.get(), Bruker::class.java) }
+            .firstOrNull { it.navn == bruker.navn }
 
-        if(bruker.id.isNotBlank()) {
+        if (bruker.id.isNotBlank()) {
             brukere
                 .document(bruker.id)
                 .set(bruker)
             return bruker
-        } else {
+        } else if (eksisterendeBruker == null) {
             val f = brukere.add(bruker).get()
             val convertValue = objectMapper.convertValue(f.get(), Bruker::class.java)
             convertValue.id = f.id
             return convertValue
+        } else {
+            return eksisterendeBruker
         }
     }
 
