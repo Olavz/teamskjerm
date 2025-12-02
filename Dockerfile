@@ -9,9 +9,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline -B
 RUN mvn clean package -DskipTests
 
-
-# Bruk en offisiell baseimage for Java 21
-FROM openjdk:21-slim-bullseye
+FROM eclipse-temurin:21
 
 # Sett arbeidskatalog i containeren
 WORKDIR /app
