@@ -25,12 +25,11 @@ class SecurityConfig {
         config.authenticationManager
 
     @Bean
-    fun authenticationProvider(brukerRepository: BrukerRepository): AuthenticationProvider =
-        DaoAuthenticationProvider()
-            .also {
-                it.setUserDetailsService(userDetailsService(brukerRepository))
-                it.setPasswordEncoder(encoder())
-            }
+    fun authenticationProvider(brukerRepository: BrukerRepository): AuthenticationProvider {
+        val provider = DaoAuthenticationProvider(userDetailsService(brukerRepository))
+        provider.setPasswordEncoder(encoder())
+        return provider
+    }
 
     @Bean
     fun securityFilterChain(

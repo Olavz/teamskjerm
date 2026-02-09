@@ -1,13 +1,13 @@
 package app.teamskjerm.inforskjerm.sikkerhet
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.cloud.firestore.Firestore
 import org.springframework.stereotype.Repository
+import tools.jackson.databind.json.JsonMapper
 
 @Repository
 class BrukerRepository(
     val firestore: Firestore,
-    val objectMapper: ObjectMapper
+    val jsonMapper: JsonMapper
 ) {
 
     fun finnBruker(navn: String): Bruker? {
@@ -33,7 +33,7 @@ class BrukerRepository(
         val brukere = firestore.collection("brukere")
         val eksisterendeBruker = brukere
             .listDocuments()
-            .map { objectMapper.convertValue(it.get(), Bruker::class.java) }
+            .map { jsonMapper.convertValue(it.get(), Bruker::class.java) }
             .firstOrNull { it.navn == bruker.navn }
 
         if (bruker.id.isNotBlank()) {
@@ -43,7 +43,7 @@ class BrukerRepository(
             return bruker
         } else if (eksisterendeBruker == null) {
             val f = brukere.add(bruker).get()
-            val convertValue = objectMapper.convertValue(f.get(), Bruker::class.java)
+            val convertValue = jsonMapper.convertValue(f.get(), Bruker::class.java)
             convertValue.id = f.id
             return convertValue
         } else {

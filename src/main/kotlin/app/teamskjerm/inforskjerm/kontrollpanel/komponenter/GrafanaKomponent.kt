@@ -1,9 +1,10 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.convertValue
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.convertValue
+
 
 class GrafanaKomponent: KontrollpanelKomponent(
     komponentType = "GrafanaKomponent"
@@ -17,11 +18,11 @@ class GrafanaKomponent: KontrollpanelKomponent(
         payload: JsonNode,
         eksisterendeKomponentData: JsonNode
     ): JsonNode {
-        val objectMapper = ObjectMapper()
+        val jsonMapper = JsonMapper.builder().build()
 
-        val grafanaRequest = objectMapper.convertValue(payload, GrafanaRequest::class.java)
+        val grafanaRequest = jsonMapper.convertValue(payload, GrafanaRequest::class.java)
 
-        val unikeEksisterende = objectMapper.convertValue<List<GrafanaRequest>>(eksisterendeKomponentData)
+        val unikeEksisterende = jsonMapper.convertValue<List<GrafanaRequest>>(eksisterendeKomponentData)
             .map { Pair(it.alerts.first().labels.key(), it) }
             .toMutableSet()
 
@@ -35,7 +36,7 @@ class GrafanaKomponent: KontrollpanelKomponent(
             }
         }
 
-        return objectMapper.valueToTree(unikeEksisterende.map { it.second }.toList())
+        return jsonMapper.valueToTree(unikeEksisterende.map { it.second }.toList())
     }
 
     override fun jsonSkjema(): String {

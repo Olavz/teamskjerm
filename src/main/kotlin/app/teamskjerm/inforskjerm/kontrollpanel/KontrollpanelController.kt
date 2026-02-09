@@ -3,18 +3,12 @@ package app.teamskjerm.inforskjerm.kontrollpanel
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KomponentRepository
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KontrollpanelKomponent
 import app.teamskjerm.inforskjerm.sikkerhet.TeamskjermUserDetails
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.ResponseEntity
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.json.JsonMapper
 
 @RestController
 @RequestMapping("/api")
@@ -22,7 +16,7 @@ class KontrollpanelController(
     val kontrollpanelRepository: KontrollpanelRepository,
     val komponentRepository: KomponentRepository,
     val simpMessagingTemplate: SimpMessagingTemplate,
-    private val objectMapper: ObjectMapper
+    val jsonMapper: JsonMapper
 ) {
 
     @GetMapping("/kontrollpanel")
@@ -65,7 +59,7 @@ class KontrollpanelController(
             return ResponseEntity.ok(alleKomponenter?.map { it.komponentUUID } ?: emptyList())
         }
 
-        val (venstre, midten, høyre) = objectMapper.readValue(
+        val (venstre, midten, høyre) = jsonMapper.readValue(
             kontrollpanel.komponentPlassering,
             KomponentPlassering::class.java
         )
@@ -74,7 +68,8 @@ class KontrollpanelController(
             .flatten()
             .map { it.komponentUUID }
             .let { plassertKomponenter ->
-                komponentRepository.finnKomponenterMedId(kontrollpanel.komponenter)?.filterNot { plassertKomponenter.contains(it.komponentUUID) }
+                komponentRepository.finnKomponenterMedId(kontrollpanel.komponenter)
+                    ?.filterNot { plassertKomponenter.contains(it.komponentUUID) }
             }
             ?.map { it.komponentUUID }
             .let {
@@ -91,11 +86,13 @@ class KontrollpanelController(
         kontrollpanel.komponentPlassering = kontrollpanelKomponentPlassering
         kontrollpanelRepository.lagre(kontrollpanel)
 
-        simpMessagingTemplate.convertAndSend("/kontrollpanel/${kontrollpanelUUID}", """
+        simpMessagingTemplate.convertAndSend(
+            "/kontrollpanel/${kontrollpanelUUID}", """
             {
               "oppdater": true
             }
-        """.trimIndent())
+        """.trimIndent()
+        )
         return ResponseEntity.ok(
             ""
         )
@@ -107,7 +104,7 @@ class KontrollpanelController(
         @RequestBody komponent: JsonNode
     ): ResponseEntity<Kontrollpanel> {
 
-        val nyttKontrollpanel = objectMapper.convertValue(komponent, Kontrollpanel::class.java)
+        val nyttKontrollpanel = jsonMapper.convertValue(komponent, Kontrollpanel::class.java)
 
         nyttKontrollpanel.eierId = bruker.id()
         nyttKontrollpanel.komponentPlassering = """
@@ -133,7 +130,7 @@ class KontrollpanelController(
         @RequestBody komponent: JsonNode
     ): ResponseEntity<String> {
 
-        val typetKomponent = objectMapper.convertValue(komponent, KontrollpanelKomponent::class.java)
+        val typetKomponent = jsonMapper.convertValue(komponent, KontrollpanelKomponent::class.java)
 
         val lagretKomponent = komponentRepository.lagre(
             typetKomponent
@@ -169,14 +166,14 @@ class KontrollpanelController(
         kontrollpanel.komponenter = oppdatertKomponenter
 
         val komponentPlassering =
-            objectMapper.readValue(kontrollpanel.komponentPlassering, KomponentPlassering::class.java)
+            jsonMapper.readValue(kontrollpanel.komponentPlassering, KomponentPlassering::class.java)
 
         KomponentPlassering(
             venstre = komponentPlassering.venstre.filter { it.komponentUUID != komponentUUID },
             midten = komponentPlassering.midten.filter { it.komponentUUID != komponentUUID },
             høyre = komponentPlassering.høyre.filter { it.komponentUUID != komponentUUID }
         ).let {
-            kontrollpanel.komponentPlassering = objectMapper.writeValueAsString(it)
+            kontrollpanel.komponentPlassering = jsonMapper.writeValueAsString(it)
         }
 
         kontrollpanelRepository.lagre(kontrollpanel)

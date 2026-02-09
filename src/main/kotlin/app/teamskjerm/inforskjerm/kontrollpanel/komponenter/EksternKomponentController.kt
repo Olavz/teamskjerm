@@ -1,8 +1,6 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
 import app.teamskjerm.inforskjerm.sikkerhet.KomponentSecretHashkeyService
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.cloud.Timestamp
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,6 +10,8 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.JsonNode
+import tools.jackson.databind.json.JsonMapper
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -22,7 +22,7 @@ class EksternKomponentController(
     val simpMessagingTemplate: SimpMessagingTemplate,
     val komponentRepository: KomponentRepository,
     val komponentSecretHashkeyService: KomponentSecretHashkeyService,
-    val objectMapper: ObjectMapper
+    val jsonMapper: JsonMapper
 ) {
 
     data class KomponenttDataResponse(
@@ -59,12 +59,12 @@ class EksternKomponentController(
                 komponent.sistOppdatertMedDataDiff = nå()
                 simpMessagingTemplate.convertAndSend(
                     "/komponent/${komponentUUID}/sistOppdatertMedDataDiff",
-                    objectMapper.createObjectNode().put("timestamp", komponent.sistOppdatertMedDataDiff.toString())
+                    jsonMapper.createObjectNode().put("timestamp", komponent.sistOppdatertMedDataDiff.toString())
                 )
             }
 
             if(komponent.hukommelse()) {
-                komponent.data = komponent.flettKomponentdataMedHukommelse(payload, objectMapper.readTree(komponent.data)).toString()
+                komponent.data = komponent.flettKomponentdataMedHukommelse(payload, jsonMapper.readTree(komponent.data)).toString()
             } else {
                 komponent.data = payload.toString()
             }
@@ -75,7 +75,7 @@ class EksternKomponentController(
             simpMessagingTemplate.convertAndSend("/komponent/${komponentUUID}/data", komponent.data)
             simpMessagingTemplate.convertAndSend(
                 "/komponent/${komponentUUID}/sistOppdatert",
-                objectMapper.createObjectNode().put("timestamp", komponent.sistOppdatert.toString())
+                jsonMapper.createObjectNode().put("timestamp", komponent.sistOppdatert.toString())
             )
 
             return ResponseEntity.ok(

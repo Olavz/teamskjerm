@@ -1,39 +1,37 @@
 package app.teamskjerm.inforskjerm.conf
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.module.SimpleModule
 import com.google.cloud.Timestamp
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import tools.jackson.core.JsonGenerator
+import tools.jackson.core.JsonParser
+import tools.jackson.databind.DeserializationContext
+import tools.jackson.databind.SerializationContext
+import tools.jackson.databind.ValueDeserializer
+import tools.jackson.databind.ValueSerializer
+import tools.jackson.databind.module.SimpleModule
 import java.time.Instant
 
 @Configuration
 class ObjectMapperConfig {
 
     @Bean
-    fun customJacksonModule(): SimpleModule {
-        return SimpleModule().apply {
-            addSerializer(Timestamp::class.java, TimestampSerializer())
-            addDeserializer(Timestamp::class.java, TimestampDeserializer())
+    fun customJacksonModule(): SimpleModule =
+        SimpleModule().apply {
+            addSerializer(Timestamp::class.java, TimestampValueSerializer())
+            addDeserializer(Timestamp::class.java, TimestampValueDeserializer())
         }
-    }
-
 }
 
-class TimestampDeserializer : JsonDeserializer<Timestamp>() {
+class TimestampValueDeserializer : ValueDeserializer<Timestamp>() {
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Timestamp {
-        val instant = Instant.parse(p.text) // Parse ISO 8601
-        return Timestamp.ofTimeSecondsAndNanos(instant.epochSecond, instant.nano) // Lag Timestamp
+        val instant = Instant.parse(p.text) // ISO-8601
+        return Timestamp.ofTimeSecondsAndNanos(instant.epochSecond, instant.nano)
     }
 }
 
-class TimestampSerializer : JsonSerializer<Timestamp>() {
-    override fun serialize(value: Timestamp, gen: JsonGenerator, serializers: SerializerProvider) {
-        gen.writeString(value.toDate().toInstant().toString()) // ISO 8601
+class TimestampValueSerializer : ValueSerializer<Timestamp>() {
+    override fun serialize(value: Timestamp, gen: JsonGenerator, ctxt: SerializationContext) {
+        gen.writeString(value.toDate().toInstant().toString()) // ISO-8601
     }
 }

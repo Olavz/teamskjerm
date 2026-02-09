@@ -3,12 +3,12 @@ package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.cloud.Timestamp
-import com.networknt.schema.JsonSchema
-import com.networknt.schema.JsonSchemaFactory
-import com.networknt.schema.SpecVersion
+import com.networknt.schema.InputFormat
+import com.networknt.schema.Schema
+import com.networknt.schema.SchemaRegistry
+import com.networknt.schema.SpecificationVersion
+import tools.jackson.databind.JsonNode
 
 data class Skjemavalidering(val harFeil: Boolean, val skjemafeil: List<String>)
 
@@ -23,7 +23,6 @@ data class Skjemavalidering(val harFeil: Boolean, val skjemafeil: List<String>)
         JsonSubTypes.Type(value = VarselKomponent::class, name = "VarselKomponent"),
         JsonSubTypes.Type(value = PieChartKomponent::class, name = "PieChartKomponent"),
         JsonSubTypes.Type(value = BarChartKomponent::class, name = "BarChartKomponent"),
-        JsonSubTypes.Type(value = GrafanaKomponent::class, name = "GrafanaKomponent")
     ]
 )
 abstract class KontrollpanelKomponent(
@@ -46,18 +45,17 @@ abstract class KontrollpanelKomponent(
 
     open fun hukommelse(): Boolean = false
 
-    open fun flettKomponentdataMedHukommelse(payload: JsonNode, eksisterendeKomponentData: JsonNode): JsonNode {
-        return payload
-    }
+    open fun flettKomponentdataMedHukommelse(payload: JsonNode, eksisterendeKomponentData: JsonNode): JsonNode =
+        payload
 
     fun validerSkjema(dataJson: String): Skjemavalidering {
-        val schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
-        val schema: JsonSchema = schemaFactory.getSchema(jsonSkjema())
-        val objectMapper = ObjectMapper()
+        val registry = SchemaRegistry.withDefaultDialect(SpecificationVersion.DRAFT_7)
+        val schema: Schema = registry.getSchema(jsonSkjema(), InputFormat.JSON)
+        val errors: List<com.networknt.schema.Error> = schema.validate(dataJson, InputFormat.JSON)
 
-        val jsonNode = objectMapper.readTree(dataJson)
-        val validationErrors = schema.validate(jsonNode)
-
-        return Skjemavalidering(!validationErrors.isEmpty(), validationErrors.map { it.message })
+        return Skjemavalidering(
+            harFeil = errors.isNotEmpty(),
+            skjemafeil = errors.map { it.message }
+        )
     }
 }

@@ -2,12 +2,12 @@ package app.teamskjerm.inforskjerm.kontrollpanel
 
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KomponentRepository
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KontrollpanelKomponent
-import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import tools.jackson.databind.json.JsonMapper
 
 
 @RestController
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 class EksterntKontrollpanelController(
     val kontrollpanelRepository: KontrollpanelRepository,
     val komponentRepository: KomponentRepository,
-    private val objectMapper: ObjectMapper
+    val jsonMapper: JsonMapper
 ) {
 
 
@@ -35,9 +35,8 @@ class EksterntKontrollpanelController(
     fun kontrollpanelKomponentPlassering(
         @PathVariable kontrollpanelUUID: String
     ): ResponseEntity<KomponentPlassering> {
-
         return ResponseEntity.ok(
-            objectMapper.readValue(
+            jsonMapper.readValue(
                 kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID).komponentPlassering,
                 KomponentPlassering::class.java
             )
