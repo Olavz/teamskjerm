@@ -1,4 +1,4 @@
-FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
+FROM maven:3.9.12-eclipse-temurin-25 AS build
 
 WORKDIR /byggmappe
 
@@ -9,7 +9,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline -B
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:21
+FROM eclipse-temurin:25
 
 # Sett arbeidskatalog i containeren
 WORKDIR /app
