@@ -3,6 +3,7 @@ import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {KontrollpanelKomponent} from "../../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import {Badge, Button} from "react-bootstrap";
+import PlaceholderKomponentKort from "./PlaceholderKomponentKort.tsx";
 
 type DraggableKomponentKortProps = {
     id: string,
@@ -30,7 +31,7 @@ export const DraggableKomponentKort: React.FC<DraggableKomponentKortProps> = ({
     };
 
     if (!komponent) {
-        return <>laster..</>
+        return <PlaceholderKomponentKort />
     }
 
     return (

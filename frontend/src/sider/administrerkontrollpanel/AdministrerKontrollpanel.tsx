@@ -276,12 +276,15 @@ function AdministrerKontrollpanel() {
         <>
             <div className="container">
                 <NavbarInnlogget/>
-                <Button variant={redigerKomponentvisning ? "danger" : "primary"} onClick={redigerVisningKlikk}>
-                    {redigerKomponentvisning ? "Avslutt redigering" : "Rediger visning"}
+                <Button variant={redigerKomponentvisning ? "secondary" : "primary"} onClick={redigerVisningKlikk}>
+                    {redigerKomponentvisning ? "Avslutt redigering" : "Aktiver redigering"}
                 </Button> {' '}
                 <LeggTilKomponentButton opprettKomponent={opprettKomponent}/> {' '}
                 <NavLink target="_blank" to={infoskjerm}><Button>Vis teamskjerm</Button></NavLink>
                 <br/>
+
+
+{redigerKomponentvisning && <><br/><div className="alert alert-warning" role="alert">Dra og slipp komponenter for å endre plassering. Husk å klikke "Avslutt redigering" for å lagre plasseringen.</div></>}
 
                 <DndContext
                     collisionDetection={closestCenter}
