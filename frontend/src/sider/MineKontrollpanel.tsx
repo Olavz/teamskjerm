@@ -18,6 +18,24 @@ function MineKontrollpanel() {
     const [kontrollpanelOpprettet, setKontrollpanelOpprettet] = useState<number>(0);
     const [lasterKontrollpanel, setLasterKontrollpanel] = useState<boolean>(true);
     const navigate = useNavigate();
+    const [brukernavn, setBrukernavn] = useState()
+
+    useEffect(() => {
+        setLasterKontrollpanel(true);
+        fetch(`/api/user`, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${teamskjermTokenCookie()}`
+            }
+        })
+            .then((response) => {
+                if (response.status === 403) {
+                    navigate("/logginn");
+                    return Promise.reject("Unauthorized");
+                }
+                response.json().then((data) => setBrukernavn(data.name));
+            })
+    }, []);
 
     useEffect(() => {
         setLasterKontrollpanel(true);
@@ -64,7 +82,7 @@ function MineKontrollpanel() {
         <>
             <div className="container">
                 <NavbarInnlogget />
-                <h1 style={{marginTop: '1.5rem'}}>Mine kontrollpanel</h1>
+                <h1 style={{marginTop: '1.5rem'}}>Velkommen {brukernavn} 👋</h1>
                 <p>Kontrollpanel brukes til å administrere komponenter og sette sammen visning på skjerm.</p>
                 <div style={{marginBottom: '1.5rem'}}>
                     <LeggTilKontrollpanelButton opprettKontrollpanel={opprettKontrollpanel}/>

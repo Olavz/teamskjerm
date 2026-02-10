@@ -47,4 +47,8 @@ class AuthenticationService(
         subject = user.username,
         expiration = Date(System.currentTimeMillis() + refreshTokenExpiration)
     )
+
+    fun extractUsernameFromToken(token: String): String {
+        return tokenService.extractUsername(token)
+    }
 }

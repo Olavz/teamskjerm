@@ -1,15 +1,20 @@
-import {Button, Container, Form} from "react-bootstrap";
+import {Alert, Button, Container, Form} from "react-bootstrap";
 import {useState} from "react";
+import {NavLink} from "react-router-dom";
 
 
 function Registreringsside() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [success, setSuccess] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const handleRegistrering = async (event: React.FormEvent) => {
         event.preventDefault();
+        setSuccess(null);
+        setError(null);
         try {
-            await fetch(`/api/register`, {
+            const response = await fetch(`/api/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -19,15 +24,28 @@ function Registreringsside() {
                     password: password
                 }),
             });
-        } catch (e) {
-            alert(e)
+            if (response.ok) {
+                setSuccess("Bruker registrert!");
+                setUsername("");
+                setPassword("");
+            } else {
+                const text = await response.text();
+                setError(text || "Registrering feilet. Prøv igjen.");
+            }
+        } catch {
+            setError("Registrering feilet. Prøv igjen senere.");
         }
-
     }
 
     return (
         <Container className="mt-5" style={{maxWidth: "400px"}}>
             <h2 className="mb-4">Registrer</h2>
+            {success && (
+                <Alert variant="success">{success} <br/> <br/> <NavLink to="/logginn">Til logg inn</NavLink></Alert>
+            )}
+            {error && (
+                <Alert variant="danger">{error}</Alert>
+            )}
             <Form onSubmit={handleRegistrering}>
                 <Form.Group controlId="username">
                     <Form.Label>Brukernavn</Form.Label>

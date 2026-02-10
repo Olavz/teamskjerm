@@ -24,7 +24,7 @@ class BrukerFirestoreRepository(
                 )
 
             }
-            .single()
+            .singleOrNull()
         return bruker;
     }
 

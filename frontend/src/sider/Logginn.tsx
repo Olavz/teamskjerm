@@ -1,4 +1,4 @@
-import {Button, Container, Form} from "react-bootstrap";
+import {Alert, Button, Container, Form} from "react-bootstrap";
 import {clearTeamskjermTokenCookie, setTeamskjermTokenCookie} from "../CookieHjelper.tsx";
 import {useState} from "react";
 import {NavLink, useNavigate} from "react-router-dom";
@@ -34,7 +34,7 @@ function Logginnside() {
                 setTeamskjermTokenCookie(token.accessToken)
                 navigate("/kontrollpanel")
             } else {
-                setError("Feil brukernavn eller passord. Prøv igjen.");
+                setError("Feil brukernavn eller passord.");
                 clearTeamskjermTokenCookie();
             }
 
@@ -49,7 +49,7 @@ function Logginnside() {
         <Container className="mt-5" style={{maxWidth: "400px"}}>
             <h2 className="mb-4">Logg inn</h2>
             {error && (
-                <div style={{color: 'red', marginBottom: '1rem'}}>{error}</div>
+                <Alert variant="danger">{error}</Alert>
             )}
             <Form onSubmit={handleLogginn}>
                 <Form.Group controlId="username">
