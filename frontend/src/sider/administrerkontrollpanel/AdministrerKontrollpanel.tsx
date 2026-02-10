@@ -18,6 +18,7 @@ import {RedigerVarselKomponent} from "../../komponenter/kontrollpanel/VarselKomp
 import { RedigerPieChartKomponent } from "../../komponenter/kontrollpanel/PieChatKomponent.tsx";
 import {RedigerBarChartKomponent} from "../../komponenter/kontrollpanel/BarChatKomponent.tsx";
 import {RedigerGrafanaKomponent} from "../../komponenter/kontrollpanel/GrafanaKomponent.tsx";
+import {RedigerStackedAreaChartKomponent} from "../../komponenter/kontrollpanel/StackedAreaChartKomponent.tsx";
 
 export interface KontrollpanelKomponentPlassering {
     venstre: KomponentRekkefølge[];
@@ -394,6 +395,15 @@ function AdministrerKontrollpanel() {
                                             <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
                                                                                    kontrollpanelKomponent={item}>
                                                 <RedigerGrafanaKomponent {...item} />
+                                            </AdministrerBaseKomponentKontrollpanel>
+                                        </div>
+                                    )
+                                } else if (item.komponentType == "StackedAreaChartKomponent") {
+                                    return (
+                                        <div className="row" key={item.komponentUUID}>
+                                            <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                                   kontrollpanelKomponent={item}>
+                                                <RedigerStackedAreaChartKomponent {...item} />
                                             </AdministrerBaseKomponentKontrollpanel>
                                         </div>
                                     )

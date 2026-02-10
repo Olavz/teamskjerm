@@ -23,6 +23,7 @@ data class Skjemavalidering(val harFeil: Boolean, val skjemafeil: List<String>)
         JsonSubTypes.Type(value = VarselKomponent::class, name = "VarselKomponent"),
         JsonSubTypes.Type(value = PieChartKomponent::class, name = "PieChartKomponent"),
         JsonSubTypes.Type(value = BarChartKomponent::class, name = "BarChartKomponent"),
+        JsonSubTypes.Type(value = StackedAreaChartKomponent::class, name = "StackedAreaChartKomponent"),
     ]
 )
 abstract class KontrollpanelKomponent(

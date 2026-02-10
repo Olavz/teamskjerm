@@ -13,7 +13,7 @@ type LeggTilKomponentProps = {
     opprettKomponent: (komponentUUID: string, kontrollpaneKomponent: KontrollpanelKomponent) => void;
 };
 
-export const LeggTilKomponentButton : React.FC<LeggTilKomponentProps> = ({opprettKomponent}) => {
+export const LeggTilKomponentButton: React.FC<LeggTilKomponentProps> = ({opprettKomponent}) => {
     const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
     const [show, setShow] = useState(false);
     const [valgtVeiviser, setValgtVeiviser] = useState("");
@@ -29,21 +29,23 @@ export const LeggTilKomponentButton : React.FC<LeggTilKomponentProps> = ({oppret
         }
 
         let tomData: string
-        if(valgtVeiviser == "TekstKomponent") {
+        if (valgtVeiviser == "TekstKomponent") {
             tomData = '{"tekst": ""}'
-        } else if(valgtVeiviser == "VarselKomponent") {
+        } else if (valgtVeiviser == "VarselKomponent") {
             tomData = '{"tekst": "", "varseltype": "grønt"}'
-        } else if(valgtVeiviser == "PieChartKomponent") {
+        } else if (valgtVeiviser == "PieChartKomponent") {
             tomData = '[]'
-        } else if(valgtVeiviser == "BarChartKomponent") {
+        } else if (valgtVeiviser == "BarChartKomponent") {
             tomData = '[]'
-        }  else if(valgtVeiviser == "GrafanaKomponent") {
+        } else if (valgtVeiviser == "GrafanaKomponent") {
             tomData = '[]'
+        } else if (valgtVeiviser == "StackedAreaChartKomponent") {
+            tomData = '{"data": [], "legend": []}'
         } else {
-            throw new Error("Har ikke standard mal for varselType "+ valgtVeiviser)
+            throw new Error("Har ikke standard mal for varselType " + valgtVeiviser)
         }
 
-        let obj = {
+        const obj = {
             navn: "Nytt komponent",
             data: tomData,
             komponentUUID: uuidv4(),
@@ -77,6 +79,7 @@ export const LeggTilKomponentButton : React.FC<LeggTilKomponentProps> = ({oppret
                         <option value="PieChartKomponent">Pie chart</option>
                         <option value="BarChartKomponent">Bar chart</option>
                         <option value="GrafanaKomponent">Grafana</option>
+                        <option value="StackedAreaChartKomponent">Stacked area chart</option>
                     </FormSelect>
 
                 </Modal.Body>
