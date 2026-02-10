@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import {NavLink, useParams} from "react-router-dom";
-import {Button, Modal} from "react-bootstrap";
+import {Button, ButtonGroup, Modal} from "react-bootstrap";
 
 import {closestCenter, DndContext, DragEndEvent, DragOverlay, DragStartEvent} from "@dnd-kit/core";
 import DroppableColumnComponent from "./DroppableColumnComponent.tsx";
@@ -9,13 +9,13 @@ import {arrayMove} from "@dnd-kit/sortable";
 import {teamskjermTokenCookie} from "../../CookieHjelper.tsx";
 import {KontrollpanelKomponent} from "../../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import NavbarInnlogget from "../../komponenter/NavbarInnlogget.tsx";
-import { LeggTilKomponentButton } from "../../komponenter/kontrollpanel/LeggTilKomponentButton.tsx";
+import {LeggTilKomponentButton} from "../../komponenter/kontrollpanel/LeggTilKomponentButton.tsx";
 import {
     AdministrerBaseKomponentKontrollpanel
 } from "../../komponenter/kontrollpanel/AdministrerKomponentKontrollpanel.tsx";
 import {RedigerTekstKomponent} from "../../komponenter/kontrollpanel/TekstKomponent.tsx";
 import {RedigerVarselKomponent} from "../../komponenter/kontrollpanel/VarselKomponent.tsx";
-import { RedigerPieChartKomponent } from "../../komponenter/kontrollpanel/PieChatKomponent.tsx";
+import {RedigerPieChartKomponent} from "../../komponenter/kontrollpanel/PieChatKomponent.tsx";
 import {RedigerBarChartKomponent} from "../../komponenter/kontrollpanel/BarChatKomponent.tsx";
 import {RedigerGrafanaKomponent} from "../../komponenter/kontrollpanel/GrafanaKomponent.tsx";
 import {RedigerStackedAreaChartKomponent} from "../../komponenter/kontrollpanel/StackedAreaChartKomponent.tsx";
@@ -95,9 +95,7 @@ function AdministrerKontrollpanel() {
                 setKomponenterMidten(data.midten)
                 setKomponenterHøyre(data.høyre)
             });
-    }, []);
 
-    useEffect(() => {
         fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponenterUtenPlassering`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -108,7 +106,7 @@ function AdministrerKontrollpanel() {
                 return response.json()
             })
             .then((data: string[]) => {
-                setKomponenterUtenPlassering(data.map(it => ({ komponentUUID: it, rekkefølge: 0 })))
+                setKomponenterUtenPlassering(data.map(it => ({komponentUUID: it, rekkefølge: 0})))
             });
     }, []);
 
@@ -278,15 +276,24 @@ function AdministrerKontrollpanel() {
         <>
             <div className="container">
                 <NavbarInnlogget/>
-                <Button variant={redigerKomponentvisning ? "secondary" : "primary"} onClick={redigerVisningKlikk}>
-                    {redigerKomponentvisning ? "Avslutt redigering" : "Aktiver redigering"}
-                </Button> {' '}
-                <LeggTilKomponentButton opprettKomponent={opprettKomponent}/> {' '}
-                <NavLink target="_blank" to={infoskjerm}><Button>Vis teamskjerm</Button></NavLink>
-                <br/>
+                <div style={{marginTop: "1rem"}}>
+                    <ButtonGroup>
+                        <Button variant={redigerKomponentvisning ? "secondary" : "outline-secondary"}
+                                onClick={redigerVisningKlikk}>
+                            {redigerKomponentvisning ? "✅ Avslutt redigering" : "🖱 Aktiver redigering"}
+                        </Button> {' '}
+                        <LeggTilKomponentButton opprettKomponent={opprettKomponent}/>
+                    </ButtonGroup>
+                    {' '}
+                    <NavLink target="_blank" to={infoskjerm}><Button variant="outline-secondary">🖥 Vis
+                        teamskjerm</Button></NavLink>
+                </div>
 
-
-{redigerKomponentvisning && <><br/><div className="alert alert-warning" role="alert">Dra og slipp komponenter for å endre plassering. Husk å klikke "Avslutt redigering" for å lagre plasseringen.</div></>}
+                {redigerKomponentvisning && <><br/>
+                    <div className="alert alert-warning" role="alert">Dra og slipp komponenter for å endre plassering.
+                        Husk å klikke "Avslutt redigering" for å lagre plasseringen.
+                    </div>
+                </>}
 
                 <DndContext
                     collisionDetection={closestCenter}

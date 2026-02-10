@@ -60,8 +60,8 @@ export const LeggTilKomponentButton: React.FC<LeggTilKomponentProps> = ({opprett
     return (
         <>
             {/* Knapp for å åpne modal */}
-            <Button variant="primary" onClick={handleShow}>
-                Nytt komponent
+            <Button variant="outline-secondary" onClick={handleShow}>
+                ➕ Nytt komponent
             </Button>
 
             {/* Modal-komponent */}

@@ -34,8 +34,8 @@ export const LeggTilKontrollpanelButton: React.FC<LeggTilKontrollpanelProps> = (
     return (
         <>
             {/* Knapp for å åpne modal */}
-            <Button variant="primary" onClick={handleShow}>
-                Nytt kontrollpanel
+            <Button variant="outline-secondary" onClick={handleShow}>
+                🖥️ Nytt kontrollpanel
             </Button>
 
             {/* Modal-komponent */}
