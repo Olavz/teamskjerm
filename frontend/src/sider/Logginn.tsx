@@ -10,11 +10,13 @@ type AccessTokenResponse = {
 function Logginnside() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
 
     const handleLogginn = async (event: React.FormEvent) => {
         event.preventDefault();
+        setError(null);
         try {
             const response = await fetch(`/api/auth`, {
                 method: 'POST',
@@ -31,10 +33,13 @@ function Logginnside() {
                 const token: AccessTokenResponse = await response.json()
                 setTeamskjermTokenCookie(token.accessToken)
                 navigate("/kontrollpanel")
+            } else {
+                setError("Feil brukernavn eller passord. Prøv igjen.");
+                clearTeamskjermTokenCookie();
             }
 
-        } catch (e) {
-            console.log(e)
+        } catch {
+            setError("Innlogging feilet. Prøv igjen senere.");
             clearTeamskjermTokenCookie()
         }
 
@@ -43,6 +48,9 @@ function Logginnside() {
     return (
         <Container className="mt-5" style={{maxWidth: "400px"}}>
             <h2 className="mb-4">Logg inn</h2>
+            {error && (
+                <div style={{color: 'red', marginBottom: '1rem'}}>{error}</div>
+            )}
             <Form onSubmit={handleLogginn}>
                 <Form.Group controlId="username">
                     <Form.Label>Brukernavn</Form.Label>
