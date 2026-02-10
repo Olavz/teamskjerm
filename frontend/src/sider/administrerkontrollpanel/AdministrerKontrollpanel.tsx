@@ -274,8 +274,8 @@ function AdministrerKontrollpanel() {
 
     return (
         <>
+            <NavbarInnlogget/>
             <div className="container">
-                <NavbarInnlogget/>
                 <div style={{marginTop: "1rem"}}>
                     <ButtonGroup>
                         <Button variant={redigerKomponentvisning ? "secondary" : "outline-secondary"}

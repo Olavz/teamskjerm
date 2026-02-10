@@ -80,8 +80,8 @@ function MineKontrollpanel() {
 
     return (
         <>
+            <NavbarInnlogget />
             <div className="container">
-                <NavbarInnlogget />
                 <h1 style={{marginTop: '1.5rem'}}>Velkommen {brukernavn} 👋</h1>
                 <p>Kontrollpanel brukes til å administrere komponenter og sette sammen visning på skjerm.</p>
                 <div style={{marginBottom: '1.5rem'}}>
