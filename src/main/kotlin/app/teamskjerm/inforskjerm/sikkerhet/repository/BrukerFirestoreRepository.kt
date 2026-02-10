@@ -1,16 +1,15 @@
-package app.teamskjerm.inforskjerm.sikkerhet
+package app.teamskjerm.inforskjerm.sikkerhet.repository
 
+import app.teamskjerm.inforskjerm.sikkerhet.Bruker
 import com.google.cloud.firestore.Firestore
-import org.springframework.stereotype.Repository
 import tools.jackson.databind.json.JsonMapper
 
-@Repository
-class BrukerRepository(
+class BrukerFirestoreRepository(
     val firestore: Firestore,
     val jsonMapper: JsonMapper
-) {
+): BrukerPort {
 
-    fun finnBruker(navn: String): Bruker? {
+    override fun hentBruker(navn: String): Bruker? {
         val bruker = firestore.collection("brukere")
             .whereEqualTo("navn", navn)
             .get()
@@ -29,7 +28,7 @@ class BrukerRepository(
         return bruker;
     }
 
-    fun lagre(bruker: Bruker): Bruker {
+    override fun lagre(bruker: Bruker): Bruker {
         val brukere = firestore.collection("brukere")
         val eksisterendeBruker = brukere
             .listDocuments()

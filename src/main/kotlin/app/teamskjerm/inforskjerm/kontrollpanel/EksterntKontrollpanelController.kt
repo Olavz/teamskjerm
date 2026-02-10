@@ -1,7 +1,8 @@
 package app.teamskjerm.inforskjerm.kontrollpanel
 
-import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KomponentRepository
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KontrollpanelKomponent
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.repository.KomponentPort
+import app.teamskjerm.inforskjerm.kontrollpanel.repository.KontrollpanelPort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -13,8 +14,8 @@ import tools.jackson.databind.json.JsonMapper
 @RestController
 @RequestMapping("/api/ext")
 class EksterntKontrollpanelController(
-    val kontrollpanelRepository: KontrollpanelRepository,
-    val komponentRepository: KomponentRepository,
+    val kontrollpanelRepository: KontrollpanelPort,
+    val komponentRepository: KomponentPort,
     val jsonMapper: JsonMapper
 ) {
 
@@ -24,8 +25,8 @@ class EksterntKontrollpanelController(
         @PathVariable kontrollpanelUUID: String
     ): ResponseEntity<List<KontrollpanelKomponent>> {
         return ResponseEntity.ok(
-            komponentRepository.finnKomponenterMedIdUtenSecret(
-                kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
+            komponentRepository.hentKomponenterMedIdUtenSecret(
+                kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
                     .komponenter
             )
         )
@@ -37,7 +38,7 @@ class EksterntKontrollpanelController(
     ): ResponseEntity<KomponentPlassering> {
         return ResponseEntity.ok(
             jsonMapper.readValue(
-                kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID).komponentPlassering,
+                kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID).komponentPlassering,
                 KomponentPlassering::class.java
             )
         )

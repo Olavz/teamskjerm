@@ -1,5 +1,6 @@
 package app.teamskjerm.inforskjerm.sikkerhet
 
+import app.teamskjerm.inforskjerm.sikkerhet.repository.BrukerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -17,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 class SecurityConfig {
     @Bean
-    fun userDetailsService(brukerRepository: BrukerRepository): UserDetailsService =
+    fun userDetailsService(brukerRepository: BrukerPort): UserDetailsService =
         JwtUserDetailsService(brukerRepository)
 
     @Bean
@@ -25,7 +26,7 @@ class SecurityConfig {
         config.authenticationManager
 
     @Bean
-    fun authenticationProvider(brukerRepository: BrukerRepository): AuthenticationProvider {
+    fun authenticationProvider(brukerRepository: BrukerPort): AuthenticationProvider {
         val provider = DaoAuthenticationProvider(userDetailsService(brukerRepository))
         provider.setPasswordEncoder(encoder())
         return provider

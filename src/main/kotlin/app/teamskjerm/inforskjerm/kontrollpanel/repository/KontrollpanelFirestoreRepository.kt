@@ -1,18 +1,17 @@
-package app.teamskjerm.inforskjerm.kontrollpanel
+package app.teamskjerm.inforskjerm.kontrollpanel.repository
 
+import app.teamskjerm.inforskjerm.kontrollpanel.Kontrollpanel
 import com.google.cloud.firestore.Firestore
-import org.springframework.stereotype.Repository
 import tools.jackson.databind.json.JsonMapper
 
 private const val COLLECTION = "kontrollpanel"
 
-@Repository
-class KontrollpanelRepository(
+class KontrollpanelFirestoreRepository(
     val firestore: Firestore,
     val jsonMapper: JsonMapper
-) {
+): KontrollpanelPort {
 
-    fun kontrollpanelForBruker(brukerId: String): List<Kontrollpanel> {
+    override fun hentKontrollpanelForBruker(brukerId: String): List<Kontrollpanel> {
         return firestore.collection("kontrollpanel")
             .whereEqualTo("eierId", brukerId)
             .get()
@@ -31,9 +30,9 @@ class KontrollpanelRepository(
             }
     }
 
-    fun finnKontrollpanel(kontrollpanelUUID: String): Kontrollpanel {
+    override fun hentKontrollpanel(kontrollpanelId: String): Kontrollpanel {
         return firestore.collection("kontrollpanel")
-            .whereEqualTo("kontrollpanelUUID", kontrollpanelUUID)
+            .whereEqualTo("kontrollpanelUUID", kontrollpanelId)
             .get()
             .get()
             .documents
@@ -46,7 +45,7 @@ class KontrollpanelRepository(
             .single()
     }
 
-    fun lagre(kontrollpanel: Kontrollpanel): Kontrollpanel {
+    override fun lagre(kontrollpanel: Kontrollpanel): Kontrollpanel {
         val kontrollpaneler = firestore.collection(COLLECTION)
 
         if (kontrollpanel.id.isNotBlank()) {
@@ -61,6 +60,10 @@ class KontrollpanelRepository(
             return convertValue
         }
 
+    }
+
+    override fun slett(kontrollpanelUUID: String): Boolean {
+        TODO("Not yet implemented")
     }
 
 }

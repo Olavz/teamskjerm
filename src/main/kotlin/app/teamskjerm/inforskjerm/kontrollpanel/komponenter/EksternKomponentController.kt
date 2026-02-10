@@ -1,5 +1,7 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
+
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.repository.KomponentPort
 import app.teamskjerm.inforskjerm.sikkerhet.KomponentSecretHashkeyService
 import com.google.cloud.Timestamp
 import org.springframework.http.HttpStatus
@@ -20,7 +22,7 @@ import java.time.ZonedDateTime
 @RequestMapping("/api/ext")
 class EksternKomponentController(
     val simpMessagingTemplate: SimpMessagingTemplate,
-    val komponentRepository: KomponentRepository,
+    val komponentRepository: KomponentPort,
     val komponentSecretHashkeyService: KomponentSecretHashkeyService,
     val jsonMapper: JsonMapper
 ) {
@@ -42,7 +44,7 @@ class EksternKomponentController(
                 .body(KomponenttDataResponse("https://www.youtube.com/watch?v=nfqEcG7EZMo"))
         }
 
-        val komponent = komponentRepository.finnKomponentMedKomponentUUID(komponentUUID)
+        val komponent = komponentRepository.hentKomponentMedKomponentUUID(komponentUUID)
 
         if (komponent == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(KomponenttDataResponse("Fant ikke komponent"))

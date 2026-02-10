@@ -1,7 +1,8 @@
 package app.teamskjerm.inforskjerm.kontrollpanel
 
-import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KomponentRepository
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KontrollpanelKomponent
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.repository.KomponentPort
+import app.teamskjerm.inforskjerm.kontrollpanel.repository.KontrollpanelPort
 import app.teamskjerm.inforskjerm.sikkerhet.TeamskjermUserDetails
 import org.springframework.http.ResponseEntity
 import org.springframework.messaging.simp.SimpMessagingTemplate
@@ -13,8 +14,8 @@ import tools.jackson.databind.json.JsonMapper
 @RestController
 @RequestMapping("/api")
 class KontrollpanelController(
-    val kontrollpanelRepository: KontrollpanelRepository,
-    val komponentRepository: KomponentRepository,
+    val kontrollpanelRepository: KontrollpanelPort,
+    val komponentRepository: KomponentPort,
     val simpMessagingTemplate: SimpMessagingTemplate,
     val jsonMapper: JsonMapper
 ) {
@@ -23,7 +24,7 @@ class KontrollpanelController(
     fun kontrollpanel(
         @AuthenticationPrincipal bruker: TeamskjermUserDetails
     ): ResponseEntity<List<Kontrollpanel>> {
-        return ResponseEntity.ok(kontrollpanelRepository.kontrollpanelForBruker(bruker.id()))
+        return ResponseEntity.ok(kontrollpanelRepository.hentKontrollpanelForBruker(bruker.id()))
     }
 
 
@@ -32,8 +33,8 @@ class KontrollpanelController(
         @PathVariable kontrollpanelUUID: String
     ): ResponseEntity<List<KontrollpanelKomponent>> {
         return ResponseEntity.ok(
-            komponentRepository.finnKomponenterMedId(
-                kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
+            komponentRepository.hentKomponenterMedId(
+                kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
                     .komponenter
             )
         )
@@ -44,7 +45,7 @@ class KontrollpanelController(
         @PathVariable kontrollpanelUUID: String
     ): ResponseEntity<String> {
         return ResponseEntity.ok(
-            kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID).komponentPlassering
+            kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID).komponentPlassering
         )
     }
 
@@ -52,10 +53,10 @@ class KontrollpanelController(
     fun komponenterUtenPlassering(
         @PathVariable kontrollpanelUUID: String
     ): ResponseEntity<List<String>> {
-        val kontrollpanel = kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
+        val kontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
 
         if (kontrollpanel.komponentPlassering.isEmpty()) {
-            val alleKomponenter = komponentRepository.finnKomponenterMedId(kontrollpanel.komponenter)
+            val alleKomponenter = komponentRepository.hentKomponenterMedId(kontrollpanel.komponenter)
             return ResponseEntity.ok(alleKomponenter?.map { it.komponentUUID } ?: emptyList())
         }
 
@@ -68,7 +69,7 @@ class KontrollpanelController(
             .flatten()
             .map { it.komponentUUID }
             .let { plassertKomponenter ->
-                komponentRepository.finnKomponenterMedId(kontrollpanel.komponenter)
+                komponentRepository.hentKomponenterMedId(kontrollpanel.komponenter)
                     ?.filterNot { plassertKomponenter.contains(it.komponentUUID) }
             }
             ?.map { it.komponentUUID }
@@ -82,7 +83,7 @@ class KontrollpanelController(
         @PathVariable kontrollpanelUUID: String,
         @RequestBody kontrollpanelKomponentPlassering: String
     ): ResponseEntity<String> {
-        val kontrollpanel = kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
+        val kontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
         kontrollpanel.komponentPlassering = kontrollpanelKomponentPlassering
         kontrollpanelRepository.lagre(kontrollpanel)
 
@@ -136,7 +137,7 @@ class KontrollpanelController(
             typetKomponent
         )
 
-        val kontrollpanel = kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
+        val kontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
         val nyListe = mutableListOf<String>()
         nyListe.addAll(kontrollpanel.komponenter)
         nyListe.add(lagretKomponent.id)
@@ -156,9 +157,9 @@ class KontrollpanelController(
         @PathVariable komponentUUID: String
     ): ResponseEntity<String> {
 
-        val slettetKomponentId = komponentRepository.slettKomponentMed(komponentUUID)
+        val slettetKomponentId = komponentRepository.slett(komponentUUID)
 
-        val kontrollpanel = kontrollpanelRepository.finnKontrollpanel(kontrollpanelUUID)
+        val kontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
         val oppdatertKomponenter = mutableListOf<String>()
         oppdatertKomponenter.addAll(kontrollpanel.komponenter)
         oppdatertKomponenter.remove(slettetKomponentId)

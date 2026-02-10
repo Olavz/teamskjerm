@@ -1,5 +1,6 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.repository.KomponentPort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import tools.jackson.databind.JsonNode
@@ -10,7 +11,7 @@ import kotlin.reflect.jvm.javaField
 @RestController
 @RequestMapping("/api")
 class KomponentController(
-    val komponentRepository: KomponentRepository
+    val komponentRepository: KomponentPort
 ) {
 
     data class KomponenttDataResponse(
@@ -24,7 +25,7 @@ class KomponentController(
 
         return ResponseEntity.ok(
             KomponenttDataResponse(
-                komponentRepository.finnKomponentMedKomponentUUID(komponentId)
+                komponentRepository.hentKomponentMedKomponentUUID(komponentId)
                     ?.data ?: throw UnsupportedOperationException("ladida fant ikke noen komponent..")
             )
         )
@@ -35,7 +36,7 @@ class KomponentController(
         @PathVariable("komponentId") komponentId: String
     ): ResponseEntity<String> {
         return ResponseEntity.ok(
-            komponentRepository.finnKomponentMedKomponentUUID(komponentId)
+            komponentRepository.hentKomponentMedKomponentUUID(komponentId)
                 ?.jsonSkjema() ?: throw UnsupportedOperationException("ladida fant ikke noen komponent..")
         )
     }
@@ -45,7 +46,7 @@ class KomponentController(
         @PathVariable("komponentUUID") komponentUUID: String,
         @RequestBody payload: JsonNode
     ): ResponseEntity<KomponenttDataResponse> {
-        val komponent = komponentRepository.finnKomponentMedKomponentUUID(komponentUUID)
+        val komponent = komponentRepository.hentKomponentMedKomponentUUID(komponentUUID)
             ?: throw UnsupportedOperationException("ladida fant ikke")
 
         oppdaterKomponentMedNiftyReflectionVirkerLurtHerOgNå(payload, komponent)
