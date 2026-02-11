@@ -1,15 +1,15 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.komponenter
 
-class StackedLineChartKomponent: KontrollpanelKomponent(
-    komponentType = "StackedLineChartKomponent"
+class LineChartKomponent: KontrollpanelKomponent(
+    komponentType = "LineChartKomponent"
 ) {
 
     override fun jsonSkjema(): String {
         return """
             {
               "${'$'}schema": "http://json-schema.org/draft-07/schema",
-              "${'$'}id": "https://todo/StackedLineChartKomponent.json",
-              "title": "StackedLineChartKomponent",
+              "${'$'}id": "https://todo/LineChartKomponent.json",
+              "title": "LineChartKomponent",
               "description": "",
               "type": "object",
               "properties": {

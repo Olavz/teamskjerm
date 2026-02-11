@@ -16,7 +16,7 @@ import {
     KontrollpanelKomponentPlassering
 } from "./administrerkontrollpanel/AdministrerKontrollpanel.tsx";
 import StackedAreaChartKomponent from "../komponenter/kontrollpanel/StackedAreaChartKomponent.tsx";
-import StackedLineChartKomponent from "../komponenter/kontrollpanel/StackedLineChartKomponent.tsx";
+import LineChartKomponent from "../komponenter/kontrollpanel/LineChartKomponent.tsx";
 
 type KontrollpanelParams = {
     kontrollpanelUUID: string;
@@ -219,9 +219,9 @@ const utledKomponentType = (
             return (
                 <StackedAreaChartKomponent {...item} />
             )
-        case 'StackedLineChartKomponent':
+        case 'LineChartKomponent':
             return (
-                <StackedLineChartKomponent {...item} />
+                <LineChartKomponent {...item} />
             )
         default:
             throw new Error("Støtter ikke " + item.komponentType)

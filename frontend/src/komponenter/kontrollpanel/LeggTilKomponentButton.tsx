@@ -41,7 +41,7 @@ export const LeggTilKomponentButton: React.FC<LeggTilKomponentProps> = ({opprett
             tomData = '[]'
         } else if (valgtVeiviser == "StackedAreaChartKomponent") {
             tomData = '{"data": [], "legend": []}'
-        } else if (valgtVeiviser == "StackedLineChartKomponent") {
+        } else if (valgtVeiviser == "LineChartKomponent") {
             tomData = '{"data": [], "legend": []}'
         } else {
             throw new Error("Har ikke standard mal for varselType " + valgtVeiviser)
@@ -82,7 +82,7 @@ export const LeggTilKomponentButton: React.FC<LeggTilKomponentProps> = ({opprett
                         <option value="BarChartKomponent">Bar chart</option>
                         <option value="GrafanaKomponent">Grafana</option>
                         <option value="StackedAreaChartKomponent">Stacked area chart</option>
-                        <option value="StackedLineChartKomponent">Stacked line chart</option>
+                        <option value="LineChartKomponent">Line chart</option>
                     </FormSelect>
 
                 </Modal.Body>

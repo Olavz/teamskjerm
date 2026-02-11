@@ -13,7 +13,7 @@ type StackedLineChartData = {
     values: number[];
 }
 
-const StackedLineChartKomponent: React.FC<KontrollpanelKomponent> = ({komponentUUID, data}: KontrollpanelKomponent) => {
+const LineChartKomponent: React.FC<KontrollpanelKomponent> = ({komponentUUID, data}: KontrollpanelKomponent) => {
     const [linechart, setLinechart] = useState<StackedLineChart>();
 
     const handleEvent = (linechart: StackedLineChart): void => {
@@ -53,7 +53,6 @@ const StackedLineChartKomponent: React.FC<KontrollpanelKomponent> = ({komponentU
             ...(linechart?.data.map(it => ({
                 name: it.name,
                 type: 'line',
-                stack: 'Total',
                 data: it.values
             })) ?? [])
         ]
@@ -67,7 +66,7 @@ const StackedLineChartKomponent: React.FC<KontrollpanelKomponent> = ({komponentU
 
 }
 
-export const RedigerStackedLineChartKomponent: React.FC<KontrollpanelKomponent> = () => {
+export const RedigerLineChartKomponent: React.FC<KontrollpanelKomponent> = () => {
     return (
         <div className="mb-3">
             <p>Ikke støttet</p>
@@ -75,5 +74,5 @@ export const RedigerStackedLineChartKomponent: React.FC<KontrollpanelKomponent> 
     );
 };
 
-export default StackedLineChartKomponent
+export default LineChartKomponent
 
