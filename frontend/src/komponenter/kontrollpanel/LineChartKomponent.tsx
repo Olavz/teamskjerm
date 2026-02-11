@@ -47,7 +47,8 @@ const LineChartKomponent: React.FC<KontrollpanelKomponent> = ({komponentUUID, da
             data: linechart?.legend ?? []
         },
         yAxis: {
-            type: 'value'
+            type: 'value',
+            scale: true
         },
         series: [
             ...(linechart?.data.map(it => ({
