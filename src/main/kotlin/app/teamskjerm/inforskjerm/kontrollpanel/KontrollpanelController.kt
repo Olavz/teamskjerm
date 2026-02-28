@@ -125,6 +125,22 @@ class KontrollpanelController(
         )
     }
 
+    @DeleteMapping("/kontrollpanel/{kontrollpanelUUID}")
+    fun slettKontrollpanel(
+        @AuthenticationPrincipal bruker: TeamskjermUserDetails,
+        @PathVariable kontrollpanelUUID: String
+    ): ResponseEntity<String> {
+
+        val kontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
+        if(kontrollpanel.eierId != bruker.id()) {
+            return ResponseEntity.status(403).body("Du har ikke tilgang til å slette dette kontrollpanelet.")
+        }
+
+        kontrollpanelRepository.slett(kontrollpanelUUID)
+
+        return ResponseEntity.ok("")
+    }
+
     @PostMapping("/kontrollpanel/{kontrollpanelUUID}/komponent")
     fun opprettKomponent(
         @PathVariable kontrollpanelUUID: String,

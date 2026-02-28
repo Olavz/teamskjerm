@@ -1,6 +1,7 @@
 package app.teamskjerm.inforskjerm.kontrollpanel.repository
 
 import app.teamskjerm.inforskjerm.kontrollpanel.Kontrollpanel
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.repository.KomponentPort
 import com.google.cloud.firestore.Firestore
 import tools.jackson.databind.json.JsonMapper
 
@@ -8,7 +9,8 @@ private const val COLLECTION = "kontrollpanel"
 
 class KontrollpanelFirestoreRepository(
     val firestore: Firestore,
-    val jsonMapper: JsonMapper
+    val jsonMapper: JsonMapper,
+    val komponentPort: KomponentPort
 ): KontrollpanelPort {
 
     override fun hentKontrollpanelForBruker(brukerId: String): List<Kontrollpanel> {
@@ -63,7 +65,16 @@ class KontrollpanelFirestoreRepository(
     }
 
     override fun slett(kontrollpanelUUID: String): Boolean {
-        TODO("Not yet implemented")
+
+        val kontrollpanel = hentKontrollpanel(kontrollpanelUUID)
+
+        kontrollpanel
+            .komponenter
+            .map { komponentPort.slettId(it) }
+
+        firestore.collection(COLLECTION).document(kontrollpanel.id).delete()
+
+        return true
     }
 
 }

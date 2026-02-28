@@ -91,4 +91,9 @@ class KomponentFirestoreRepository(
         return komponentId
     }
 
+    override fun slettId(id: String): String {
+        firestore.collection(COLLECTION).document(id).delete()
+        return id
+    }
+
 }

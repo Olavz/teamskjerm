@@ -25,13 +25,13 @@ class RepositoryConfiguration {
 
 
     @Bean
-    fun kontrollpanelRepository(): KontrollpanelPort {
+    fun kontrollpanelRepository(komponentPort: KomponentPort): KontrollpanelPort {
         return KontrollpanelFirestoreRepository(
             firestore,
-            jsonMapper
+            jsonMapper,
+            komponentPort
         )
     }
-
 
     @Bean
     fun brukerRepository(): BrukerPort {

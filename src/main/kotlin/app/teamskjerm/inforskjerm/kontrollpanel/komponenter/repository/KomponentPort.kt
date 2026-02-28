@@ -9,4 +9,5 @@ interface KomponentPort {
 
     fun lagre(kontrollpanelKomponent: KontrollpanelKomponent): KontrollpanelKomponent
     fun slett(komponentUUID: String): String
+    fun slettId(id: String): String
 }

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {NavLink, useParams} from "react-router-dom";
+import {NavLink, useNavigate, useParams} from "react-router-dom";
 import {Button, ButtonGroup, Modal} from "react-bootstrap";
 
 import {closestCenter, DndContext, DragEndEvent, DragOverlay, DragStartEvent} from "@dnd-kit/core";
@@ -45,6 +45,7 @@ type KontrollpanelParams = {
 };
 
 function AdministrerKontrollpanel() {
+    const navigate = useNavigate()
     const [redigerKomponentvisning, setRedigerKomponentvisning] = useState(false);
     const [draggableAktivId, setDraggableAktivId] = useState<string | null>(null);
 
@@ -267,6 +268,32 @@ function AdministrerKontrollpanel() {
         }
     }
 
+    const slettKontrollpanel = async (kontrollpanelUUID: string) => {
+        if (window.confirm("Er du sikker på at du vil slette dette kontrollpanelet? Dette kan ikke angres!")) {
+            try {
+                const response = await fetch(`/api/kontrollpanel/${kontrollpanelUUID}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${teamskjermTokenCookie()}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to send data');
+                }
+                await response;
+                navigate("/kontrollpanel");
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    }
+
+    const endreNavn = async () => {
+        alert("Funksjonalitet for å endre navn kommer snart!")
+    }
+
     const visModalForKomponent = (komponentUUID: string) => {
         åpneModal()
         setValgtKomponentUUIDForModal(komponentUUID)
@@ -276,17 +303,39 @@ function AdministrerKontrollpanel() {
         <>
             <NavbarInnlogget/>
             <div className="container">
-                <div style={{marginTop: "1rem"}}>
-                    <ButtonGroup>
-                        <Button variant={redigerKomponentvisning ? "secondary" : "outline-secondary"}
-                                onClick={redigerVisningKlikk}>
-                            {redigerKomponentvisning ? "✅ Avslutt redigering" : "🖱 Aktiver redigering"}
-                        </Button> {' '}
-                        <LeggTilKomponentButton opprettKomponent={opprettKomponent}/>
-                    </ButtonGroup>
-                    {' '}
-                    <NavLink target="_blank" to={infoskjerm}><Button variant="outline-secondary">🖥 Vis
-                        teamskjerm</Button></NavLink>
+                <div
+                    style={{marginTop: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                    <div style={{display: "flex", gap: "0.5rem", alignItems: "center"}}>
+                        <ButtonGroup>
+                            <Button variant={redigerKomponentvisning ? "secondary" : "outline-secondary"}
+                                    onClick={redigerVisningKlikk}>
+                                {redigerKomponentvisning ? "✅ Avslutt redigering" : "🖱 Aktiver redigering"}
+                            </Button>
+                            <LeggTilKomponentButton opprettKomponent={opprettKomponent}/>
+                        </ButtonGroup>
+                        <NavLink target="_blank" to={infoskjerm}>
+                            <Button variant="outline-secondary">🖥 Vis teamskjerm</Button>
+                        </NavLink>
+                    </div>
+
+                    <div className="dropdown">
+                        <button className="btn btn-outline-secondary dropdown-toggle" type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                            Mer
+                        </button>
+                       <ul className="dropdown-menu">
+                            <li>
+                                <Button className="dropdown-item" onClick={() => endreNavn()}>
+                                    Endre navn
+                                </Button>
+                            </li><li>
+                                <Button className="dropdown-item"  onClick={() => slettKontrollpanel(kontrollpanelUUID)}>
+                                    Slett kontrollpanel
+                                </Button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 {redigerKomponentvisning && <><br/>
