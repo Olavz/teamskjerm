@@ -146,7 +146,7 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
                         <h3 className="card-title">{kontrollpanelKomponent.navn}</h3>
                         {children}
                     </div>
-                    {kontrollpanelKomponent.visSistOppdatert &&
+                    {(kontrollpanelKomponent.visSistOppdatert !== false) &&
                         <CardFooter>{sistOppdatert?.toLocaleString("nb-NO") || ""}</CardFooter>}
                 </div>
             }
