@@ -1,6 +1,6 @@
 import {KomponentKontrollpanel, KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 import {ReactNode, useEffect, useState} from "react";
-import {Accordion, Badge, Button, FormControl, FormGroup, FormLabel} from "react-bootstrap";
+import {Accordion, Badge, Button, FormCheck, FormControl, FormGroup, FormLabel} from "react-bootstrap";
 import {teamskjermTokenCookie} from "../../CookieHjelper.tsx";
 
 type BaseKomponentKontrollpanelProps = {
@@ -15,7 +15,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                                                                                                      children
                                                                                                  }) => {
 
-    const [inpSeMerInformasjon, setInpSeMerInformasjon] = useState<string>('')
+    const [visSistOppdatert, setVisSistOppdatert] = useState<boolean>(true)
     const [inpNavn, setInpNavn] = useState<string>('')
     const [utdatertKomponentEtterMinutter, setUtdatertKomponentEtterMinutter] = useState(0)
     const [skjulVarselEtterMinutterUtenFeil, setSkjulVarselEtterMinutterUtenFeil] = useState(0)
@@ -33,7 +33,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                 },
                 body: JSON.stringify({
                     navn: inpNavn,
-                    seMerInformasjon: inpSeMerInformasjon,
+                    visSistOppdatert: visSistOppdatert,
                     utdatertKomponentEtterMinutter: utdatertKomponentEtterMinutter,
                     skjulVarselEtterMinutterUtenFeil: skjulVarselEtterMinutterUtenFeil
                 }),
@@ -54,7 +54,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
 
     useEffect(() => {
         setInpNavn(kontrollpanelKomponent.navn)
-        setInpSeMerInformasjon(kontrollpanelKomponent.seMerInformasjon ?? "")
+        setVisSistOppdatert(kontrollpanelKomponent.visSistOppdatert ?? true)
         setUtdatertKomponentEtterMinutter(kontrollpanelKomponent.utdatertKomponentEtterMinutter ?? 0)
         setSkjulVarselEtterMinutterUtenFeil(kontrollpanelKomponent.skjulVarselEtterMinutterUtenFeil ?? 0)
     }, []);
@@ -91,13 +91,11 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                         </FormGroup>
 
                         <FormGroup className="mb-3">
-                            <FormLabel>Se mer informasjon lenke</FormLabel>
-                            <FormControl
-                                onChange={(e) => setInpSeMerInformasjon(e.target.value)}
-                                type="url"
-                                placeholder="http://..."
-                                value={inpSeMerInformasjon}
-                                aria-label="Se mer informasjon lenke"
+                            <FormCheck
+                                type="switch"
+                                label="Vis sist oppdatert"
+                                checked={visSistOppdatert}
+                                onChange={(e) => setVisSistOppdatert(e.target.checked)}
                             />
                         </FormGroup>
 

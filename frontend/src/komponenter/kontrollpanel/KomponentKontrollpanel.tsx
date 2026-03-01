@@ -8,11 +8,11 @@ export interface KontrollpanelKomponent {
     navn: string;
     data: string;
     komponentType: string;
-    seMerInformasjon?: string;
     secret?: string;
     secretHashKey?: string;
     jsonSkjema: string;
     sistOppdatert?: string;
+    visSistOppdatert?: boolean;
     utdatertKomponentEtterMinutter?: number;
     sistOppdatertMedDataDiff?: string;
     skjulVarselEtterMinutterUtenFeil?: number;
@@ -43,7 +43,7 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
 
     useEffect(() => {
         const topic = `/komponent/${kontrollpanelKomponent.komponentUUID}/data`;
-        const subscription = stompService.subscribe<string>(topic, (data: string) : void => {
+        const subscription = stompService.subscribe<string>(topic, (data: string): void => {
             oppdaterKomponentData(JSON.stringify(data));
         });
 
@@ -146,7 +146,8 @@ export const KomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> =
                         <h3 className="card-title">{kontrollpanelKomponent.navn}</h3>
                         {children}
                     </div>
-                    <CardFooter>{sistOppdatert?.toLocaleString("nb-NO") || ""}</CardFooter>
+                    {kontrollpanelKomponent.visSistOppdatert &&
+                        <CardFooter>{sistOppdatert?.toLocaleString("nb-NO") || ""}</CardFooter>}
                 </div>
             }
         </>

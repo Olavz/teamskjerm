@@ -33,7 +33,7 @@ abstract class KontrollpanelKomponent(
     var navn: String = "",
     var data: String = "",
     var komponentType: String,
-    var seMerInformasjon: String? = null,
+    var visSistOppdatert: Boolean? = null,
     var secret: String? = null,
     var secretHashKey: String? = null,
     var sistOppdatert: Timestamp? = null,
