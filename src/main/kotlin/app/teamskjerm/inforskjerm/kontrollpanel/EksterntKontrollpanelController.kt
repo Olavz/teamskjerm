@@ -25,10 +25,12 @@ class EksterntKontrollpanelController(
     fun kontrollpanelInfo(
         @PathVariable kontrollpanelUUID: String
     ): ResponseEntity<KontrollpanelInfo> {
+        val hentKontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
         return ResponseEntity.ok(
             KontrollpanelInfo(
                 uuid = kontrollpanelUUID,
-                navn = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID).navn
+                navn = hentKontrollpanel.navn,
+                bakgrunn = hentKontrollpanel.bakgrunn
             )
         )
     }

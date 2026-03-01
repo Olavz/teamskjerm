@@ -29,6 +29,7 @@ export type Komponentlayout = {
 export type KontrollpanelInfo = {
     kontrollpanelUUID: string;
     navn: string;
+    bakgrunn: string;
 }
 
 function InfoskjermKontrollpanel() {
@@ -116,7 +117,7 @@ function InfoskjermKontrollpanel() {
 
     return (
         <>
-            <div>
+            <div className={kontrollpanelInfo?.bakgrunn}>
                 <HeaderKontrollpanel tittel={kontrollpanelInfo?.navn}/>
                 <div className="bittelittepadding">
                     <div className="row">

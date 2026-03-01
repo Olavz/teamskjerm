@@ -6,5 +6,6 @@ data class Kontrollpanel(
     var navn: String = "",
     var eierId: String = "",
     var komponenter: List<String> = mutableListOf(),
-    var komponentPlassering: String = ""
+    var komponentPlassering: String = "",
+    var bakgrunn: String = ""
 )
