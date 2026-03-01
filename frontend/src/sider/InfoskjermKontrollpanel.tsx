@@ -26,7 +26,13 @@ export type Komponentlayout = {
     visning: "ingen" | "minimal" | "full" | "innhold";
 };
 
+export type KontrollpanelInfo = {
+    kontrollpanelUUID: string;
+    navn: string;
+}
+
 function InfoskjermKontrollpanel() {
+    const [kontrollpanelInfo, setKontrollpanelInfo] = useState<KontrollpanelInfo>();
     const [kontrollpanelKomponent, setKontrollpanelKomponent] = useState<KontrollpanelKomponent[]>([]);
     const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
 
@@ -83,6 +89,10 @@ function InfoskjermKontrollpanel() {
         if (!kontrollpanelUUID) {
             return;
         }
+        fetch(`/api/ext/kontrollpanel/${kontrollpanelUUID}/info`)
+            .then((response) => response.json())
+            .then((data: KontrollpanelInfo) => setKontrollpanelInfo(data));
+
         fetch(`/api/ext/kontrollpanel/${kontrollpanelUUID}/komponenter`)
             .then((response) => response.json())
             .then((data: KontrollpanelKomponent[]) => setKontrollpanelKomponent(data));
@@ -107,7 +117,7 @@ function InfoskjermKontrollpanel() {
     return (
         <>
             <div>
-                <HeaderKontrollpanel/>
+                <HeaderKontrollpanel tittel={kontrollpanelInfo?.navn}/>
                 <div className="bittelittepadding">
                     <div className="row">
                         <div className="col p-0">

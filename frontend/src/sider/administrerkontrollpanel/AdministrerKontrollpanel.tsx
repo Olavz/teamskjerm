@@ -20,6 +20,7 @@ import {RedigerBarChartKomponent} from "../../komponenter/kontrollpanel/BarChatK
 import {RedigerGrafanaKomponent} from "../../komponenter/kontrollpanel/GrafanaKomponent.tsx";
 import {RedigerStackedAreaChartKomponent} from "../../komponenter/kontrollpanel/StackedAreaChartKomponent.tsx";
 import {RedigerLineChartKomponent} from "../../komponenter/kontrollpanel/LineChartKomponent.tsx";
+import {KontrollpanelInfo} from "../InfoskjermKontrollpanel.tsx";
 
 export interface KontrollpanelKomponentPlassering {
     venstre: KomponentRekkefølge[];
@@ -46,6 +47,8 @@ type KontrollpanelParams = {
 
 function AdministrerKontrollpanel() {
     const navigate = useNavigate()
+    const [kontrollpanelInfo, setKontrollpanelInfo] = useState<KontrollpanelInfo>();
+
     const [redigerKomponentvisning, setRedigerKomponentvisning] = useState(false);
     const [draggableAktivId, setDraggableAktivId] = useState<string | null>(null);
 
@@ -109,6 +112,10 @@ function AdministrerKontrollpanel() {
             .then((data: string[]) => {
                 setKomponenterUtenPlassering(data.map(it => ({komponentUUID: it, rekkefølge: 0})))
             });
+
+        fetch(`/api/ext/kontrollpanel/${kontrollpanelUUID}/info`)
+            .then((response) => response.json())
+            .then((data: KontrollpanelInfo) => setKontrollpanelInfo(data));
     }, []);
 
     const slettKomponent = async (komponentUUID: string) => {
@@ -301,7 +308,7 @@ function AdministrerKontrollpanel() {
 
     return (
         <>
-            <NavbarInnlogget/>
+            <NavbarInnlogget tittel={kontrollpanelInfo?.navn}/>
             <div className="container">
                 <div
                     style={{marginTop: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center"}}>

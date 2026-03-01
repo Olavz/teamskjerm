@@ -1,13 +1,17 @@
 import {Container, Nav, Navbar} from "react-bootstrap";
 import {NavLink} from "react-router-dom";
 
-export default function NavbarInnlogget() {
+interface NavbarInnloggetProps {
+    tittel?: string | undefined
+}
+
+export default function NavbarInnlogget({tittel}: NavbarInnloggetProps) {
 
     return (
         <>
             <Navbar bg="light" variant="light" expand="lg">
                 <Container>
-                    <Navbar.Brand as={NavLink} to="/">Teamskjerm</Navbar.Brand>
+                    <Navbar.Brand as={NavLink} to="/">Teamskjerm {tittel && <span>&rarr; {tittel}</span>}</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ms-auto">

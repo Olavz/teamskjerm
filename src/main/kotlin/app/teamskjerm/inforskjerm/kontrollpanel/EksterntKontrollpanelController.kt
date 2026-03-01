@@ -1,5 +1,6 @@
 package app.teamskjerm.inforskjerm.kontrollpanel
 
+import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KontrollpanelInfo
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.KontrollpanelKomponent
 import app.teamskjerm.inforskjerm.kontrollpanel.komponenter.repository.KomponentPort
 import app.teamskjerm.inforskjerm.kontrollpanel.repository.KontrollpanelPort
@@ -19,6 +20,18 @@ class EksterntKontrollpanelController(
     val jsonMapper: JsonMapper
 ) {
 
+
+    @GetMapping("/kontrollpanel/{kontrollpanelUUID}/info")
+    fun kontrollpanelInfo(
+        @PathVariable kontrollpanelUUID: String
+    ): ResponseEntity<KontrollpanelInfo> {
+        return ResponseEntity.ok(
+            KontrollpanelInfo(
+                uuid = kontrollpanelUUID,
+                navn = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID).navn
+            )
+        )
+    }
 
     @GetMapping("/kontrollpanel/{kontrollpanelUUID}/komponenter")
     fun kontrollpanelSineKomponenter(
