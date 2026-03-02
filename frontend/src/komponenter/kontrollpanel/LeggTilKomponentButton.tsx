@@ -1,4 +1,4 @@
-import {Button, FormSelect, Modal} from "react-bootstrap";
+import {Button, Form, FormSelect, Modal} from "react-bootstrap";
 import {useState} from "react";
 import {useParams} from "react-router-dom";
 import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
@@ -17,6 +17,7 @@ export const LeggTilKomponentButton: React.FC<LeggTilKomponentProps> = ({opprett
     const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
     const [show, setShow] = useState(false);
     const [valgtVeiviser, setValgtVeiviser] = useState("");
+    const [navn, setNavn] = useState("")
 
     // Håndter modalvisning
     const handleClose = () => setShow(false);
@@ -48,7 +49,7 @@ export const LeggTilKomponentButton: React.FC<LeggTilKomponentProps> = ({opprett
         }
 
         const obj = {
-            navn: "Nytt komponent",
+            navn: navn,
             data: tomData,
             komponentUUID: uuidv4(),
             komponentType: valgtVeiviser
@@ -71,19 +72,30 @@ export const LeggTilKomponentButton: React.FC<LeggTilKomponentProps> = ({opprett
                 </Modal.Header>
                 <Modal.Body>
 
-                    <p>Navn</p>
-                    <p>Info url</p>
+                    <Form.Group>
+                        <Form.Label>Navn</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Nytt komponent"
+                            value={navn}
+                            onChange={(e) => setNavn(e.target.value)}
+                            required
+                        />
+                    </Form.Group>
 
-                    <FormSelect onChange={(e) => setValgtVeiviser(e.target.value)}>
-                        <option value="">Velg mal</option>
-                        <option value="TekstKomponent">Tekst</option>
-                        <option value="VarselKomponent">Varsel</option>
-                        <option value="PieChartKomponent">Pie chart</option>
-                        <option value="BarChartKomponent">Bar chart</option>
-                        <option value="GrafanaKomponent">Grafana</option>
-                        <option value="StackedAreaChartKomponent">Stacked area chart</option>
-                        <option value="LineChartKomponent">Line chart</option>
-                    </FormSelect>
+                    <Form.Group>
+                        <Form.Label>Komponentmal</Form.Label>
+                        <FormSelect onChange={(e) => setValgtVeiviser(e.target.value)}>
+                            <option value="">Velg mal</option>
+                            <option value="TekstKomponent">Tekst</option>
+                            <option value="VarselKomponent">Varsel</option>
+                            <option value="PieChartKomponent">Pie chart</option>
+                            <option value="BarChartKomponent">Bar chart</option>
+                            <option value="GrafanaKomponent">Grafana</option>
+                            <option value="StackedAreaChartKomponent">Stacked area chart</option>
+                            <option value="LineChartKomponent">Line chart</option>
+                        </FormSelect>
+                    </Form.Group>
 
                 </Modal.Body>
                 <Modal.Footer>

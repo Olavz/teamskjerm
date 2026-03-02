@@ -67,11 +67,10 @@ function AdministrerKontrollpanel() {
     const åpneModal = () => setVisModal(true);
     const lukkModal = () => setVisModal(false);
 
-    if (!kontrollpanelUUID) {
-        return <p>Ingen ID spesifisert!</p>;
-    }
 
     useEffect(() => {
+        if (!kontrollpanelUUID) return;
+
         fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponenter`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -85,6 +84,8 @@ function AdministrerKontrollpanel() {
     }, [komponentopprettet]);
 
     useEffect(() => {
+        if (!kontrollpanelUUID) return;
+
         fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponentPlassering`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -116,7 +117,7 @@ function AdministrerKontrollpanel() {
         fetch(`/api/ext/kontrollpanel/${kontrollpanelUUID}/info`)
             .then((response) => response.json())
             .then((data: KontrollpanelInfo) => setKontrollpanelInfo(data));
-    }, []);
+    }, [komponentopprettet]);
 
     const slettKomponent = async (komponentUUID: string) => {
         try {
@@ -136,6 +137,7 @@ function AdministrerKontrollpanel() {
         setKontrollpanelKomponenter(
             kontrollpanelKomponenter.filter((it) => it.komponentUUID != komponentUUID)
         )
+        setKomponentopprettet(komponentopprettet-1)
     }
 
     const opprettKomponent = async (kontrollpanelUUID: string, kontrollpanelKomponent: KontrollpanelKomponent) => {
@@ -304,6 +306,10 @@ function AdministrerKontrollpanel() {
     const visModalForKomponent = (komponentUUID: string) => {
         åpneModal()
         setValgtKomponentUUIDForModal(komponentUUID)
+    }
+
+    if (!kontrollpanelUUID) {
+        return <p>Ingen ID spesifisert!</p>;
     }
 
     return (
