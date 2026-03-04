@@ -3,6 +3,7 @@ import {stompService} from "../../WebSocketService.tsx";
 import {FormControl, FormSelect} from "react-bootstrap";
 import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 import {Komponentlayout} from "../../sider/InfoskjermKontrollpanel.tsx";
+import {MarkdownView} from "../MarkdownView.tsx";
 
 type VarselData = {
     varseltype: "grønt" | "gult" | "rødt";
@@ -88,19 +89,19 @@ const VarselKomponent: React.FC<VarselKomponentProps> = ({
     if (varseldata.varseltype == "rødt") {
         return (
             <div className="alert alert-danger" role="alert">
-                <h2>{varseldata.tekst ?? ""}</h2>
+                <h2><MarkdownView markdown={varseldata.tekst ?? ""} /></h2>
             </div>
         )
     } else if (varseldata.varseltype == "gult") {
         return (
             <div className="alert alert-warning" role="alert">
-                <h2>{varseldata.tekst ?? ""}</h2>
+                <h2><MarkdownView markdown={varseldata.tekst ?? ""}></MarkdownView></h2>
             </div>
         )
     } else {
         return (
             <div className="alert alert-success" role="alert">
-                <h2>{varseldata.tekst ?? ""}</h2>
+                <h2><MarkdownView markdown={varseldata.tekst ?? ""}></MarkdownView></h2>
             </div>
         )
     }
