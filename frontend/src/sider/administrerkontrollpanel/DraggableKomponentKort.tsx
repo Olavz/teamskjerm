@@ -9,14 +9,16 @@ type DraggableKomponentKortProps = {
     id: string,
     komponent: KontrollpanelKomponent,
     redigerVisning: boolean,
-    visModalForKomponent: (komponentUUID: string) => void
+    visModalForRedigeringAvKomponent: (komponentUUID: string) => void
+    visModalForhaandsvisKomponent: (komponentUUID: string) => void
 };
 
 export const DraggableKomponentKort: React.FC<DraggableKomponentKortProps> = ({
                                                                                   id,
                                                                                   komponent,
                                                                                   redigerVisning,
-                                                                                  visModalForKomponent
+                                                                                  visModalForRedigeringAvKomponent,
+                                                                                  visModalForhaandsvisKomponent
                                                                               }) => {
     const {attributes, listeners, setNodeRef, transform, transition} = useSortable({id, disabled: !redigerVisning});
 
@@ -40,7 +42,12 @@ export const DraggableKomponentKort: React.FC<DraggableKomponentKortProps> = ({
             <Badge bg="secondary">{komponent.komponentUUID}</Badge> <br/>
             <Badge bg="info">{komponent.komponentType}</Badge> <br/>
             <h3>{komponent.navn}</h3>
-            {!redigerVisning && <Button variant="outline-primary" onClick={() => visModalForKomponent(komponent.komponentUUID)}>Vis alternativer</Button>}
+            {!redigerVisning && (
+                <div className="btn-group">
+                    <Button variant="outline-primary" onClick={() => visModalForRedigeringAvKomponent(komponent.komponentUUID)}>Endre</Button>
+                    <Button variant="outline-primary" onClick={() => visModalForhaandsvisKomponent(komponent.komponentUUID)}>Forhåndsvis</Button>
+                </div>
+            )}
         </div>
     );
 };

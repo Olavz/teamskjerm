@@ -194,7 +194,7 @@ function InfoskjermKontrollpanel() {
     )
 }
 
-const utledKomponentType = (
+export const utledKomponentType = (
     item: KontrollpanelKomponent,
     sistEndret: Date,
     komponentlayout: Komponentlayout,

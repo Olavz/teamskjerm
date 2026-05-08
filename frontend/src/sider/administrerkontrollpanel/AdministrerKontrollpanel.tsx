@@ -7,7 +7,10 @@ import DroppableColumnComponent from "./DroppableColumnComponent.tsx";
 import {DraggableKomponentKort} from "./DraggableKomponentKort.tsx";
 import {arrayMove} from "@dnd-kit/sortable";
 import {teamskjermTokenCookie} from "../../CookieHjelper.tsx";
-import {KontrollpanelKomponent} from "../../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
+import {
+    KomponentKontrollpanel,
+    KontrollpanelKomponent
+} from "../../komponenter/kontrollpanel/KomponentKontrollpanel.tsx";
 import NavbarInnlogget from "../../komponenter/NavbarInnlogget.tsx";
 import {LeggTilKomponentButton} from "../../komponenter/kontrollpanel/LeggTilKomponentButton.tsx";
 import {
@@ -20,7 +23,7 @@ import {RedigerBarChartKomponent} from "../../komponenter/kontrollpanel/BarChatK
 import {RedigerGrafanaKomponent} from "../../komponenter/kontrollpanel/GrafanaKomponent.tsx";
 import {RedigerStackedAreaChartKomponent} from "../../komponenter/kontrollpanel/StackedAreaChartKomponent.tsx";
 import {RedigerLineChartKomponent} from "../../komponenter/kontrollpanel/LineChartKomponent.tsx";
-import {KontrollpanelInfo} from "../InfoskjermKontrollpanel.tsx";
+import {KontrollpanelInfo, utledKomponentType} from "../InfoskjermKontrollpanel.tsx";
 
 export interface KontrollpanelKomponentPlassering {
     venstre: KomponentRekkefølge[];
@@ -62,10 +65,9 @@ function AdministrerKontrollpanel() {
 
     const [komponenterUtenPlassering, setKomponenterUtenPlassering] = useState<KomponentRekkefølge[]>([]);
 
-    const [visModal, setVisModal] = useState(false);
+    const [visModalForhaandsvisKomponent, setVisModalForhaandsvisKomponent] = useState(false);
+    const [visModalRedigerKomponent, setVisModalRedigerKomponent] = useState(false);
     const [valgtKomponentUUIDForModal, setValgtKomponentUUIDForModal] = useState("");
-    const åpneModal = () => setVisModal(true);
-    const lukkModal = () => setVisModal(false);
 
 
     useEffect(() => {
@@ -303,8 +305,13 @@ function AdministrerKontrollpanel() {
         alert("Funksjonalitet for å endre navn kommer snart!")
     }
 
-    const visModalForKomponent = (komponentUUID: string) => {
-        åpneModal()
+    const visModalForRedigeringAvKomponent = (komponentUUID: string) => {
+        setVisModalRedigerKomponent(true)
+        setValgtKomponentUUIDForModal(komponentUUID)
+    }
+
+    const visModalForForhaandsvisKomponent = (komponentUUID: string) => {
+        setVisModalForhaandsvisKomponent(true)
         setValgtKomponentUUIDForModal(komponentUUID)
     }
 
@@ -371,7 +378,8 @@ function AdministrerKontrollpanel() {
                             kontrollpanelKomponenter={kontrollpanelKomponenter}
                             komponenterRekkefølge={komponenterUtenPlassering}
                             redigerVisning={redigerKomponentvisning}
-                            visModalForKomponent={visModalForKomponent}
+                            visModalForRedigeringAvKomponent={visModalForRedigeringAvKomponent}
+                            visModalForhaandsvisKomponent={visModalForForhaandsvisKomponent}
                         />
 
                         <DroppableColumnComponent
@@ -380,7 +388,8 @@ function AdministrerKontrollpanel() {
                             kontrollpanelKomponenter={kontrollpanelKomponenter}
                             komponenterRekkefølge={komponenterVenstre}
                             redigerVisning={redigerKomponentvisning}
-                            visModalForKomponent={visModalForKomponent}
+                            visModalForRedigeringAvKomponent={visModalForRedigeringAvKomponent}
+                            visModalForhaandsvisKomponent={visModalForForhaandsvisKomponent}
                         />
                         <DroppableColumnComponent
                             id="midten"
@@ -388,7 +397,8 @@ function AdministrerKontrollpanel() {
                             kontrollpanelKomponenter={kontrollpanelKomponenter}
                             komponenterRekkefølge={komponenterMidten}
                             redigerVisning={redigerKomponentvisning}
-                            visModalForKomponent={visModalForKomponent}
+                            visModalForRedigeringAvKomponent={visModalForRedigeringAvKomponent}
+                            visModalForhaandsvisKomponent={visModalForForhaandsvisKomponent}
                         />
                         <DroppableColumnComponent
                             id="høyre"
@@ -396,7 +406,8 @@ function AdministrerKontrollpanel() {
                             kontrollpanelKomponenter={kontrollpanelKomponenter}
                             komponenterRekkefølge={komponenterHøyre}
                             redigerVisning={redigerKomponentvisning}
-                            visModalForKomponent={visModalForKomponent}
+                            visModalForRedigeringAvKomponent={visModalForRedigeringAvKomponent}
+                            visModalForhaandsvisKomponent={visModalForForhaandsvisKomponent}
                         />
                     </div>
                     <DragOverlay>
@@ -406,14 +417,15 @@ function AdministrerKontrollpanel() {
                                 key={draggableAktivId}
                                 id={draggableAktivId}
                                 redigerVisning={redigerKomponentvisning}
-                                visModalForKomponent={visModalForKomponent}
+                                visModalForRedigeringAvKomponent={visModalForRedigeringAvKomponent}
+                                visModalForhaandsvisKomponent={visModalForForhaandsvisKomponent}
                             /> : null}
                     </DragOverlay>
                 </DndContext>
 
                 <Modal
-                    show={visModal}
-                    onHide={lukkModal}
+                    show={visModalRedigerKomponent}
+                    onHide={() => setVisModalRedigerKomponent(false)}
                     size="lg" // Alternativ: xl, eller bruk fullscreen
                     centered
                 >
@@ -491,7 +503,42 @@ function AdministrerKontrollpanel() {
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={lukkModal}>
+                        <Button variant="secondary" onClick={() => setVisModalRedigerKomponent(false)}>
+                            Lukk
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal
+                    show={visModalForhaandsvisKomponent}
+                    onHide={() => setVisModalForhaandsvisKomponent(false)}
+                    size="lg"
+                    centered
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Forhåndsvisning av komponent</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <div className="container">
+                            {kontrollpanelKomponenter.filter(it => it.komponentUUID === valgtKomponentUUIDForModal).map((item) => {
+                                return (<KomponentKontrollpanel
+                                    kontrollpanelKomponent={item}
+                                    komponentlayout={{visning: "full"}}
+                                    setKomponentSistEndret={() => {}}
+                                    oppdaterKomponentData={() => {}}
+                                >
+                                    {utledKomponentType(
+                                        item,
+                                        item.sistOppdatertMedDataDiff ? new Date(item.sistOppdatertMedDataDiff) : new Date(),
+                                        {visning: "full"},
+                                        () => {})
+                                    }
+                                </KomponentKontrollpanel>)
+                            })}
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={() => setVisModalForhaandsvisKomponent(false)}>
                             Lukk
                         </Button>
                     </Modal.Footer>

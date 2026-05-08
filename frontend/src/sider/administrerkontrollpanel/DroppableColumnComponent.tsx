@@ -11,7 +11,8 @@ type ColumnComponentProps = {
     kontrollpanelKomponenter: KontrollpanelKomponent[],
     komponenterRekkefølge: KomponentRekkefølge[],
     redigerVisning: boolean,
-    visModalForKomponent: (komponentUUID: string) => void
+    visModalForRedigeringAvKomponent: (komponentUUID: string) => void,
+    visModalForhaandsvisKomponent: (komponentUUID: string) => void
 };
 
 const DroppableColumnComponent: React.FC<ColumnComponentProps> = ({
@@ -20,7 +21,8 @@ const DroppableColumnComponent: React.FC<ColumnComponentProps> = ({
                                                                       komponenterRekkefølge,
                                                                       kontrollpanelKomponenter,
                                                                       redigerVisning,
-                                                                      visModalForKomponent
+                                                                      visModalForRedigeringAvKomponent,
+                                                                      visModalForhaandsvisKomponent
                                                                   }) => {
 
     const {setNodeRef} = useDroppable({id, disabled: !redigerVisning});
@@ -48,7 +50,8 @@ const DroppableColumnComponent: React.FC<ColumnComponentProps> = ({
                         id={komponent.komponentUUID}
                         komponent={kontrollpanelKomponenter.find((it) => it.komponentUUID === komponent.komponentUUID)!}
                         redigerVisning={redigerVisning}
-                        visModalForKomponent={visModalForKomponent}
+                        visModalForRedigeringAvKomponent={visModalForRedigeringAvKomponent}
+                        visModalForhaandsvisKomponent={visModalForhaandsvisKomponent}
                     />
                 ))}
             </SortableContext>
