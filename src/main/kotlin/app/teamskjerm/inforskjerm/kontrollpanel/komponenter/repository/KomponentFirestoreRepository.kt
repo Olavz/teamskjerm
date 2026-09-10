@@ -13,13 +13,12 @@ class KomponentFirestoreRepository(
     val jsonMapper: JsonMapper,
     val komponentSecretHashkeyService: KomponentSecretHashkeyService
 ): KomponentPort {
+
     override fun lagre(kontrollpanelKomponent: KontrollpanelKomponent): KontrollpanelKomponent {
         val komponenter = firestore.collection(COLLECTION)
 
         if (kontrollpanelKomponent.id.isNotBlank()) {
-            komponenter
-                .document(kontrollpanelKomponent.id)
-                .set(kontrollpanelKomponent)
+            komponenter.document(kontrollpanelKomponent.id).set(kontrollpanelKomponent)
             return kontrollpanelKomponent
         } else {
             kontrollpanelKomponent.secret = UUID.randomUUID().toString().replace("-", "")
@@ -31,7 +30,6 @@ class KomponentFirestoreRepository(
             kontrollpanelKomponent.id = f.id
             return kontrollpanelKomponent
         }
-
     }
 
     override fun hentKomponentMedKomponentUUID(komponentUUID: String): KontrollpanelKomponent? {
@@ -45,15 +43,16 @@ class KomponentFirestoreRepository(
                 komponent.id = it.id
                 komponent
             }
-            .single()
+            .singleOrNull()
     }
 
-    override fun hentKomponenterMedId(komponenter: List<String>): List<KontrollpanelKomponent>? {
-        return komponenter
-            .map {
-                firestore.collection(COLLECTION).document(it).get().get()
-            }
-            .filter { it.exists() }
+    override fun hentKomponenterMedUUID(komponenter: List<String>): List<KontrollpanelKomponent>? {
+        if (komponenter.isEmpty()) return emptyList()
+        return firestore.collection(COLLECTION)
+            .whereIn("komponentUUID", komponenter)
+            .get()
+            .get()
+            .documents
             .map {
                 val komponent = jsonMapper.convertValue(it.data, KontrollpanelKomponent::class.java)
                 komponent.id = it.id
@@ -61,12 +60,13 @@ class KomponentFirestoreRepository(
             }
     }
 
-    override fun hentKomponenterMedIdUtenSecret(komponenter: List<String>): List<KontrollpanelKomponent>? {
-        return komponenter
-            .map {
-                firestore.collection(COLLECTION).document(it).get().get()
-            }
-            .filter { it.exists() }
+    override fun hentKomponenterMedUUIDUtenSecret(komponenter: List<String>): List<KontrollpanelKomponent>? {
+        if (komponenter.isEmpty()) return emptyList()
+        return firestore.collection(COLLECTION)
+            .whereIn("komponentUUID", komponenter)
+            .get()
+            .get()
+            .documents
             .map {
                 val komponent = jsonMapper.convertValue(it.data, KontrollpanelKomponent::class.java)
                 komponent.id = it.id
@@ -77,23 +77,13 @@ class KomponentFirestoreRepository(
     }
 
     override fun slett(komponentUUID: String): String {
-
-        val komponentId = firestore.collection(COLLECTION)
+        val docs = firestore.collection(COLLECTION)
             .whereEqualTo("komponentUUID", komponentUUID)
             .get()
             .get()
             .documents
-            .map { it.id }
-            .single()
 
-        firestore.collection(COLLECTION).document(komponentId).delete()
-
-        return komponentId
+        docs.forEach { firestore.collection(COLLECTION).document(it.id).delete() }
+        return komponentUUID
     }
-
-    override fun slettId(id: String): String {
-        firestore.collection(COLLECTION).document(id).delete()
-        return id
-    }
-
 }

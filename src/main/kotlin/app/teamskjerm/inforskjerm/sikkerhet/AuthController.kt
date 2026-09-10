@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 class AuthController(
@@ -33,6 +34,7 @@ class AuthController(
         val encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
         brukerRepository.lagre(Bruker(
             "",
+            UUID.randomUUID().toString(),
             authRequest.username,
             encoder.encode(authRequest.password)!!
         ))

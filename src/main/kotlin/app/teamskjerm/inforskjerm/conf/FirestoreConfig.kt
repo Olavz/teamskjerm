@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import org.springframework.core.io.Resource
 
-@Profile("!test")
+@Profile("prod")
 @Configuration
 class FirestoreConfig {
 

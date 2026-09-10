@@ -13,7 +13,7 @@ class JwtUserDetailsService(
             ?: throw UsernameNotFoundException("User $username not found!")
 
         return TeamskjermUserDetails(
-            user.id,
+            user.brukerUUID,
             user.navn,
             user.passord
         )

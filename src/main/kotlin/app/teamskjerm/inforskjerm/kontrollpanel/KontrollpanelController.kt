@@ -33,7 +33,7 @@ class KontrollpanelController(
         @PathVariable kontrollpanelUUID: String
     ): ResponseEntity<List<KontrollpanelKomponent>> {
         return ResponseEntity.ok(
-            komponentRepository.hentKomponenterMedId(
+            komponentRepository.hentKomponenterMedUUID(
                 kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
                     .komponenter
             )
@@ -56,7 +56,7 @@ class KontrollpanelController(
         val kontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
 
         if (kontrollpanel.komponentPlassering.isEmpty()) {
-            val alleKomponenter = komponentRepository.hentKomponenterMedId(kontrollpanel.komponenter)
+            val alleKomponenter = komponentRepository.hentKomponenterMedUUID(kontrollpanel.komponenter)
             return ResponseEntity.ok(alleKomponenter?.map { it.komponentUUID } ?: emptyList())
         }
 
@@ -69,7 +69,7 @@ class KontrollpanelController(
             .flatten()
             .map { it.komponentUUID }
             .let { plassertKomponenter ->
-                komponentRepository.hentKomponenterMedId(kontrollpanel.komponenter)
+                komponentRepository.hentKomponenterMedUUID(kontrollpanel.komponenter)
                     ?.filterNot { plassertKomponenter.contains(it.komponentUUID) }
             }
             ?.map { it.komponentUUID }
@@ -156,7 +156,7 @@ class KontrollpanelController(
         val kontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
         val nyListe = mutableListOf<String>()
         nyListe.addAll(kontrollpanel.komponenter)
-        nyListe.add(lagretKomponent.id)
+        nyListe.add(lagretKomponent.komponentUUID)
 
         kontrollpanel.komponenter = nyListe
 
@@ -173,12 +173,12 @@ class KontrollpanelController(
         @PathVariable komponentUUID: String
     ): ResponseEntity<String> {
 
-        val slettetKomponentId = komponentRepository.slett(komponentUUID)
+        komponentRepository.slett(komponentUUID)
 
         val kontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
         val oppdatertKomponenter = mutableListOf<String>()
         oppdatertKomponenter.addAll(kontrollpanel.komponenter)
-        oppdatertKomponenter.remove(slettetKomponentId)
+        oppdatertKomponenter.remove(komponentUUID)
 
         kontrollpanel.komponenter = oppdatertKomponenter
 

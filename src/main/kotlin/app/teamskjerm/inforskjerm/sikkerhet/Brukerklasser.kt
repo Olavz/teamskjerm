@@ -1,7 +1,8 @@
 package app.teamskjerm.inforskjerm.sikkerhet
 
 data class Bruker(
-    var id: String = "", // Settes og genereres av firestore
+    var id: String = "",
+    var brukerUUID: String = "",
     val navn: String = "",
     val passord: String = ""
 )

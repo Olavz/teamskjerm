@@ -70,7 +70,7 @@ class KontrollpanelFirestoreRepository(
 
         kontrollpanel
             .komponenter
-            .map { komponentPort.slettId(it) }
+            .forEach { komponentPort.slett(it) }
 
         firestore.collection(COLLECTION).document(kontrollpanel.id).delete()
 
