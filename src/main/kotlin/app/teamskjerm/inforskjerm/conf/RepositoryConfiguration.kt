@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 import tools.jackson.databind.json.JsonMapper
 
-@Profile("prod")
+@Profile("!dev")
 @Configuration
 class RepositoryConfiguration {
 
