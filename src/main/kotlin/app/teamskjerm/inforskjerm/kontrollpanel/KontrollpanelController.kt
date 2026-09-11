@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*
 import tools.jackson.databind.JsonNode
 import tools.jackson.databind.json.JsonMapper
 
+data class FlyttKomponentRequest(val tilKontrollpanelUUID: String)
+
 @RestController
 @RequestMapping("/api")
 class KontrollpanelController(
@@ -194,6 +196,71 @@ class KontrollpanelController(
         }
 
         kontrollpanelRepository.lagre(kontrollpanel)
+
+        return ResponseEntity.ok(
+            ""
+        )
+    }
+
+    @PostMapping("/kontrollpanel/{kontrollpanelUUID}/komponent/{komponentUUID}/flytt")
+    fun flyttKomponent(
+        @AuthenticationPrincipal bruker: TeamskjermUserDetails,
+        @PathVariable kontrollpanelUUID: String,
+        @PathVariable komponentUUID: String,
+        @RequestBody flyttKomponentRequest: FlyttKomponentRequest
+    ): ResponseEntity<String> {
+
+        val fraKontrollpanel = kontrollpanelRepository.hentKontrollpanel(kontrollpanelUUID)
+        val tilKontrollpanel = kontrollpanelRepository.hentKontrollpanel(flyttKomponentRequest.tilKontrollpanelUUID)
+
+        if (fraKontrollpanel.eierId != bruker.id() || tilKontrollpanel.eierId != bruker.id()) {
+            return ResponseEntity.status(403).body("Du har ikke tilgang til å flytte denne komponenten.")
+        }
+
+        if (fraKontrollpanel.kontrollpanelUUID == tilKontrollpanel.kontrollpanelUUID) {
+            return ResponseEntity.badRequest().body("Komponenten er allerede i dette kontrollpanelet.")
+        }
+
+        if (!fraKontrollpanel.komponenter.contains(komponentUUID)) {
+            return ResponseEntity.badRequest().body("Komponenten finnes ikke i kontrollpanelet den flyttes fra.")
+        }
+
+        fraKontrollpanel.komponenter = fraKontrollpanel.komponenter.filter { it != komponentUUID }
+
+        if (fraKontrollpanel.komponentPlassering.isNotEmpty()) {
+            val fraPlassering =
+                jsonMapper.readValue(fraKontrollpanel.komponentPlassering, KomponentPlassering::class.java)
+
+            fraKontrollpanel.komponentPlassering = jsonMapper.writeValueAsString(
+                KomponentPlassering(
+                    venstre = fraPlassering.venstre.filter { it.komponentUUID != komponentUUID },
+                    midten = fraPlassering.midten.filter { it.komponentUUID != komponentUUID },
+                    høyre = fraPlassering.høyre.filter { it.komponentUUID != komponentUUID }
+                )
+            )
+        }
+
+        kontrollpanelRepository.lagre(fraKontrollpanel)
+
+        if (!tilKontrollpanel.komponenter.contains(komponentUUID)) {
+            tilKontrollpanel.komponenter = tilKontrollpanel.komponenter + komponentUUID
+            kontrollpanelRepository.lagre(tilKontrollpanel)
+        }
+
+        simpMessagingTemplate.convertAndSend(
+            "/kontrollpanel/${kontrollpanelUUID}", """
+            {
+              "oppdater": true
+            }
+        """.trimIndent()
+        )
+        simpMessagingTemplate.convertAndSend(
+            "/kontrollpanel/${tilKontrollpanel.kontrollpanelUUID}", """
+            {
+              "oppdater": true
+            }
+        """.trimIndent()
+        )
 
         return ResponseEntity.ok(
             ""

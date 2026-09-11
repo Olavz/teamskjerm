@@ -69,6 +69,7 @@ function AdministrerKontrollpanel() {
 
     const [komponentopprettet, setKomponentopprettet] = useState<number>(0);
     const [kontrollpanelKomponenter, setKontrollpanelKomponenter] = useState<KontrollpanelKomponent[]>([]);
+    const [andreKontrollpanel, setAndreKontrollpanel] = useState<NyttKontrollpanel[]>([]);
     const {kontrollpanelUUID} = useParams<KontrollpanelParams>();
 
     const [komponenterVenstre, setKomponenterVenstre] = useState<KomponentRekkefølge[]>([]);
@@ -136,6 +137,17 @@ function AdministrerKontrollpanel() {
         fetch(`/api/ext/kontrollpanel/${kontrollpanelUUID}/info`)
             .then((response) => response.json())
             .then((data: KontrollpanelInfo) => setKontrollpanelInfo(data));
+
+        fetch(`/api/kontrollpanel`, {
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${teamskjermTokenCookie()}`
+            }
+        })
+            .then((response) => response.json())
+            .then((data: NyttKontrollpanel[]) => {
+                setAndreKontrollpanel(data.filter((panel) => panel.kontrollpanelUUID !== kontrollpanelUUID))
+            });
     }, [komponentopprettet]);
 
     const slettKomponent = async (komponentUUID: string) => {
@@ -157,6 +169,32 @@ function AdministrerKontrollpanel() {
             kontrollpanelKomponenter.filter((it) => it.komponentUUID != komponentUUID)
         )
         setKomponentopprettet(komponentopprettet-1)
+    }
+
+    const flyttKomponent = async (komponentUUID: string, tilKontrollpanelUUID: string) => {
+        try {
+            const response = await fetch(`/api/kontrollpanel/${kontrollpanelUUID}/komponent/${komponentUUID}/flytt`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${teamskjermTokenCookie()}`
+                },
+                body: JSON.stringify({tilKontrollpanelUUID}),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert("Kunne ikke flytte komponenten. Prøv igjen.");
+            return;
+        }
+        setVisModalRedigerKomponent(false)
+        setKontrollpanelKomponenter(
+            kontrollpanelKomponenter.filter((it) => it.komponentUUID != komponentUUID)
+        )
+        setKomponentopprettet(komponentopprettet - 1)
     }
 
     const opprettKomponent = async (kontrollpanelUUID: string, kontrollpanelKomponent: KontrollpanelKomponent) => {
@@ -473,6 +511,8 @@ function AdministrerKontrollpanel() {
                                     return (
                                         <div className="row" key={item.komponentUUID}>
                                             <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                                   flyttKomponent={flyttKomponent}
+                                                                                   andreKontrollpanel={andreKontrollpanel}
                                                                                    kontrollpanelKomponent={item}>
                                                 <RedigerTekstKomponent  {...item}/>
                                             </AdministrerBaseKomponentKontrollpanel>
@@ -482,6 +522,8 @@ function AdministrerKontrollpanel() {
                                     return (
                                         <div className="row" key={item.komponentUUID}>
                                             <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                                   flyttKomponent={flyttKomponent}
+                                                                                   andreKontrollpanel={andreKontrollpanel}
                                                                                    kontrollpanelKomponent={item}>
                                                 <RedigerVarselKomponent {...item} />
                                             </AdministrerBaseKomponentKontrollpanel>
@@ -491,6 +533,8 @@ function AdministrerKontrollpanel() {
                                     return (
                                         <div className="row" key={item.komponentUUID}>
                                             <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                                   flyttKomponent={flyttKomponent}
+                                                                                   andreKontrollpanel={andreKontrollpanel}
                                                                                    kontrollpanelKomponent={item}>
                                                 <RedigerPieChartKomponent {...item} />
                                             </AdministrerBaseKomponentKontrollpanel>
@@ -500,6 +544,8 @@ function AdministrerKontrollpanel() {
                                     return (
                                         <div className="row" key={item.komponentUUID}>
                                             <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                                   flyttKomponent={flyttKomponent}
+                                                                                   andreKontrollpanel={andreKontrollpanel}
                                                                                    kontrollpanelKomponent={item}>
                                                 <RedigerBarChartKomponent {...item} />
                                             </AdministrerBaseKomponentKontrollpanel>
@@ -509,6 +555,8 @@ function AdministrerKontrollpanel() {
                                     return (
                                         <div className="row" key={item.komponentUUID}>
                                             <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                                   flyttKomponent={flyttKomponent}
+                                                                                   andreKontrollpanel={andreKontrollpanel}
                                                                                    kontrollpanelKomponent={item}>
                                                 <RedigerGrafanaKomponent {...item} />
                                             </AdministrerBaseKomponentKontrollpanel>
@@ -518,6 +566,8 @@ function AdministrerKontrollpanel() {
                                     return (
                                         <div className="row" key={item.komponentUUID}>
                                             <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                                   flyttKomponent={flyttKomponent}
+                                                                                   andreKontrollpanel={andreKontrollpanel}
                                                                                    kontrollpanelKomponent={item}>
                                                 <RedigerStackedAreaChartKomponent {...item} />
                                             </AdministrerBaseKomponentKontrollpanel>
@@ -527,6 +577,8 @@ function AdministrerKontrollpanel() {
                                     return (
                                         <div className="row" key={item.komponentUUID}>
                                             <AdministrerBaseKomponentKontrollpanel slettKomponent={slettKomponent}
+                                                                                   flyttKomponent={flyttKomponent}
+                                                                                   andreKontrollpanel={andreKontrollpanel}
                                                                                    kontrollpanelKomponent={item}>
                                                 <RedigerLineChartKomponent {...item} />
                                             </AdministrerBaseKomponentKontrollpanel>

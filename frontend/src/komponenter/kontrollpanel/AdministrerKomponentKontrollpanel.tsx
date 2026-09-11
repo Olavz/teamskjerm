@@ -1,16 +1,21 @@
 import {KomponentKontrollpanel, KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 import {ReactNode, useEffect, useState} from "react";
-import {Accordion, Badge, Button, FormCheck, FormControl, FormGroup, FormLabel} from "react-bootstrap";
+import {Accordion, Badge, Button, FormCheck, FormControl, FormGroup, FormLabel, FormSelect} from "react-bootstrap";
 import {teamskjermTokenCookie} from "../../CookieHjelper.tsx";
+import {NyttKontrollpanel} from "../../sider/administrerkontrollpanel/AdministrerKontrollpanel.tsx";
 
 type BaseKomponentKontrollpanelProps = {
     kontrollpanelKomponent: KontrollpanelKomponent
     slettKomponent: (komponentUUID: string) => void
+    flyttKomponent: (komponentUUID: string, tilKontrollpanelUUID: string) => void
+    andreKontrollpanel: NyttKontrollpanel[]
     children: ReactNode
 }
 
 export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontrollpanelProps> = ({
                                                                                                      slettKomponent,
+                                                                                                     flyttKomponent,
+                                                                                                     andreKontrollpanel,
                                                                                                      kontrollpanelKomponent,
                                                                                                      children
                                                                                                  }) => {
@@ -20,6 +25,7 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
     const [utdatertKomponentEtterMinutter, setUtdatertKomponentEtterMinutter] = useState(0)
     const [skjulVarselEtterMinutterUtenFeil, setSkjulVarselEtterMinutterUtenFeil] = useState(0)
     const [lagreknappDeaktivert, setLagreknappDeaktivert] = useState(false)
+    const [valgtFlyttKontrollpanelUUID, setValgtFlyttKontrollpanelUUID] = useState<string>('')
 
 
     const oppdaterKomponent = async () => {
@@ -58,6 +64,10 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
         setUtdatertKomponentEtterMinutter(kontrollpanelKomponent.utdatertKomponentEtterMinutter ?? 0)
         setSkjulVarselEtterMinutterUtenFeil(kontrollpanelKomponent.skjulVarselEtterMinutterUtenFeil ?? 0)
     }, []);
+
+    useEffect(() => {
+        setValgtFlyttKontrollpanelUUID(andreKontrollpanel[0]?.kontrollpanelUUID ?? '')
+    }, [andreKontrollpanel]);
 
     const getBaseUrl = () => {
         const {protocol, host} = window.location;
@@ -206,6 +216,34 @@ export const AdministrerBaseKomponentKontrollpanel: React.FC<BaseKomponentKontro
                                 </pre>
                             </Accordion.Body>
                         </Accordion.Item>
+                        {andreKontrollpanel.length > 0 &&
+                            <Accordion.Item eventKey="2">
+                                <Accordion.Header>Flytt til annet kontrollpanel</Accordion.Header>
+                                <Accordion.Body>
+                                    <div className="d-flex gap-2">
+                                        <FormSelect
+                                            value={valgtFlyttKontrollpanelUUID}
+                                            onChange={(e) => setValgtFlyttKontrollpanelUUID(e.target.value)}
+                                            aria-label="Velg kontrollpanel å flytte til"
+                                        >
+                                            {andreKontrollpanel.map((panel) => (
+                                                <option key={panel.kontrollpanelUUID} value={panel.kontrollpanelUUID}>
+                                                    {panel.navn}
+                                                </option>
+                                            ))}
+                                        </FormSelect>
+                                        <Button
+                                            variant="outline-secondary"
+                                            className="flex-shrink-0"
+                                            disabled={!valgtFlyttKontrollpanelUUID}
+                                            onClick={() => flyttKomponent(kontrollpanelKomponent.komponentUUID, valgtFlyttKontrollpanelUUID)}
+                                        >
+                                            Flytt
+                                        </Button>
+                                    </div>
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        }
                     </Accordion>
                 </div>
             </div>
