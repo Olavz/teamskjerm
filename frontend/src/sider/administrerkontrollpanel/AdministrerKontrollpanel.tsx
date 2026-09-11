@@ -2,10 +2,22 @@ import {useEffect, useState} from "react";
 import {NavLink, useNavigate, useParams} from "react-router-dom";
 import {Button, ButtonGroup, Modal} from "react-bootstrap";
 
-import {closestCenter, DndContext, DragEndEvent, DragOverlay, DragStartEvent} from "@dnd-kit/core";
+import {
+    closestCorners,
+    DndContext,
+    DragCancelEvent,
+    DragEndEvent,
+    DragOverEvent,
+    DragOverlay,
+    DragStartEvent,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors
+} from "@dnd-kit/core";
 import DroppableColumnComponent from "./DroppableColumnComponent.tsx";
-import {DraggableKomponentKort} from "./DraggableKomponentKort.tsx";
-import {arrayMove} from "@dnd-kit/sortable";
+import {KomponentKortOverlay} from "./DraggableKomponentKort.tsx";
+import {arrayMove, sortableKeyboardCoordinates} from "@dnd-kit/sortable";
 import {teamskjermTokenCookie} from "../../CookieHjelper.tsx";
 import {
     KomponentKontrollpanel,
@@ -68,6 +80,11 @@ function AdministrerKontrollpanel() {
     const [visModalForhaandsvisKomponent, setVisModalForhaandsvisKomponent] = useState(false);
     const [visModalRedigerKomponent, setVisModalRedigerKomponent] = useState(false);
     const [valgtKomponentUUIDForModal, setValgtKomponentUUIDForModal] = useState("");
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {activationConstraint: {distance: 4}}),
+        useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
+    );
 
 
     useEffect(() => {
@@ -198,15 +215,55 @@ function AdministrerKontrollpanel() {
         return undefined;
     };
 
-    const utledValgtKomponent = (id: string): KomponentRekkefølge | undefined => {
-        return [...komponenterVenstre, ...komponenterMidten, ...komponenterHøyre, ...komponenterUtenPlassering].find(k => k.komponentUUID === id);
+    type KolonneId = "ikkePlassert" | "venstre" | "midten" | "høyre";
+    const alleKolonneIder: KolonneId[] = ["ikkePlassert", "venstre", "midten", "høyre"];
+
+    const kolonneMap: Record<KolonneId, [KomponentRekkefølge[], React.Dispatch<React.SetStateAction<KomponentRekkefølge[]>>]> = {
+        ikkePlassert: [komponenterUtenPlassering, setKomponenterUtenPlassering],
+        venstre: [komponenterVenstre, setKomponenterVenstre],
+        midten: [komponenterMidten, setKomponenterMidten],
+        høyre: [komponenterHøyre, setKomponenterHøyre],
     };
+
+    const finnKolonneId = (overId: string): KolonneId | undefined =>
+        alleKolonneIder.includes(overId as KolonneId)
+            ? (overId as KolonneId)
+            : finnKolonneFraKomponentUUID(overId);
 
     const handleDragStart = (event: DragStartEvent) => {
         setDraggableAktivId(event.active.id.toString())
     }
 
-    type KolonneId = "ikkePlassert" | "venstre" | "midten" | "høyre";
+    const handleDragOver = (event: DragOverEvent) => {
+        const {active, over} = event;
+        if (!over) return;
+
+        const draggedId = active.id as string;
+        const overId = over.id as string;
+
+        if (draggedId === overId) return;
+
+        const sourceColumn = finnKolonneFraKomponentUUID(draggedId);
+        const destinationColumn = finnKolonneId(overId);
+
+        if (!sourceColumn || !destinationColumn || sourceColumn === destinationColumn) return;
+
+        const [sourceList, setSourceList] = kolonneMap[sourceColumn];
+        const [, setDestinationList] = kolonneMap[destinationColumn];
+
+        const valgtKomponent = sourceList.find(k => k.komponentUUID === draggedId);
+        if (!valgtKomponent) return;
+
+        setSourceList(prev => prev.filter(k => k.komponentUUID !== draggedId));
+        setDestinationList(prev => {
+            if (prev.some(k => k.komponentUUID === draggedId)) return prev;
+            const overIndex = prev.findIndex(k => k.komponentUUID === overId);
+            const innsettingsindeks = overIndex >= 0 ? overIndex : prev.length;
+            const nyListe = [...prev];
+            nyListe.splice(innsettingsindeks, 0, valgtKomponent);
+            return nyListe;
+        });
+    };
 
     const handleDragEnd = (event: DragEndEvent) => {
         setDraggableAktivId(null);
@@ -218,46 +275,21 @@ function AdministrerKontrollpanel() {
         const overId = over.id as string;
 
         const sourceColumn = finnKolonneFraKomponentUUID(draggedId);
-        const destinationColumn: KolonneId | undefined =
-            ["ikkePlassert", "venstre", "midten", "høyre"].includes(overId)
-                ? (overId as KolonneId)
-                : finnKolonneFraKomponentUUID(overId);
-
-        if (!sourceColumn || !destinationColumn) return;
-
-        const kolonneMap: Record<KolonneId, [KomponentRekkefølge[], React.Dispatch<React.SetStateAction<KomponentRekkefølge[]>>]> = {
-            ikkePlassert: [komponenterUtenPlassering, setKomponenterUtenPlassering],
-            venstre: [komponenterVenstre, setKomponenterVenstre],
-            midten: [komponenterMidten, setKomponenterMidten],
-            høyre: [komponenterHøyre, setKomponenterHøyre],
-        };
+        if (!sourceColumn) return;
 
         const [sourceList, setSourceList] = kolonneMap[sourceColumn];
-        const [, setDestinationList] = kolonneMap[destinationColumn];
 
-        // Flytting innen samme kolonne
-        if (sourceColumn === destinationColumn) {
-            const oldIndex = sourceList.findIndex(k => k.komponentUUID === draggedId);
-            const newIndex = sourceList.findIndex(k => k.komponentUUID === overId);
+        const oldIndex = sourceList.findIndex(k => k.komponentUUID === draggedId);
+        const newIndex = sourceList.findIndex(k => k.komponentUUID === overId);
 
-            if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
-                const nyListe = arrayMove(sourceList, oldIndex, newIndex);
-                setSourceList(nyListe);
-            }
-
-            return;
+        if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
+            setSourceList(arrayMove(sourceList, oldIndex, newIndex));
         }
-
-        // Flytting mellom kolonner
-        const valgtKomponent = utledValgtKomponent(draggedId);
-        if (!valgtKomponent) return;
-
-        // Fjern fra kilden
-        setSourceList(prev => prev.filter(k => k.komponentUUID !== draggedId));
-        // Legg til i målet
-        setDestinationList(prev => [...prev, valgtKomponent]);
     };
 
+    const handleDragCancel = (_event: DragCancelEvent) => {
+        setDraggableAktivId(null);
+    };
 
     const infoskjerm = `/kontrollpanel/${kontrollpanelUUID}`
 
@@ -365,9 +397,12 @@ function AdministrerKontrollpanel() {
                 </>}
 
                 <DndContext
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
+                    sensors={sensors}
+                    collisionDetection={closestCorners}
                     onDragStart={handleDragStart}
+                    onDragOver={handleDragOver}
+                    onDragEnd={handleDragEnd}
+                    onDragCancel={handleDragCancel}
                 >
 
                     <div style={{display: "flex", gap: "1rem", padding: "1rem"}}>
@@ -412,10 +447,9 @@ function AdministrerKontrollpanel() {
                     </div>
                     <DragOverlay>
                         {draggableAktivId ?
-                            <DraggableKomponentKort
+                            <KomponentKortOverlay
                                 komponent={kontrollpanelKomponenter.find((it) => it.komponentUUID === draggableAktivId)!}
                                 key={draggableAktivId}
-                                id={draggableAktivId}
                                 redigerVisning={redigerKomponentvisning}
                                 visModalForRedigeringAvKomponent={visModalForRedigeringAvKomponent}
                                 visModalForhaandsvisKomponent={visModalForForhaandsvisKomponent}
