@@ -1,17 +1,21 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {NavLink, useNavigate, useParams} from "react-router-dom";
 import {Button, ButtonGroup, Modal} from "react-bootstrap";
 
 import {
-    closestCorners,
+    closestCenter,
+    CollisionDetection,
     DndContext,
     DragCancelEvent,
     DragEndEvent,
     DragOverEvent,
     DragOverlay,
     DragStartEvent,
+    getFirstCollision,
     KeyboardSensor,
+    pointerWithin,
     PointerSensor,
+    rectIntersection,
     useSensor,
     useSensors
 } from "@dnd-kit/core";
@@ -77,6 +81,15 @@ function AdministrerKontrollpanel() {
     const [komponenterHøyre, setKomponenterHøyre] = useState<KomponentRekkefølge[]>([]);
 
     const [komponenterUtenPlassering, setKomponenterUtenPlassering] = useState<KomponentRekkefølge[]>([]);
+
+    const lastOverId = useRef<string | null>(null);
+    const recentlyMovedToNewContainer = useRef(false);
+
+    useEffect(() => {
+        requestAnimationFrame(() => {
+            recentlyMovedToNewContainer.current = false;
+        });
+    }, [komponenterVenstre, komponenterMidten, komponenterHøyre, komponenterUtenPlassering]);
 
     const [visModalForhaandsvisKomponent, setVisModalForhaandsvisKomponent] = useState(false);
     const [visModalRedigerKomponent, setVisModalRedigerKomponent] = useState(false);
@@ -268,6 +281,47 @@ function AdministrerKontrollpanel() {
             ? (overId as KolonneId)
             : finnKolonneFraKomponentUUID(overId);
 
+    // Egendefinert collision detection etter mønster fra dnd-kits offisielle
+    // "Multiple Containers"-eksempel. Ren closestCorners/closestCenter klarer ikke
+    // pålitelig å plukke opp en tom kolonne som droppmål når den konkurrerer med
+    // kort i nabokolonner. Her sjekkes pekeren direkte (pointerWithin) først, med
+    // rectIntersection som fallback, og lastOverId huskes for å unngå at "over"
+    // blir null i det korte vinduet rett etter at et kort er flyttet til en ny
+    // (evt. tom) kolonne.
+    const collisionDetectionStrategy: CollisionDetection = (args) => {
+        const pointerIntersections = pointerWithin(args);
+        const intersections = pointerIntersections.length > 0 ? pointerIntersections : rectIntersection(args);
+        let overId = getFirstCollision(intersections, "id") as string | undefined;
+
+        if (overId != null) {
+            if (alleKolonneIder.includes(overId as KolonneId)) {
+                const containerItems = kolonneMap[overId as KolonneId][0];
+
+                if (containerItems.length > 0) {
+                    const nærmesteBlantKortene = closestCenter({
+                        ...args,
+                        droppableContainers: args.droppableContainers.filter(
+                            (container) =>
+                                container.id !== overId &&
+                                containerItems.some(item => item.komponentUUID === container.id)
+                        ),
+                    })[0]?.id as string | undefined;
+
+                    overId = nærmesteBlantKortene ?? overId;
+                }
+            }
+
+            lastOverId.current = overId ?? null;
+            return overId ? [{id: overId}] : [];
+        }
+
+        if (recentlyMovedToNewContainer.current) {
+            lastOverId.current = args.active.id as string;
+        }
+
+        return lastOverId.current ? [{id: lastOverId.current}] : [];
+    };
+
     const handleDragStart = (event: DragStartEvent) => {
         setDraggableAktivId(event.active.id.toString())
     }
@@ -291,6 +345,8 @@ function AdministrerKontrollpanel() {
 
         const valgtKomponent = sourceList.find(k => k.komponentUUID === draggedId);
         if (!valgtKomponent) return;
+
+        recentlyMovedToNewContainer.current = true;
 
         setSourceList(prev => prev.filter(k => k.komponentUUID !== draggedId));
         setDestinationList(prev => {
@@ -436,7 +492,7 @@ function AdministrerKontrollpanel() {
 
                 <DndContext
                     sensors={sensors}
-                    collisionDetection={closestCorners}
+                    collisionDetection={collisionDetectionStrategy}
                     onDragStart={handleDragStart}
                     onDragOver={handleDragOver}
                     onDragEnd={handleDragEnd}
