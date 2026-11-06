@@ -22,21 +22,24 @@ class GrafanaKomponent: KontrollpanelKomponent(
 
         val grafanaRequest = jsonMapper.convertValue(payload, GrafanaRequest::class.java)
 
-        val unikeEksisterende = jsonMapper.convertValue<List<GrafanaRequest>>(eksisterendeKomponentData)
-            .map { Pair(it.alerts.first().labels.key(), it) }
-            .toMutableSet()
+        val aktiveVarsler = LinkedHashMap<String, GrafanaRequest>()
+        jsonMapper.convertValue<List<GrafanaRequest>>(eksisterendeKomponentData)
+            .filter { !it.alerts.isNullOrEmpty() }
+            .forEach { aktiveVarsler.putIfAbsent(it.key(), it) }
 
-        if(grafanaRequest.fireing()) {
-            if(!unikeEksisterende.any { it.first == grafanaRequest.key() }) {
-                unikeEksisterende.add(Pair(grafanaRequest.key(), grafanaRequest))
-            }
-        } else if(grafanaRequest.resolved()) {
-            if(unikeEksisterende.any { it.first == grafanaRequest.key() }) {
-                unikeEksisterende.removeIf { it.first == grafanaRequest.key() }
+        // Grafana grupperer varsler, så én webhook kan inneholde flere alerts med ulik status
+        grafanaRequest.alerts.orEmpty().forEach { alert ->
+            val key = alert.labels?.key() ?: GrafanaLabels().key()
+            when (alert.status) {
+                "firing" -> aktiveVarsler.putIfAbsent(
+                    key,
+                    GrafanaRequest(grafanaRequest.receiver, alert.status, listOf(alert))
+                )
+                "resolved" -> aktiveVarsler.remove(key)
             }
         }
 
-        return jsonMapper.valueToTree(unikeEksisterende.map { it.second }.toList())
+        return jsonMapper.valueToTree(aktiveVarsler.values.toList())
     }
 
     override fun jsonSkjema(): String {
@@ -63,38 +66,32 @@ class GrafanaKomponent: KontrollpanelKomponent(
         """.trimIndent()
     }
 
+    // Feltene er nullable fordi Grafana kan utelate labels (f.eks. grafana_folder) eller sende null,
+    // og mapperen her har ikke Kotlin-modulen som ville brukt default-verdiene.
     @JsonIgnoreProperties(ignoreUnknown = true)
-    class GrafanaRequest (
-        var receiver: String = "",
-        var status: String = "",
-        var alerts: List<GrafanaAlert> = emptyList()
+    class GrafanaRequest(
+        var receiver: String? = null,
+        var status: String? = null,
+        var alerts: List<GrafanaAlert>? = null
     ) {
         fun key(): String {
-            return alerts.first().labels.key()
-        }
-
-        fun fireing(): Boolean {
-            return alerts.first().status.equals("firing")
-        }
-
-        fun resolved(): Boolean {
-            return alerts.first().status.equals("resolved")
+            return alerts.orEmpty().first().labels?.key() ?: ""
         }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    data class GrafanaAlert(
-        var status: String = "",
-        var labels: GrafanaLabels = GrafanaLabels(),
+    class GrafanaAlert(
+        var status: String? = null,
+        var labels: GrafanaLabels? = null,
     )
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     class GrafanaLabels(
-        var alertname: String = "",
-        var grafana_folder: String = ""
+        var alertname: String? = null,
+        var grafana_folder: String? = null
     ) {
         fun key(): String {
-            return "$grafana_folder $alertname".replace(" ", "_")
+            return "${grafana_folder.orEmpty()} ${alertname.orEmpty()}".replace(" ", "_")
         }
     }
 

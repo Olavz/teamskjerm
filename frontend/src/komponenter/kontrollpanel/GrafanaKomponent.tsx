@@ -3,19 +3,35 @@ import {KontrollpanelKomponent} from "./KomponentKontrollpanel.tsx";
 import {stompService} from "../../WebSocketService.tsx";
 
 type GrafanaData = {
-    receiver: string;
-    status: string;
-    alerts: GrafanaAlert[]
+    receiver?: string | null;
+    status?: string | null;
+    alerts?: GrafanaAlert[] | null
 };
 
 type GrafanaAlert = {
-    status: string;
-    labels: GrafanaLabels
+    status?: string | null;
+    labels?: GrafanaLabels | null
 };
 type GrafanaLabels = {
-    alertname: string;
-    grafana_folder: string
+    alertname?: string | null;
+    grafana_folder?: string | null
 };
+
+const AktiveVarsler = ({grafanadata}: { grafanadata: GrafanaData[] }) => {
+    const varsler = grafanadata.flatMap(it => it.alerts ?? [])
+    if (varsler.length === 0) {
+        return <p>Ingen aktive varsler</p>
+    }
+    return (
+        <ul className="list-unstyled mb-0">
+            {varsler.map((alert, i) => (
+                <li key={`${alert.labels?.grafana_folder ?? ""}_${alert.labels?.alertname ?? ""}_${i}`}>
+                    🔥 {alert.labels?.alertname ?? "Ukjent varsel"}
+                </li>
+            ))}
+        </ul>
+    )
+}
 
 const GrafanaKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID}: KontrollpanelKomponent) => {
     const [grafanadata, setGrafanadata] = useState<GrafanaData[]>();
@@ -41,11 +57,7 @@ const GrafanaKomponent: React.FC<KontrollpanelKomponent> = ({data, komponentUUID
         return <p>Ingen data</p>
     }
 
-    return (
-        <>
-            <p>{grafanadata.map(it => it.alerts[0].labels.alertname)}</p>
-        </>
-    )
+    return <AktiveVarsler grafanadata={grafanadata}/>
 
 }
 
@@ -62,11 +74,7 @@ export const RedigerGrafanaKomponent: React.FC<KontrollpanelKomponent> = ({data}
         return <p>Ingen data</p>
     }
 
-    return (
-        <>
-            <p>{grafanadata.map(it => it.alerts[0].labels.alertname)}</p>
-        </>
-    )
+    return <AktiveVarsler grafanadata={grafanadata}/>
 }
 
 export default GrafanaKomponent;
